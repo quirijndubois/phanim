@@ -12,3 +12,6 @@ quotes = [
     # "“Fuck you.”\n-Me",
     # "“Yobama is joe momma.”\n-Joe Biden (probably)"
     ]
+
+gl_version = (3, 3)
+
