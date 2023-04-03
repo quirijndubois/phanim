@@ -79,3 +79,5 @@ def calulateNormal(vector):
         vector[0]
     ]))
 
+def mapRange(value,frombegin,fromend,tobegin,toend):
+    return (value-frombegin)/(fromend-frombegin) * (toend-tobegin) + tobegin

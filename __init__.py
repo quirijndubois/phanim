@@ -7,4 +7,5 @@ from phanim.functions import *
 from phanim.ui import *
 from phanim.phobjects import *
 from phanim.field import *
+from phanim.particles import *
 print("\nphanim imported!\n")

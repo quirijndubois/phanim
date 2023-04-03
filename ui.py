@@ -2,7 +2,7 @@ import numpy as np
 from phanim.functions import *
 
 class Grid():
-    def __init__(self, Xspacing, Yspacing, n_horizontal, n_vertical, color = (60,60,60), width = 5):
+    def __init__(self, Xspacing, Yspacing, n_horizontal, n_vertical, color = (60,60,60), width = 1):
    
         self.lines = []
         self.color = color
@@ -23,9 +23,9 @@ class Trail():
     def __init__(self,color="white",lineWidth = 1,length=50,segmentLength=1):
         self.positions = []
         self.lines = []
+        self.index = 0
         self.color = color
         self.lineWidth = lineWidth
-        self.index = 0
         self.length = length
         self.segmentLength = segmentLength
     def add(self,position,color):
@@ -34,7 +34,10 @@ class Trail():
             self.positions.append([position[0],position[1]])
             if len(self.positions) > 1:
                 line = [self.positions[-2],self.positions[-1],color]
-                self.lines.append(line)
+                if abs(line[0][0] - line[1][0]) < 0.1 and abs(line[0][1] - line[1][1]) < 0.1:
+                    self.lines.append(line)
+                else:
+                    self.lines.append([line[1],line[1],color])
             if len(self.positions) > self.length/self.segmentLength:
                 self.positions.pop(0)
                 self.lines.pop(0)
@@ -46,6 +49,10 @@ class Trail():
                 self.lines[i][2][2],
                 alpha
             )
+    def reset(self):
+        self.index = 0
+        self.position = []
+        self.lines = []
 
 class Graph():
     def __init__(self,pos=[0,0],xSize=1,ySize=1,xrange=500,lineWidth = 2,color="red"):
@@ -60,12 +67,13 @@ class Graph():
         self.lines = []
     def setLines(self):
         self.points = []
-        self.max = max(abs(np.array(self.data)))
+        self.max = max(np.array(self.data))
+        self.min = min(np.array(self.data))
         for i in range(len(self.data)):
             if len(self.data) > 0 and self.max > 0:
                 self.points.append([
                     i / len(self.data) * self.xSize + self.position[0],
-                    self.data[i] / self.max * self.ySize + self.position[1]
+                    mapRange(self.data[i], self.min, self.max, -1, 1)+self.position[1]
                 ])
         self.lines = pointsToLines(self.points,self.color)
 

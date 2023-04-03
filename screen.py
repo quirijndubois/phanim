@@ -10,19 +10,24 @@ icon = pygame.image.load('phanim/icon.png')
 pygame.display.set_icon(icon)
 
 class Screen():
-    def __init__(self,resolution,zoom = 10,fullscreen=False):
-        self.resolution = resolution
-        self.display = pygame.display.set_mode(resolution,flags=pygame.SCALED,vsync=1)
-        self.surface = pygame.Surface(resolution,pygame.SRCALPHA)
+    def __init__(self,resolution,zoom = 10,fullscreen=False,background=(10,15,20)):
+        infoObject = pygame.display.Info()
+        if resolution == 0:
+            self.resolution = (infoObject.current_w, infoObject.current_h)
+        else:
+            self.resolution = resolution    
+        self.display = pygame.display.set_mode(self.resolution,flags=pygame.SCALED,vsync=1)
+        self.surface = pygame.Surface(self.resolution,pygame.SRCALPHA)
         if fullscreen:
-            self.display = pygame.display.set_mode(resolution,flags=pygame.SCALED+pygame.FULLSCREEN,vsync=1)
+            self.display = pygame.display.set_mode(self.resolution,flags=pygame.SCALED+pygame.FULLSCREEN,vsync=1)
         self.updaterList = []
         self.t0 = time.time()
         self.clock = pygame.time.Clock()
         self.zoom = zoom
         self.pixelsPerUnit = self.resolution[0] / self.zoom
+        self.background = background
 
-        self.mouseThightness = 0.5
+        self.mouseThightness = 0.4
 
 
 
@@ -63,7 +68,7 @@ class Screen():
             if hasattr(phobject,"polygons"):
                 self.drawPolygons(phobject.polygons,phobject.color)
 
-    def run(self,background=(50,50,50)):
+    def run(self):
         running = True
         dt = 0
         pos = pygame.mouse.get_pos()
@@ -81,7 +86,7 @@ class Screen():
                     running = False
                     print("Window closed!")
 
-            self.display.fill(background)
+            self.display.fill(self.background)
             self.surface.fill((0,0,0,0))
 
             pos = pf.interp2d(pos,pygame.mouse.get_pos(),self.mouseThightness)
