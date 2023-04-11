@@ -49,6 +49,9 @@ myScreen.run()
 A simple visualisation of the electric field can be found in examples/vectorField.py
 ![vector field](https://github.com/quirijndaboyy/phanim/blob/main/gifs/vectorFIeld.gif)
 
+A simulation of a triple pendulum with the use of stiff springs can be found in examples/triplePendulum.py. The graphs on the right show the energy that each of the masses has. The yellow graph shows the total energy in the system.
+![triple pendulum](https://github.com/quirijndaboyy/phanim/blob/main/gifs/pendulum.gif)
+
 
 
 
