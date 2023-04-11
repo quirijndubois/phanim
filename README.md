@@ -1,6 +1,6 @@
 # phanim
 PHysics ANIMations: 
-a bad Physics render engine
+a bad Physics render library
 
 The project is still in the early stages of development, so larger simulation will be slow and features are very limited. Look at the example files to see what cool things you can already do!
 
