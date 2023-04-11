@@ -36,12 +36,12 @@ Now we can define a update function that will be called each frame. Then we add 
 def updateFunction(screen):
   screen.draw(grid)
   
- screen.addUpdater(updateFunction)
+ myScreen.addUpdater(updateFunction)
 ```
 Now we can run the script and a window with a simple grid should show up.
 
 ```
-screen.run()
+myScreen.run()
 ```
 
 
