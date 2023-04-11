@@ -46,6 +46,8 @@ myScreen.run()
 
 ## Examples
 
+![vector field](https://github.com/quirijndaboyy/phanim/blob/main/gifs/vectorFIeld.gif)
+
 
 
 
