@@ -1,9 +1,8 @@
 # phanim
 PHysics ANIMations: 
-
 a bad Physics render engine
 
-Look at the example files to figure out how to use the library.
+The project is still in the early stages of development, so larger simulation will be slow and features are very limited. Look at the example files for what cool stuff you can already do!
 
 ## Requirements
 pygame, numpy
