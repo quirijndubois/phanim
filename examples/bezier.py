@@ -30,7 +30,7 @@ def update(screen):
 
 def click(screen):
     if len(nodes) < 4:
-        nodes.append(p.Node(pos=screen.mousePos))
+        nodes.append(p.Node(pos=screen.mousePos,radius = 0.1))
 
 def drag(screen):
     if len(nodes) == 4 and screen.closest != -1:
