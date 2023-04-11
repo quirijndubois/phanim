@@ -46,6 +46,7 @@ myScreen.run()
 
 ## Examples
 
+A simple visualisation of the electric field can be found in examples/vectorField.py
 ![vector field](https://github.com/quirijndaboyy/phanim/blob/main/gifs/vectorFIeld.gif)
 
 
