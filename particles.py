@@ -43,6 +43,10 @@ class Particles():
                     phanim.mapRange(random1, 0, 1,self.area[0][0],self.area[0][1]),
                     phanim.mapRange(random2, 0, 1,self.area[1][0],self.area[1][1])
                 ]
+                # pos = [
+                #     phanim.mapRange(random1, 0, 1,-0.1,0.1),
+                #     phanim.mapRange(random2, 0, 1,-0.1,0.1)
+                # ]
                 particle.position = pos
                 particle.age = 0
             else:

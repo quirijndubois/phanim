@@ -2,7 +2,7 @@ import numpy as np
 import phanim
 
 class Field():
-    def __init__(self,resolution=1,size=6,vectorScale=1,maxVectorScale = 0.6,pointSize = 0.2,lineThickness=0.06):
+    def __init__(self,resolution=1,size=[5,3],vectorScale=50,maxVectorScale = 0.6,pointSize = 0.2,lineThickness=0.06):
         self.vectorScale = vectorScale/resolution
         self.maxVectorScale = maxVectorScale/resolution
         self.pointSize = pointSize/resolution
@@ -10,8 +10,8 @@ class Field():
         self.size = size
         self.resolution = resolution
     def setField(self,lambdaFunction):
-        x_range = np.arange(-self.size, self.size,1/self.resolution)
-        y_range = np.arange(-self.size, self.size,1/self.resolution)
+        x_range = np.arange(-self.size[0], self.size[0],1/self.resolution)
+        y_range = np.arange(-self.size[1], self.size[1],1/self.resolution)
         self.field = []
         self.lambdaFunction = lambdaFunction
         for x in x_range:
@@ -30,9 +30,10 @@ class Field():
                 )
             else:
                 color = "red"
-            
-            arrow = phanim.Arrow(pointSize=self.pointSize,lineThickness=self.lineThickness,color=color)
+
+            arrow = phanim.Arrow(pointSize=0.4,lineThickness=0.1,color=color)
             direction = np.array(point[1])*self.vectorScale
+
             if direction[0]**2+direction[1]**2 > 1:
                 arrow.setDirection(point[0],phanim.functions.normalize(direction),scale=self.maxVectorScale)
             else:

@@ -30,7 +30,7 @@ def normalize(vector):
 def difference(v1,v2):
     return np.array([
         v1[0] - v2[0],
-        v2[1] - v2[1]
+        v1[1] - v2[1]
     ])
 
 diff = difference
@@ -40,6 +40,18 @@ def magnitude(vector):
     for dimension in vector:
         s += dimension**2
     return s**(0.5)
+
+def magSquared(vector):
+    s = 0
+    for dimension in vector:
+        s += dimension**2
+    return s
+
+def distSq(a,b): #returns distance Squared for efficiency purposes
+    return magSquared(diff(a,b))
+
+def distance(a,b):
+    return np.sqrt(distSq(a,b))
 
 def springForce(C,l,begin,end):
     difference = np.array(begin) - np.array(end)
@@ -81,3 +93,16 @@ def calulateNormal(vector):
 
 def mapRange(value,frombegin,fromend,tobegin,toend):
     return (value-frombegin)/(fromend-frombegin) * (toend-tobegin) + tobegin
+
+def findClosest(positions,target):
+    for i in range(len(positions)):
+        distance = magSquared(diff(positions[i],target))
+        if i == 0:
+            closestDistance = distance
+            closestIndex = 0
+        else:
+            if distance < closestDistance:
+                closestDistance = distance
+                closestIndex = i
+    return closestIndex
+
