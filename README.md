@@ -44,6 +44,9 @@ Now we can run the script and a window with a simple grid should show up.
 myScreen.run()
 ```
 
+## Examples
+
+
 
 
 
