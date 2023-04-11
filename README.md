@@ -24,3 +24,26 @@ resolution = [1080,1920] ##Or any other resolution you require.
 myScreen = phanim.Screen(resolution)
 
 ```
+Now we can create something to render on the screen. In this example we will create a simple grid, but the possibilities are endless.
+
+```python
+grid = phanim.Grid(1,1,10,10) #This creates a grid with each line seperated by 1, and 10 lines to each side of the origin.
+```
+
+Now we can define a update function that will be called each frame. Then we add the update function to the manim updater list.
+
+```python
+def updateFunction(screen):
+  screen.draw(grid)
+  
+ screen.addUpdater(updateFunction)
+```
+Now we can run the script and a window with a simple grid should show up.
+
+```
+screen.run()
+```
+
+
+
+
