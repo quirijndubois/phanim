@@ -1,4 +1,4 @@
-<img src="[Assets/icon.png](https://github.com/quirijndaboyy/phanim/blob/main/phanim/icon.png)" width="200">
+![phanim logo](https://github.com/quirijndaboyy/phanim/blob/main/phanim/icon.png)
 
 PHysics ANIMations: 
 a bad Physics render library
