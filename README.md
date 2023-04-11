@@ -20,7 +20,7 @@ import phanim
 After importing you can create a phanim screen as follows:
 
 ```python
-resolution = [1080,1920] #Or any other resolution you require.
+resolution = [1000,1000] #Or any other resolution you require.
 myScreen = phanim.Screen(resolution)
 
 ```
@@ -36,7 +36,7 @@ Now we can define a update function that will be called each frame. Then we add 
 def updateFunction(screen):
   screen.draw(grid)
   
- myScreen.addUpdater(updateFunction)
+myScreen.addUpdater(updateFunction)
 ```
 Now we can run the script and a window with a simple grid should show up.
 
