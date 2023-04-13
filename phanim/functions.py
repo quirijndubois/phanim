@@ -78,11 +78,14 @@ def gravity(pos1,pos2,G):
         pos1[1] - pos2[1]
     ]
     r2 = diff[0]**2 + diff[1]**2
-    fz = G/r2
-    force = [
-        -diff[0]/r2**0.5*fz,
-        -diff[1]/r2**0.5*fz
-    ]
+    if r2 != 0:
+        fz = G/r2
+        force = [
+            -diff[0]/r2**0.5*fz,
+            -diff[1]/r2**0.5*fz
+        ]
+    else:
+        force = np.array([0,0])
     return np.array(force)
 
 def swirlForce(pos1,pos2,G):
@@ -91,11 +94,14 @@ def swirlForce(pos1,pos2,G):
         pos1[1] - pos2[1]
     ]
     r2 = diff[0]**2 + diff[1]**2
-    fz = G/r2
-    force = [
-        -diff[1]/r2**0.5*fz,
-        diff[0]/r2**0.5*fz
-    ]
+    if r2 != 0:
+        fz = G/r2
+        force = [
+            -diff[1]/r2**0.5*fz,
+            diff[0]/r2**0.5*fz
+        ]
+    else:
+        force = np.array([0,0])
     return np.array(force)
 
 def calulateNormal(vector):
