@@ -40,9 +40,30 @@ myScreen.addUpdater(updateFunction)
 ```
 Now we can run the script and a window with a simple grid should show up.
 
-```
+```python
 myScreen.run()
 ```
+We can also create different object. For example, a blue arrow, which points to the position of the cursor at all times.
+We can create the arrow by defining it like this:
+
+```python
+arrow = phanim.Arrow(color="blue")
+```
+We must draw it withing the update function. This can be done by either altering our first update function, or creating a new one. In this example we will create a new update function.
+
+```python
+def drawArrow(screen):
+  arrow.setDirection([0,0],screen.mousePos)
+  screen.draw(arrow)
+```
+Then add this function to the updater list and run the script:
+
+'''python
+myScreen.addUpdater(drawArrow)
+myScreen.run()
+'''
+
+
 
 ## Examples
 
