@@ -20,7 +20,7 @@ import phanim
 After importing you can create a phanim screen as follows:
 
 ```python
-resolution = [1000,1000] #Or any other resolution you require.
+resolution = [400,400] #Or any other resolution you require.
 myScreen = phanim.Screen(resolution)
 
 ```
