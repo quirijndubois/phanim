@@ -11,12 +11,7 @@ nodes = phanim.Node(pos=[1,0]),phanim.Node(pos=[-1,0])
 
 gravityStrength1 = 0.3
 gravityStrength2 = -0.3
-swirlSrength1 = 0.3
-swirlSrength2 = -0.3
-
-gravityStrength1 = 0
-gravityStrength2 = 0.3
-swirlSrength1 = 0.3
+swirlSrength1 = 0
 swirlSrength2 = 0
 
 
