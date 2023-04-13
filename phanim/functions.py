@@ -85,6 +85,19 @@ def gravity(pos1,pos2,G):
     ]
     return np.array(force)
 
+def swirlForce(pos1,pos2,G):
+    diff = [
+        pos1[0] - pos2[0],
+        pos1[1] - pos2[1]
+    ]
+    r2 = diff[0]**2 + diff[1]**2
+    fz = G/r2
+    force = [
+        -diff[1]/r2**0.5*fz,
+        diff[0]/r2**0.5*fz
+    ]
+    return np.array(force)
+
 def calulateNormal(vector):
     return np.array(normalize([
         -vector[1],
@@ -105,4 +118,12 @@ def findClosest(positions,target):
                 closestDistance = distance
                 closestIndex = i
     return closestIndex
+
+def calculateGradient(function,position,h=0.001):
+    dx = function(vadd(position,[h,0])) - function(position)
+    dy = function(vadd(position,[0,h])) - function(position)
+    return np.array([dx,dy])/h
+
+def dot(vec1,vec2):
+    return vec1[0] * vec2[0] + vec1[1] * vec2[1]
 
