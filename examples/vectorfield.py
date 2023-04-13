@@ -40,7 +40,6 @@ def update(screen):
     screen.draw(*nodes)
 
 def dragFunction(screen):
-    print(screen.dragging)
     if screen.selected != -1:
         nodes[screen.selected].setPosition(screen.mousePos)
     
