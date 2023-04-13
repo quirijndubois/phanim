@@ -62,6 +62,26 @@ Then add this function to the updater list and run the script:
 myScreen.addUpdater(drawArrow)
 myScreen.run()
 ```
+The final script will look like this:
+
+```python
+import phanim
+
+myScreen = phanim.Screen([400,400])
+grid = phanim.Grid(1,1,10,10)
+arrow = phanim.Arrow(color="blue")
+
+def updateFunction(screen):
+  screen.draw(grid)
+  
+def drawArrow(screen):
+  arrow.setDirection([0,0],screen.mousePos)
+  screen.draw(arrow)
+
+myScreen.addUpdater(updateFunction)
+myScreen.addUpdater(drawArrow)
+myScreen.run()
+```
 
 
 
