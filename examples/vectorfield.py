@@ -25,7 +25,6 @@ def update(screen):
     if phanim.distance(nodes[screen.selected].position,screen.mousePos) > 1:
         screen.selected = -1
 
-
     field.setField(func)
     field.generateArrows()
 
@@ -40,11 +39,8 @@ def update(screen):
     screen.draw(*nodes)
 
 def dragFunction(screen):
-    print(screen.dragging)
     if screen.selected != -1:
         nodes[screen.selected].setPosition(screen.mousePos)
-    
-
 
 screen.addUpdater(update)
 screen.addMouseDragUpdater(dragFunction)
