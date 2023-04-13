@@ -65,6 +65,17 @@ Then add this function to the updater list and run the script:
 myScreen.addUpdater(drawArrow)
 myScreen.run()
 ```
+We can also add some dotted lines to track the mouse position like this:
+
+```python
+lines = phanim.dottedLine(lineWidth=1),phanim.dottedLine(lineWidth=1)
+
+def drawLines(screen):
+    lines[0].setEnds([screen.mousePos[0],0],screen.mousePos)
+    lines[1].setEnds([0,screen.mousePos[1]],screen.mousePos)
+myScreen.addUpdater(drawLines)
+```
+
 After combining the update functions the final script will look like this:
 
 ```python
@@ -73,11 +84,15 @@ import phanim
 myScreen = phanim.Screen([400,400])
 grid = phanim.Grid(1,1,10,10)
 arrow = phanim.Arrow(color="blue")
+lines = phanim.dottedLine(lineWidth=1),phanim.dottedLine(lineWidth=1)
 
 def updateFunction(screen):
-  screen.draw(grid)
-  arrow.setDirection([0,0],screen.mousePos)
-  screen.draw(arrow)
+    lines[0].setEnds([screen.mousePos[0],0],screen.mousePos)
+    lines[1].setEnds([0,screen.mousePos[1]],screen.mousePos)
+    screen.draw(grid)
+    arrow.setDirection([0,0],screen.mousePos)
+    screen.draw(*lines)
+    screen.draw(arrow)
 
 myScreen.addUpdater(updateFunction)
 myScreen.run()
