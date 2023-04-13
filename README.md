@@ -6,7 +6,10 @@ a bad Physics render library
 The project is still in the early stages of development, so larger simulation will be slow and features are very limited. Look at the example files to see what cool things you can already do!
 
 ## Requirements
-pygame, numpy
+To install the requirements run the following command:
+```
+pip install -r requirements.txt
+```
 
 ## Installation
 Clone the repository and put your own files in the base folder. Now simply:
