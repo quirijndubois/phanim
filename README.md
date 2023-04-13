@@ -58,10 +58,10 @@ def drawArrow(screen):
 ```
 Then add this function to the updater list and run the script:
 
-'''python
+```python
 myScreen.addUpdater(drawArrow)
 myScreen.run()
-'''
+```
 
 
 
