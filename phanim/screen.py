@@ -1,7 +1,8 @@
 import pygame
-import phanim.functions as pf
+from . import functions as pf
 import numpy as np
 import time
+from copy import deepcopy
 
 pygame.init()
 pygame.mouse.set_visible(False)
@@ -32,6 +33,8 @@ class Screen():
         self.updaterList = []
         self.mouseClickUpdaterList = []
         self.mouseDragUpdaterList = []
+        self.animationQueue = []
+        self.drawList = []
         self.t0 = time.time()
         self.clock = pygame.time.Clock()
         self.background = background
@@ -78,9 +81,10 @@ class Screen():
 
     def drawText(self,texts):
         for text in texts:
-            img = self.font.render(text[0],True,text[2])
-            pos = pf.coords2screen(self.resolution,text[1],self.pixelsPerUnit)
-            self.display.blit(img,pos)
+            if len(text) > 0:
+                img = self.font.render(text[0],True,text[2])
+                pos = pf.coords2screen(self.resolution,text[1],self.pixelsPerUnit)
+                self.display.blit(img,pos)
 
     def draw(self,*args):
         for phobject in args:
@@ -93,22 +97,11 @@ class Screen():
             if hasattr(phobject, "texts"):
                 self.drawText(phobject.texts)
 
-    def run(self):
-        running = True
-        dt = 0
-        pos = pygame.mouse.get_pos()
-
-        while running:
-
-            self.t = time.time() - self.t0
-
-            self.zoom = self.resolution[0] / self.zoom
-
+    def handleInput(self):
             self.keys = pygame.key.get_pressed()
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
+                    self.running = False
                     print("Window closed!")
                 if event.type == pygame.MOUSEBUTTONUP:
                     self.dragging = False
@@ -121,26 +114,77 @@ class Screen():
                 for func in self.mouseDragUpdaterList:
                     func(self)
 
+    def resetDisplay(self):
             self.display.fill(self.background)
             self.surface.fill((0,0,0,0))
 
-            pos = pf.interp2d(pos,pygame.mouse.get_pos(),self.mouseThightness)
-            self.mousePos = pf.screen2cords(self.resolution, pos, self.pixelsPerUnit)
+    
+    def calculateCursor(self):
+        pos = pygame.mouse.get_pos()
+        pos = pf.interp2d(pos,pygame.mouse.get_pos(),self.mouseThightness)
+        self.cursorPositionScreen = pos
+        self.cursorPosition = pf.screen2cords(self.resolution, pos, self.pixelsPerUnit)
+        self.mousePos = self.cursorPosition #for version compatibility
 
-            for func in self.updaterList:
-                for i in range(func[1]):
-                    self.dt = dt/func[1]
-                    func[0](self)
+    def performUpdateList(self):
+        for func in self.updaterList:
+            for i in range(func[1]):
+                self.dt = self.frameDt/func[1]
+                func[0](self)
+
+    def drawCursor(self):
+        radius = 10
+        circle = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
+        pygame.draw.circle(circle, (255, 255, 255, 80), (radius, radius), radius)
+        self.display.blit(circle,[self.cursorPositionScreen[0]-radius,self.cursorPositionScreen[1]-radius])
+
+    def play(self,*args):
+        for animation in args:
+            self.animationQueue.append(animation)
+
+    def playAnimations(self):
+        if len(self.animationQueue) > 0:
+            if self.animationQueue[0].currentFrame == 0:
+                self.animationQueue[0].oldPhobject = deepcopy(self.animationQueue[0].object)
+            self.animationQueue[0].currentFrame += 1
+            self.animationQueue[0].updateAndPrint()
+            if self.animationQueue[0].mode == "add":
+                self.draw(self.animationQueue[0])
+
+            if self.animationQueue[0].currentFrame == self.animationQueue[0].duration:
+                if self.animationQueue[0].mode == "add":
+                    self.add(self.animationQueue[0].object)
+                if self.animationQueue[0].mode == "remove":
+                    self.remove(self.animationQueue[0].object)
+                self.animationQueue.pop(0)
+        
+    def add(self,phobject):
+        self.drawList.append(phobject)
+
+    def remove(self,phobject):
+        self.drawList.remove(phobject)
+        
+    def drawDrawList(self):
+        self.draw(*self.drawList)
+
+    def run(self):
+        self.frameDt = 0
+        self.running = True
+        while self.running:
+            self.t = time.time() - self.t0
+
+            self.handleInput()
+            self.resetDisplay()
+            self.calculateCursor()
+            # self.drawDrawList()
+            # self.playAnimations()
+            self.performUpdateList()
 
             self.display.blit(self.surface,(0,0))
+            self.drawCursor()
 
-            radius = 10
-            circle = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
-            pygame.draw.circle(circle, (255, 255, 255, 80), (radius, radius), radius)
-            self.display.blit(circle,[pos[0]-radius,pos[1]-radius])
+            pygame.display.update()
+            self.frameDt = self.clock.tick(60) / 1000
 
-            pygame.display.flip()
-            dt = self.clock.tick(60) / 1000
         pygame.quit()
-
 

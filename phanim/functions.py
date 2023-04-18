@@ -133,3 +133,16 @@ def calculateGradient(function,position,h=0.001):
 def dot(vec1,vec2):
     return vec1[0] * vec2[0] + vec1[1] * vec2[1]
 
+def calculateBezier(a,b,c,d,t):
+    a = np.array(a)
+    b = np.array(b)
+    c = np.array(c)
+    d = np.array(d)
+    end = (
+        a*(-t**3+3*t**2-3*t+1)+
+        b*(3*t**3-6*t**2+3*t)+
+        c*(-3*t**3+3*t**2)+
+        d*(t**3)
+    )
+    return end
+

@@ -1,5 +1,6 @@
 import numpy as np
 from phanim.functions import *
+from copy import deepcopy
 
 class Grid():
     def __init__(self, Xspacing, Yspacing, n_horizontal, n_vertical, color = (60,60,60), width = 1):
@@ -18,6 +19,14 @@ class Grid():
             self.lines.append([[x,ymax],[x,-ymax],self.color])
         for y in y_range:
             self.lines.append([[xmax,y],[-xmax,y],self.color])
+
+    def createFunction(self,t,old):
+        for i in range(len(self.lines)):
+            startIndex = 0
+            endIndex = 1
+            self.lines[i][startIndex] = list((interp2d(self.lines[i][endIndex],old.lines[i][startIndex],t)))
+            
+            
     
 class Trail():
     def __init__(self,color="white",lineWidth = 1,length=50,segmentLength=1):
@@ -28,6 +37,7 @@ class Trail():
         self.lineWidth = lineWidth
         self.length = length
         self.segmentLength = segmentLength
+        
     def add(self,position,color):
         self.index += 1
         if self.index%self.segmentLength == 0:
@@ -49,6 +59,7 @@ class Trail():
                 self.lines[i][2][2],
                 alpha
             )
+
     def reset(self):
         self.index = 0
         self.position = []
@@ -66,6 +77,7 @@ class Graph():
         self.liveRange = liveRange
         self.lines = []
         self.texts = [[],[]]
+
     def setLines(self):
         self.points = []
         if self.yRange[1] == 0 and self.yRange[0] == 0:
@@ -144,6 +156,10 @@ class Arrow():
 
     def setDirection(self,begin,direction,scale=1):
         self.setPosition(begin,begin+np.array(direction)*scale)
+    
+    def createFunction(self,t,old):
+        self.lineThickness = interp(0,old.lineThickness,t)
+        self.pointThickness = interp(0,old.pointThickness,t)
 
         
 class BezierCurve():
@@ -209,8 +225,11 @@ class Line():
         self.start = start
         self.stop = stop
         self.setLines()
+    
+    def createFunction(self,t,old):
+        self.setEnds(self.start,interp2d(old.start,old.stop,t))
 
-class dottedLine():
+class dottedLine(Line):
     def __init__(self,start=[0,0],stop=[1,0],color = "white",lineWidth = 5,stripeLength = 0.1):
         self.start = start
         self.stop = stop
