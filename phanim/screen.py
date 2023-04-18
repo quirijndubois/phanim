@@ -176,8 +176,8 @@ class Screen():
             self.handleInput()
             self.resetDisplay()
             self.calculateCursor()
-            # self.drawDrawList()
-            # self.playAnimations()
+            self.drawDrawList()
+            self.playAnimations()
             self.performUpdateList()
 
             self.display.blit(self.surface,(0,0))
