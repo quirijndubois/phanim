@@ -1,5 +1,7 @@
 import pygame
 from . import functions as pf
+from .camera import *
+from .animate import *
 import numpy as np
 import time
 from copy import deepcopy
@@ -12,6 +14,9 @@ pygame.display.set_icon(icon)
 
 class Screen():
     def __init__(self,resolution,zoom = 10,fullscreen=False,background=(10,15,20),fontSize=0.5):
+
+        self.camera = Camera(zoom,resolution)
+
         infoObject = pygame.display.Info()
 
         if resolution == 0:
@@ -19,10 +24,10 @@ class Screen():
         else:
             self.resolution = resolution    
 
-        self.zoom = zoom
-        self.pixelsPerUnit = self.resolution[0] / self.zoom
+        # self.zoom = zoom
+        # self.pixelsPerUnit = self.resolution[0] / self.zoom
         self.surface = pygame.Surface(self.resolution,pygame.SRCALPHA)
-        self.fontSize = int(fontSize*self.pixelsPerUnit)
+        self.fontSize = int(fontSize*self.camera.pixelsPerUnit)
         self.font = pygame.font.SysFont(None,self.fontSize)
 
         if fullscreen:
@@ -55,8 +60,8 @@ class Screen():
 
     def drawLines(self,lines,width):
         for line in lines:
-            start = pf.coords2screen(self.resolution,line[0],self.pixelsPerUnit)
-            stop = pf.coords2screen(self.resolution,line[1],self.pixelsPerUnit)
+            start = self.camera.coords2screen(line[0])
+            stop = self.camera.coords2screen(line[1])
 
             pygame.draw.line(
                 self.surface,
@@ -69,21 +74,21 @@ class Screen():
 
     def drawCircles(self,circles):
             for circle in circles:
-                pos = pf.coords2screen(self.resolution, circle[1], self.pixelsPerUnit)
-                pygame.draw.circle(self.surface, circle[2], pos, circle[0]*self.pixelsPerUnit)
+                pos = self.camera.coords2screen(circle[1])
+                pygame.draw.circle(self.surface, circle[2], pos, circle[0]*self.camera.pixelsPerUnit)
 
     def drawPolygons(self,polygons,color):
         for polygon in polygons:
             points = []
             for point in polygon:
-                points.append(pf.coords2screen(self.resolution, point, self.pixelsPerUnit))
+                points.append(self.camera.coords2screen(point))
             pygame.draw.polygon(self.surface, color, points)
 
     def drawText(self,texts):
         for text in texts:
             if len(text) > 0:
                 img = self.font.render(text[0],True,text[2])
-                pos = pf.coords2screen(self.resolution,text[1],self.pixelsPerUnit)
+                pos = self.camera.coords2screen(text[1])
                 self.display.blit(img,pos)
 
     def draw(self,*args):
@@ -123,7 +128,7 @@ class Screen():
         pos = pygame.mouse.get_pos()
         pos = pf.interp2d(pos,pygame.mouse.get_pos(),self.mouseThightness)
         self.cursorPositionScreen = pos
-        self.cursorPosition = pf.screen2cords(self.resolution, pos, self.pixelsPerUnit)
+        self.cursorPosition = self.camera.screen2cords(pos)
         self.mousePos = self.cursorPosition #for version compatibility
 
     def performUpdateList(self):
@@ -139,24 +144,31 @@ class Screen():
         self.display.blit(circle,[self.cursorPositionScreen[0]-radius,self.cursorPositionScreen[1]-radius])
 
     def play(self,*args):
-        for animation in args:
-            self.animationQueue.append(animation)
+        self.animationQueue.append(list(args))
+    
+    def wait(self,duration):
+        self.play(Sleep(duration))
 
     def playAnimations(self):
         if len(self.animationQueue) > 0:
-            if self.animationQueue[0].currentFrame == 0:
-                self.animationQueue[0].oldPhobject = deepcopy(self.animationQueue[0].object)
-            self.animationQueue[0].currentFrame += 1
-            self.animationQueue[0].updateAndPrint()
-            if self.animationQueue[0].mode == "add":
-                self.draw(self.animationQueue[0])
-
-            if self.animationQueue[0].currentFrame == self.animationQueue[0].duration:
-                if self.animationQueue[0].mode == "add":
-                    self.add(self.animationQueue[0].object)
-                if self.animationQueue[0].mode == "remove":
-                    self.remove(self.animationQueue[0].object)
+            for index,animation in enumerate(self.animationQueue[0]):
+                if animation.currentFrame == 0:
+                    if hasattr(animation,"object"):
+                        animation.oldPhobject = deepcopy(animation.object)
+                animation.currentFrame += 1
+                animation.updateAndPrint()
+                if animation.mode == "add":
+                    # if animation.currentFrame > 1:
+                    self.draw(animation)
+                if animation.currentFrame == animation.duration:
+                    if animation.mode == "add":
+                        self.add(animation.object)
+                    if animation.mode == "remove":
+                        self.remove(animation.object)
+                    self.animationQueue[0].pop(index)
+            if len(self.animationQueue[0]) == 0:
                 self.animationQueue.pop(0)
+
         
     def add(self,phobject):
         self.drawList.append(phobject)

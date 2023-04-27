@@ -24,7 +24,10 @@ def normalize(vector):
     s = s**(0.5)
     newVector = []
     for dimension in vector:
-        newVector.append(dimension/s)
+        if s != 0:
+            newVector.append(dimension/s)
+        else:
+            newVector.append(0)
     return np.array(newVector)
 
 def difference(v1,v2):
@@ -146,3 +149,6 @@ def calculateBezier(a,b,c,d,t):
     )
     return end
 
+def calculateSteepness(a,b):
+    rc = (a[1] - b[1]) / (a[0] - b[0])
+    return rc

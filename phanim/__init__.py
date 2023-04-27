@@ -9,4 +9,7 @@ from phanim.phobject import *
 from phanim.field import *
 from phanim.particles import *
 from phanim.animate import *
+from phanim.curve import *
+from phanim.shapes import *
+import phanim.colors as color
 print("phanim imported!")

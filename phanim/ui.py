@@ -3,124 +3,45 @@ from phanim.functions import *
 from copy import deepcopy
 
 class Grid():
-    def __init__(self, Xspacing, Yspacing, n_horizontal, n_vertical, color = (60,60,60), width = 1):
-   
+    def __init__(self, Xspacing, Yspacing, n_horizontal, n_vertical, color = (100,100,100), width = 1,position = [0,0]):
+        self.position = position
         self.lines = []
         self.color = color
         self.lineWidth = width
 
-        xmax = n_horizontal * Xspacing
-        ymax = n_vertical * Yspacing
+        self.n_horizontal = n_horizontal
+        self.n_vertical = n_vertical
+        self.Xspacing = Xspacing
+        self.Yspacing = Yspacing
 
-        x_range = np.arange(-n_horizontal,n_horizontal,Xspacing)
-        y_range = np.arange(-n_vertical,n_vertical,Yspacing)
+        self.generateGrid()
+        
+    def generateGrid(self):
+        xmax = self.n_horizontal * self.Xspacing
+        ymax = self.n_vertical * self.Yspacing
+        x_range = np.arange(-self.n_horizontal,self.n_horizontal,self.Xspacing)
+        y_range = np.arange(-self.n_vertical,self.n_vertical,self.Yspacing)
 
+        pos = np.array(self.position)
         for x in x_range:
-            self.lines.append([[x,ymax],[x,-ymax],self.color])
+            self.lines.append([[x,ymax]+pos,[x,-ymax]+pos,self.color])
         for y in y_range:
-            self.lines.append([[xmax,y],[-xmax,y],self.color])
+            self.lines.append([[xmax,y]+pos,[-xmax,y]+pos,self.color])
 
     def createFunction(self,t,old):
         for i in range(len(self.lines)):
             startIndex = 0
             endIndex = 1
-            self.lines[i][startIndex] = list((interp2d(self.lines[i][endIndex],old.lines[i][startIndex],t)))
-            
-            
-    
-class Trail():
-    def __init__(self,color="white",lineWidth = 1,length=50,segmentLength=1):
-        self.positions = []
-        self.lines = []
-        self.index = 0
-        self.color = color
-        self.lineWidth = lineWidth
-        self.length = length
-        self.segmentLength = segmentLength
-        
-    def add(self,position,color):
-        self.index += 1
-        if self.index%self.segmentLength == 0:
-            self.positions.append([position[0],position[1]])
-            if len(self.positions) > 1:
-                line = [self.positions[-2],self.positions[-1],color]
-                if abs(line[0][0] - line[1][0]) < 0.5 and abs(line[0][1] - line[1][1]) < 0.5:
-                    self.lines.append(line)
-                else:
-                    self.lines.append([line[1],line[1],color])
-            if len(self.positions) > self.length/self.segmentLength:
-                self.positions.pop(0)
-                self.lines.pop(0)
-        for i in range(len(self.lines)):
-            alpha = int(i/self.length*254)
-            self.lines[i][2] = (
-                self.lines[i][2][0],
-                self.lines[i][2][1],
-                self.lines[i][2][2],
-                alpha
-            )
+            self.lines[i][startIndex] = list((interp2d(self.lines[i][endIndex],old.lines[i][startIndex],t)))  
+
+    def setPosition(self,position):
+        self.position = position
+        self.reset()
+        self.generateGrid()
 
     def reset(self):
         self.index = 0
-        self.position = []
         self.lines = []
-
-class Graph():
-    def __init__(self,pos=[0,0],xSize=[-1,1],ySize=[-1,1],yRange=[0,0],liveRange=500,lineWidth = 2,color="red"):
-        self.position = pos
-        self.data = []
-        self.xSize = xSize
-        self.ySize = ySize
-        self.yRange = yRange
-        self.color = color
-        self.lineWidth = lineWidth
-        self.liveRange = liveRange
-        self.lines = []
-        self.texts = [[],[]]
-
-    def setLines(self):
-        self.points = []
-        if self.yRange[1] == 0 and self.yRange[0] == 0:
-            self.max = max(np.array(self.data))
-            self.min = min(np.array(self.data))
-        else:
-            self.min = self.yRange[0]
-            self.max = self.yRange[1]
-
-        for i in range(len(self.data)):
-            if len(self.data) > 0 and self.max > 0:
-                self.points.append([
-                    interp(self.xSize[0],self.xSize[1],i / len(self.data))+self.position[0],
-                    mapRange(self.data[i], self.min, self.max, self.ySize[0], self.ySize[1])+self.position[1]
-                ])
-        self.lines = pointsToLines(self.points,self.color)
-
-    def setTexts(self):
-        text = str(round(self.max,1))
-        pos = [
-            self.position[0] + self.xSize[0],
-            self.position[1] + self.ySize[1]
-        ]
-        self.texts[0] = [text,pos,self.color]
-
-        text = str(round(self.min,1))
-        pos = [
-            self.position[0] + self.xSize[0],
-            self.position[1] + self.ySize[0]
-        ]
-        self.texts[1] = [text,pos,self.color]
-
-    def setData(self,data):
-        self.data = data
-        self.setLines()
-        self.setTexts()
-
-    def addDataPoint(self,dataPoint):
-        self.data.append(dataPoint)
-        self.setLines()
-        self.setTexts()
-        if len(self.data) > self.liveRange:
-            self.data.pop(0)
 
 class Arrow():
     def __init__(self,begin=[0,0],end=[0,1],color="blue",lineThickness=0.06,pointSize=0.2):
@@ -161,52 +82,55 @@ class Arrow():
         self.lineThickness = interp(0,old.lineThickness,t)
         self.pointThickness = interp(0,old.pointThickness,t)
 
-        
-class BezierCurve():
-    def __init__(self,color = "white",res = 100,lineWidth = 0.05):
-        self.points = [[0,0],[1,2],[2,-1],[3,0]]
-        self.color = color
-        self.res = res
+class Axes():
+    def __init__(self,position=[0,0],xRange=[-4,4],yRange=[-2,2],lineWidth=1,color=(255,255,255),step=1,numbers=False):
+        self.position = position
+        self.xRange = xRange
+        self.yRange = yRange
         self.lineWidth = lineWidth
-        self.setCurvePoints()
-        self.setPolygons()
+        self.color = color
+        self.step = step
+        self.showNumbers = numbers
+        self.setLines()
+
+    def setLines(self):
+        self.relativeTexts = []
+        self.relativeLines = [
+            [[self.xRange[0],0],[self.xRange[1],0],self.color],
+            [[0,self.yRange[0]],[0,self.yRange[1]],self.color]
+        ]
+        xList = np.arange(self.xRange[0],self.xRange[1]+self.step,self.step)
+        yList = np.arange(self.yRange[0],self.yRange[1]+self.step,self.step)
+        for x in xList:
+            if x != 0:
+                self.relativeLines.append([[x,0.1],[x,-0.1],self.color])
+                if self.showNumbers:
+                    self.relativeTexts.append([str(x),[x,-0.2],self.color])
+        for y in yList:
+            if y != 0:
+                self.relativeLines.append([[0.1,y],[-0.1,y],self.color])
+                if self.showNumbers:
+                    self.relativeTexts.append([str(y),[-0.3,y+0.05],self.color])
+        
+        self.lines = []
+        self.texts = []
+        for line in self.relativeLines:
+            self.lines.append([vadd(line[0],self.position),vadd(line[1],self.position),line[2]])
+        if self.showNumbers:
+            for text in self.relativeTexts:
+                self.texts.append([text[0],vadd(text[1],self.position),text[2]])
     
-    def setCurvePoints(self):
-        self.curvePoints = []
-        a = np.array(self.points[0])
-        b = np.array(self.points[1])
-        c = np.array(self.points[2])
-        d = np.array(self.points[3])
-        for t in np.linspace(0,1,self.res):
-            end = (
-                a*(-t**3+3*t**2-3*t+1)+
-                b*(3*t**3-6*t**2+3*t)+
-                c*(-3*t**3+3*t**2)+
-                d*(t**3)
-            )
-            derivative = (
-                a*(-3*t**2+6*t-3)+
-                b*(9*t**2-12*t+3)+
-                c*(-9*t**2+6*t)+
-                d*(3*t**2)
-            )
-            normal = [-derivative[1],derivative[0]]
-            self.curvePoints.append([end,normal,derivative])
+    def setPosition(self,position):
+        self.position = position
+        self.setLines()
 
-    def setPolygons(self):
-        self.polygons = []
-        for i in range(len(self.curvePoints)-1):
-            self.polygons.append([
-                self.curvePoints[i][0] + normalize(self.curvePoints[i][1])*self.lineWidth/2,
-                self.curvePoints[i][0] - normalize(self.curvePoints[i][1])*self.lineWidth/2,
-                self.curvePoints[i+1][0] - normalize(self.curvePoints[i+1][1])*self.lineWidth/2,
-                self.curvePoints[i+1][0] + normalize(self.curvePoints[i+1][1])*self.lineWidth/2
-            ])
-
-    def setPoint(self,points):
-        self.points = points
-        self.setCurvePoints()
-        self.setPolygons()
+    def createFunction(self,t,old):
+        for i in range(len(self.lines)):
+            startIndex = 1
+            endIndex = 0
+            self.lines[i][startIndex] = list((interp2d(self.lines[i][endIndex],old.lines[i][startIndex],t)))
+        for i in range(len(self.texts)):
+            self.texts[i][1] = interp2d([0,0],old.texts[i][1], t)
 
 class Line():
     def __init__(self,start=[0,0],stop=[1,0],color = "white",lineWidth = 5):
