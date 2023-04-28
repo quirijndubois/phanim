@@ -48,3 +48,21 @@ class Circle(Curve):
                 radius*np.sin(t)
             ])
         self.setPoints(points)
+
+class Triangle(Curve):
+    def __init__(self,position=[0,0],strokeWidth=0.05,color=(255,255,255),corners=[[1,-1],[0,1],[-1,-1]],resolution=100):
+        super().__init__(position,strokeWidth,color)
+        self.corners = corners
+        self.resolution = resolution
+        self.setTriangle()
+    
+    def setTriangle(self):
+        rest = self.resolution%3
+        points = []
+        for t in np.linspace(0,1,int(self.resolution/3)+rest):
+            points.append(interp2d(self.corners[0],self.corners[1], t))
+        for t in np.linspace(0,1,int(self.resolution/3)):
+            points.append(interp2d(self.corners[1],self.corners[2], t))
+        for t in np.linspace(0,1,int(self.resolution/3)):
+            points.append(interp2d(self.corners[2],self.corners[0], t))
+        self.setPoints(points)

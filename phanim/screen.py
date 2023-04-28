@@ -91,16 +91,24 @@ class Screen():
                 pos = self.camera.coords2screen(text[1])
                 self.display.blit(img,pos)
 
+    def drawPhobject(self,phobject):
+        if hasattr(phobject, 'lines'):
+            self.drawLines(phobject.lines, phobject.lineWidth)
+        if hasattr(phobject, 'circles'):
+            self.drawCircles(phobject.circles)
+        if hasattr(phobject,"polygons"):
+            self.drawPolygons(phobject.polygons,phobject.color)
+        if hasattr(phobject, "texts"):
+            self.drawText(phobject.texts)
+
     def draw(self,*args):
-        for phobject in args:
-            if hasattr(phobject, 'lines'):
-                self.drawLines(phobject.lines, phobject.lineWidth)
-            if hasattr(phobject, 'circles'):
-                self.drawCircles(phobject.circles)
-            if hasattr(phobject,"polygons"):
-                self.drawPolygons(phobject.polygons,phobject.color)
-            if hasattr(phobject, "texts"):
-                self.drawText(phobject.texts)
+        for arg in args:
+            if hasattr(arg,"groupObjects"):
+                for phobject in arg.groupObjects:
+                    self.drawPhobject(phobject)
+            else:
+                self.drawPhobject(arg)
+
 
     def handleInput(self):
             self.keys = pygame.key.get_pressed()
@@ -158,7 +166,6 @@ class Screen():
                 animation.currentFrame += 1
                 animation.updateAndPrint()
                 if animation.mode == "add":
-                    # if animation.currentFrame > 1:
                     self.draw(animation)
                 if animation.currentFrame == animation.duration:
                     if animation.mode == "add":

@@ -153,7 +153,7 @@ class Line():
     def createFunction(self,t,old):
         self.setEnds(self.start,interp2d(old.start,old.stop,t))
 
-class dottedLine(Line):
+class DottedLine(Line):
     def __init__(self,start=[0,0],stop=[1,0],color = "white",lineWidth = 5,stripeLength = 0.1):
         self.start = start
         self.stop = stop

@@ -21,17 +21,26 @@ class Animation():
         if self.animationMode == "linear":
             self.t = t
         self.update()
+
         if hasattr(self,"object"):
-            if hasattr(self.object, 'lines'):
-                self.lines = self.object.lines
-                self.lineWidth = self.object.lineWidth
-            if hasattr(self.object, 'circles'):
-                self.circles = self.object.circles
-            if hasattr(self.object,"polygons"):
-                self.polygons = self.object.polygons
-                self.color =self.object.color
-            if hasattr(self.object, "texts"):
-                self.texts = self.object.texts
+            if hasattr(self.object,"groupObjects"):
+                for obj in self.object.groupObjects:
+                    self.groupObjects = deepcopy(self.object.groupObjects)
+            else:
+                self.setAttributes(self.object)
+
+    def setAttributes(self,obj):
+        if hasattr(self.object, 'lines'):
+            self.lines = self.object.lines
+            self.lineWidth = self.object.lineWidth
+        if hasattr(self.object, 'circles'):
+            self.circles = self.object.circles
+        if hasattr(self.object,"polygons"):
+            self.polygons = self.object.polygons
+            self.color =self.object.color
+        if hasattr(self.object, "texts"):
+            self.texts = self.object.texts
+
     def update(self):
         pass
 
