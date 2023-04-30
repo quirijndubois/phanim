@@ -1,4 +1,4 @@
-import phanim.functions as pf
+from . import functions as pf
 
 class Node():
     def __init__(self,pos=[0,0],vel=[0,0],radius = 0.2, color = (200,200,200),mass = 1):

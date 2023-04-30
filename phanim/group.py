@@ -1,4 +1,4 @@
-from phanim import *
+from . import *
 
 class Group():
     def __init__(self,*objects):

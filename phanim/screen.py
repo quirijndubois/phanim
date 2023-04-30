@@ -9,8 +9,12 @@ from copy import deepcopy
 pygame.init()
 pygame.mouse.set_visible(False)
 pygame.display.set_caption("Phanim window (beta)")
-icon = pygame.image.load('phanim/icon.png')
-pygame.display.set_icon(icon)
+
+try: 
+    icon = pygame.image.load('phanim/icon.png')
+    pygame.display.set_icon(icon)
+except:
+    print("logo error")
 
 class Screen():
     def __init__(self,resolution,zoom = 10,fullscreen=False,background=(10,15,20),fontSize=0.5):
@@ -24,8 +28,6 @@ class Screen():
         else:
             self.resolution = resolution    
 
-        # self.zoom = zoom
-        # self.pixelsPerUnit = self.resolution[0] / self.zoom
         self.surface = pygame.Surface(self.resolution,pygame.SRCALPHA)
         self.fontSize = int(fontSize*self.camera.pixelsPerUnit)
         self.font = pygame.font.SysFont(None,self.fontSize)

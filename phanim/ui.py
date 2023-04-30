@@ -1,5 +1,5 @@
 import numpy as np
-from phanim.functions import *
+from .functions import *
 from copy import deepcopy
 
 class Grid():

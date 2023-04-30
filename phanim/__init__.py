@@ -2,15 +2,15 @@ from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 
 import pygame
-from phanim.screen import *
-from phanim.functions import *
-from phanim.ui import *
-from phanim.phobject import *
-from phanim.field import *
-from phanim.particles import *
-from phanim.animate import *
-from phanim.curve import *
-from phanim.shapes import *
-from phanim.group import *
-import phanim.colors as color
+from .screen import *
+from .functions import *
+from .ui import *
+from .phobject import *
+from .field import *
+from .particles import *
+from .animate import *
+from .curve import *
+from .shapes import *
+from .group import *
+from .color import *
 print("phanim imported!")
