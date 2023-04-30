@@ -51,21 +51,23 @@ class Arrow():
         self.pointThickness = pointSize
         self.pointlength = pointSize
         self.color = color
+        self.sizeRatio = 1
         self.polygons = [self.calculateVertices()]
 
     def calculateVertices(self):
-        direction = np.array([self.end[0] - self.begin[0],self.end[1] - self.begin[1]])
+        end = interp2d(self.begin,self.end,self.sizeRatio)
+        direction = np.array([end[0] - self.begin[0],end[1] - self.begin[1]])
         normal = normalize([-direction[1],direction[0]])
         length = magnitude(direction)
-        # pointstart = self.end - normalize(direction)*self.pointlength
-        pointstart = interp2d(self.end, self.begin,self.pointlength)
+        # direction *= self.sizeRatio
+        pointstart = interp2d(end, self.begin,self.pointlength)
 
         return [
             self.begin - normal*(self.lineThickness*length)/2,
             self.begin + normal*(self.lineThickness*length)/2,
             pointstart + normal*(self.lineThickness*length)/2,
             pointstart + normal*(self.pointThickness*length)/2,
-            self.end,
+            end,
             pointstart - normal*(self.pointThickness*length)/2,
             pointstart - normal*(self.lineThickness*length)/2
         ]
@@ -79,8 +81,8 @@ class Arrow():
         self.setPosition(begin,begin+np.array(direction)*scale)
     
     def createFunction(self,t,old):
-        self.lineThickness = interp(0,old.lineThickness,t)
-        self.pointThickness = interp(0,old.pointThickness,t)
+        self.sizeRatio = t
+        self.polygons = [self.calculateVertices()]
 
 class Axes():
     def __init__(self,position=[0,0],xRange=[-4,4],yRange=[-2,2],lineWidth=1,color=(255,255,255),step=1,numbers=False):
