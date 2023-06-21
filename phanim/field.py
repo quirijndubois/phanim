@@ -9,6 +9,7 @@ class Field():
         self.lineThickness = lineThickness/resolution
         self.size = size
         self.resolution = resolution
+        self.sizeRatio = 1
     def setField(self,lambdaFunction):
         x_range = np.arange(-self.size[0], self.size[0],1/self.resolution)
         y_range = np.arange(-self.size[1], self.size[1],1/self.resolution)
@@ -32,7 +33,7 @@ class Field():
                 color = "red"
 
             arrow = phanim.Arrow(pointSize=0.4,lineThickness=0.1,color=color)
-            direction = np.array(point[1])*self.vectorScale
+            direction = np.array(point[1])*self.vectorScale*self.sizeRatio
 
             if direction[0]**2+direction[1]**2 > 1:
                 arrow.setDirection(point[0],phanim.functions.normalize(direction),scale=self.maxVectorScale)
@@ -40,3 +41,8 @@ class Field():
                 arrow.setDirection(point[0],(direction),scale=self.maxVectorScale)
 
             self.arrows.append(arrow)
+            self.groupObjects = self.arrows
+
+    def createFunction(self,t,old):
+        self.sizeRatio = t
+        self.generateArrows()

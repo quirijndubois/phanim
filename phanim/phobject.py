@@ -1,4 +1,4 @@
-from . import functions as pf
+import phanim.functions as pf
 
 class Node():
     def __init__(self,pos=[0,0],vel=[0,0],radius = 0.2, color = (200,200,200),mass = 1):
@@ -46,3 +46,12 @@ class Node():
         size = pf.calculateBezier([0,0],[0,3],[0.5,1.5],[1,1],t)[1]*old.radius
         self.setRadius(size)
 
+class Value():
+    def __init__(self,value = 0):
+        self.value = value
+    
+    def setValue(self,value):
+        self.value = value
+
+    def getValue(self):
+        return self.value

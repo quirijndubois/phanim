@@ -66,51 +66,23 @@ class Curve():
             newpoints.append(interp2d(old.points[i],new.points[i],t))
         self.setPoints(newpoints)
 
-class BezierCurve():
-    def __init__(self,color = "white",res = 100,lineWidth = 0.05):
-        self.points = [[0,0],[1,2],[2,-1],[3,0]]
-        self.color = color
-        self.res = res
-        self.lineWidth = lineWidth
-        self.setCurvePoints()
-        self.setPolygons()
+class BezierCurve(Curve):
+    def __init__(self,position=[0,0],strokeWidth=0.05,color=(255,255,255),corners=[[1,1],[-1,1],[-1,-1],[1,-1]],resolution=100):
+        super().__init__(position,strokeWidth,color)
+        self.corners = corners
+        self.resolution = resolution
+        self.setBezier()
+
+    def setBezier(self):
+        points = []
+        for t in np.linspace(0,1,self.resolution):
+            points.append(calculateBezier(self.corners[0],self.corners[1],self.corners[2],self.corners[3], t))
+        self.setPoints(points)
     
-    def setCurvePoints(self):
-        self.curvePoints = []
-        a = np.array(self.points[0])
-        b = np.array(self.points[1])
-        c = np.array(self.points[2])
-        d = np.array(self.points[3])
-        for t in np.linspace(0,1,self.res):
-            end = (
-                a*(-t**3+3*t**2-3*t+1)+
-                b*(3*t**3-6*t**2+3*t)+
-                c*(-3*t**3+3*t**2)+
-                d*(t**3)
-            )
-            derivative = (
-                a*(-3*t**2+6*t-3)+
-                b*(9*t**2-12*t+3)+
-                c*(-9*t**2+6*t)+
-                d*(3*t**2)
-            )
-            normal = [-derivative[1],derivative[0]]
-            self.curvePoints.append([end,normal,derivative])
-
-    def setPolygons(self):
-        self.polygons = []
-        for i in range(len(self.curvePoints)-1):
-            self.polygons.append([
-                self.curvePoints[i][0] + normalize(self.curvePoints[i][1])*self.lineWidth/2,
-                self.curvePoints[i][0] - normalize(self.curvePoints[i][1])*self.lineWidth/2,
-                self.curvePoints[i+1][0] - normalize(self.curvePoints[i+1][1])*self.lineWidth/2,
-                self.curvePoints[i+1][0] + normalize(self.curvePoints[i+1][1])*self.lineWidth/2
-            ])
-
-    def setPoint(self,points):
-        self.points = points
-        self.setCurvePoints()
-        self.setPolygons()
+    def setHandles(self, points):
+        self.corners = points
+        self.setBezier()
+    
 
 class Graph(Curve):
     def __init__(self, position=[0,0], width=0.05,color=(255,255,255)):
@@ -124,7 +96,7 @@ class Graph(Curve):
         self.setPoints(points)
 
 class LiveGraph():
-    def __init__(self,pos=[0,0],xSize=[-1,1],ySize=[-1,1],yRange=[0,0],liveRange=500,lineWidth = 2,color="red"):
+    def __init__(self,pos=[0,0],xSize=[-1,1],ySize=[-1,1],yRange=[0,0],liveRange=500,lineWidth = 2,color="red",numbers=True):
         self.position = pos
         self.data = []
         self.xSize = xSize
@@ -135,6 +107,7 @@ class LiveGraph():
         self.liveRange = liveRange
         self.lines = []
         self.texts = [[],[]]
+        self.numbers = numbers
 
     def setLines(self):
         self.points = []
@@ -176,9 +149,18 @@ class LiveGraph():
     def addDataPoint(self,dataPoint):
         self.data.append(dataPoint)
         self.setLines()
-        self.setTexts()
+        if self.numbers:
+            self.setTexts()
         if len(self.data) > self.liveRange:
             self.data.pop(0)
+
+class FPScounter(LiveGraph):
+    def __init__(self,pos=[-3.5,2],xSize=[-1,1],ySize=[-1,1],yRange=[0,100],liveRange=360,lineWidth = 2,color="white",numbers=False):
+        super().__init__(pos,xSize,ySize,yRange,liveRange,lineWidth,color,numbers)
+
+    def update(self,screen):
+        if screen.dt != 0:
+            self.addDataPoint(1/screen.dt)
 
 class Trail():
     def __init__(self,color="white",lineWidth = 1,length=50,segmentLength=1):

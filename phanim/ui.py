@@ -1,5 +1,5 @@
 import numpy as np
-from .functions import *
+from phanim.functions import *
 from copy import deepcopy
 
 class Grid():
@@ -167,13 +167,19 @@ class DottedLine(Line):
     def setLines(self):
         self.lines = []
         r = ((self.start[0]-self.stop[0])**2+(self.start[1]-self.stop[1])**2)**(0.5)
-        index = 0
-        for t in np.arange(0,1,self.stripeLength/r):
+        
+        if r != 0:
+            res = self.stripeLength/r
+        else:
+            res = 1
+
+        array = np.arange(0,1,res)
+        for index,t in enumerate(array):
             if index%2 == 1:
                 self.lines.append([interp2d(self.start,self.stop,t),interp2d(self.start,self.stop,lastt),self.color])
             else:
                 lastt = t
-            index+=1
+
             
 
     def setEnds(self,start,stop):

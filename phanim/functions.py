@@ -152,3 +152,9 @@ def calculateBezier(a,b,c,d,t):
 def calculateSteepness(a,b):
     rc = (a[1] - b[1]) / (a[0] - b[0])
     return rc
+
+def calculateSlope(func,x,h=0.0000001):
+    slope = (func(x+h) - func(x))/h
+    return slope
+
+
