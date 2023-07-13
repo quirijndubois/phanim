@@ -12,5 +12,6 @@ from phanim.animate import *
 from phanim.curve import *
 from phanim.shapes import *
 from phanim.group import *
+from phanim.text import *
 import phanim.colors as color
 print("phanim imported!")

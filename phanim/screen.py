@@ -5,6 +5,7 @@ from .animate import *
 import numpy as np
 import time
 from copy import deepcopy
+from pygame import gfxdraw
 
 pygame.init()
 pygame.mouse.set_visible(False)
@@ -13,19 +14,18 @@ icon = pygame.image.load('phanim/icon.png')
 pygame.display.set_icon(icon)
 
 class Screen():
-    def __init__(self,resolution,zoom = 10,fullscreen=False,background=(10,15,20),fontSize=0.5):
+    def __init__(self,resolution=(0,0),zoom = 10,fullscreen=False,background=(10,15,20),fontSize=0.5):
 
-        self.camera = Camera(zoom,resolution)
 
         infoObject = pygame.display.Info()
 
-        if resolution == 0:
+        if resolution == (0,0):
             self.resolution = (infoObject.current_w, infoObject.current_h)
         else:
             self.resolution = resolution    
 
-        # self.zoom = zoom
-        # self.pixelsPerUnit = self.resolution[0] / self.zoom
+        self.camera = Camera(zoom,resolution)
+
         self.surface = pygame.Surface(self.resolution,pygame.SRCALPHA)
         self.fontSize = int(fontSize*self.camera.pixelsPerUnit)
         self.font = pygame.font.SysFont(None,self.fontSize)
@@ -63,9 +63,13 @@ class Screen():
             start = self.camera.coords2screen(line[0])
             stop = self.camera.coords2screen(line[1])
 
+            if len(line) == 3:
+                color = line[2]
+            else:
+                color = (255,255,255)
             pygame.draw.line(
                 self.surface,
-                line[2],
+                color,
                 start,
                 stop,
                 width=width
