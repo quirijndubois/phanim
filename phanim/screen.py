@@ -24,7 +24,7 @@ class Screen():
         else:
             self.resolution = resolution    
 
-        self.camera = Camera(zoom,resolution)
+        self.camera = Camera(zoom,self.resolution)
 
         self.surface = pygame.Surface(self.resolution,pygame.SRCALPHA)
         self.fontSize = int(fontSize*self.camera.pixelsPerUnit)
