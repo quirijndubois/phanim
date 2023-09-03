@@ -14,8 +14,6 @@ class Curve():
     
     def setPosition(self,position):
         self.position = position
-        self.setNormals()
-        self.setPolygons()
 
     def setNormals(self):
         self.pointsWithNormals = []
@@ -38,10 +36,10 @@ class Curve():
         self.polygons = []
         for i in range(len(self.pointsWithNormals)-1):
             self.polygons.append([
-                self.pointsWithNormals[i][0] + normalize(self.pointsWithNormals[i][1])*self.strokeWidth/2 + self.position,
-                self.pointsWithNormals[i][0] - normalize(self.pointsWithNormals[i][1])*self.strokeWidth/2 + self.position,
-                self.pointsWithNormals[i+1][0] - normalize(self.pointsWithNormals[i+1][1])*self.strokeWidth/2 + self.position,
-                self.pointsWithNormals[i+1][0] + normalize(self.pointsWithNormals[i+1][1])*self.strokeWidth/2 + self.position
+                self.pointsWithNormals[i][0] + normalize(self.pointsWithNormals[i][1])*self.strokeWidth/2,
+                self.pointsWithNormals[i][0] - normalize(self.pointsWithNormals[i][1])*self.strokeWidth/2,
+                self.pointsWithNormals[i+1][0] - normalize(self.pointsWithNormals[i+1][1])*self.strokeWidth/2,
+                self.pointsWithNormals[i+1][0] + normalize(self.pointsWithNormals[i+1][1])*self.strokeWidth/2
             ])
         
     def createFunction(self,t,old):
@@ -165,6 +163,7 @@ class FPScounter(LiveGraph):
 class Trail():
     def __init__(self,color="white",lineWidth = 1,length=50,segmentLength=1):
         self.positions = []
+        self.position = [0,0]
         self.lines = []
         self.index = 0
         self.color = color

@@ -1,17 +1,19 @@
 import phanim.functions as pf
 
 class Node():
-    def __init__(self,pos=[0,0],vel=[0,0],radius = 0.2, color = (200,200,200),mass = 1):
+    def __init__(self,pos=[0,0],vel=[0,0],radius = 0.2, color = (0,0,0), borderColor = (200,200,200),borderSize=0.3,mass = 1):
         self.velocity = vel
         self.accelaration = [0,0]
         self.accelarationAVG = [0,0]
         self.mass = mass
         self.radius = radius
         self.color = color
+        self.borderColor = borderColor
+        self.borderSize = borderSize
         self.setPosition(pos)
     
     def setCircles(self):
-        self.circles = [[self.radius,self.position,self.color],[self.radius*0.7,self.position,"black"]]
+        self.circles = [[self.radius,[0,0],self.borderColor],[self.radius*(1-self.borderSize),[0,0],self.color]]
     
     def setColor(self,color):
         self.color = color
@@ -19,7 +21,6 @@ class Node():
 
     def setPosition(self,position):
         self.position = position
-        self.setCircles()
     
     def setRadius(self,radius):
         self.radius = radius
@@ -55,3 +56,26 @@ class Value():
 
     def getValue(self):
         return self.value
+
+class Electron(Node):
+    def __init__(self, pos=[0,0], vel=[0,0], radius=0.2, color=(255,255,255),borderColor=(0,0,0),borderSize = 0.05, mass=1,positive = True):
+        super().__init__(pos, vel, radius, color, borderColor,borderSize, mass)
+        self.plusSize = 0.08
+        self.lineWidth = 3
+        self.positive = positive
+        self.setSign(self.plusSize)
+
+    def setSign(self,size):
+        if self.positive:
+            self.lines = [
+                [[0,size],[0,-size],(0,0,0)],
+                [[size,0],[-size,0],(0,0,0)]
+            ]
+        else:
+            self.lines = [
+                [[size,0],[-size,0],(0,0,0)]
+            ]      
+
+    def createFunction(self, t, old):
+        super().createFunction(t, old)
+        self.setSign(t*self.plusSize)

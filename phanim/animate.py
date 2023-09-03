@@ -5,6 +5,7 @@ import math
 class Animation():
     def __init__(self,phobject,duration = 60,mode = "smoothstep"):
         self.object = phobject
+        self.position = phobject.position
         self.duration = duration
         self.currentFrame = 0
         self.oldPhobject = deepcopy(phobject)
@@ -63,6 +64,7 @@ class Transform(Animation):
     
     def update(self):
         self.object.transformFunction(self.t,self.oldPhobject,self.newPhobject)
+        self.object.position = pf.interp2d(self.oldPhobject.position,self.newPhobject.position,self.t)
 
 
 class Add(Animation):

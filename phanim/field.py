@@ -46,3 +46,63 @@ class Field():
     def createFunction(self,t,old):
         self.sizeRatio = t
         self.generateArrows()
+
+class ElectricLineField():
+    def __init__(self,charges,lineWidth=4,linesPerCharge=20,color=(100,100,100)):
+        self.charges = charges
+        self.lineWidth = lineWidth
+        self.color = color
+        self.radius = 0.1
+        self.linesPerCharge = linesPerCharge
+        self.position = [0,0]
+        self.generateLines()
+
+    def update(self,charges):
+        self.charges = charges
+        self.generateLines()
+
+    def generateLines(self):
+        startPositionsPositive = []
+        startPositionsNegative = []
+        for q in self.charges:
+            if q[1] > 0:
+                for i in range(self.linesPerCharge):
+                    startPositionsPositive.append([
+                        q[0][0] + np.cos(i/self.linesPerCharge*2*np.pi)/10,
+                        q[0][1] + np.sin(i/self.linesPerCharge*2*np.pi)/10
+                    ])
+            if q[1] < 0:
+                for i in range(self.linesPerCharge):
+                    startPositionsNegative.append([
+                        q[0][0] + np.cos(i/self.linesPerCharge*2*np.pi)*self.radius,
+                        q[0][1] + np.sin(i/self.linesPerCharge*2*np.pi)*self.radius
+                    ])
+        startPositions = [startPositionsPositive,startPositionsNegative]
+
+        self.lines = []
+        particleLimit = (self.radius*0.9)**2
+        for category in range(1):
+            for startPosition in startPositions[category]:
+                positions = [startPosition]
+                for i in range(10000):
+                    totalForce = [0,0]
+                    dobreak = False
+                    for q in self.charges:
+                        diff = phanim.diff(positions[-1],q[0])
+                        if category == 1:
+                            diff = -diff
+                        magsq = phanim.magSquared(diff)
+                        if magsq < particleLimit:
+                            dobreak = True
+                        force = q[1]/magsq*diff
+                        totalForce = phanim.vadd(force,totalForce)
+                    if dobreak:
+                        break
+                    positions.append(phanim.vadd(positions[-1],phanim.normalize(totalForce)/8))
+
+                decimateAmount = 20
+                if len(positions) > decimateAmount:
+                    positions = phanim.decimate(positions,decimateAmount)
+                lines = phanim.pointsToLines(positions,self.color)
+                for line in lines:
+                    self.lines.append(line)

@@ -16,13 +16,12 @@ pygame.display.set_icon(icon)
 class Screen():
     def __init__(self,resolution=(0,0),zoom = 10,fullscreen=False,background=(10,15,20),fontSize=0.5):
 
-
         infoObject = pygame.display.Info()
 
         if resolution == (0,0):
             self.resolution = (infoObject.current_w, infoObject.current_h)
         else:
-            self.resolution = resolution    
+            self.resolution = resolution
 
         self.camera = Camera(zoom,self.resolution)
 
@@ -58,10 +57,10 @@ class Screen():
     def addMouseDragUpdater(self,someFunction):
         self.mouseDragUpdaterList.append(someFunction)
 
-    def drawLines(self,lines,width):
+    def drawLines(self,lines,width,position):
         for line in lines:
-            start = self.camera.coords2screen(line[0])
-            stop = self.camera.coords2screen(line[1])
+            start = self.camera.coords2screen(pf.vadd(line[0],position))
+            stop = self.camera.coords2screen(pf.vadd(line[1],position))
 
             if len(line) == 3:
                 color = line[2]
@@ -76,34 +75,34 @@ class Screen():
             )
 
 
-    def drawCircles(self,circles):
+    def drawCircles(self,circles,position):
             for circle in circles:
-                pos = self.camera.coords2screen(circle[1])
+                pos = self.camera.coords2screen(pf.vadd(circle[1],position))
                 pygame.draw.circle(self.surface, circle[2], pos, circle[0]*self.camera.pixelsPerUnit)
 
-    def drawPolygons(self,polygons,color):
+    def drawPolygons(self,polygons,color,position):
         for polygon in polygons:
             points = []
             for point in polygon:
-                points.append(self.camera.coords2screen(point))
+                points.append(self.camera.coords2screen(pf.vadd(point,position)))
             pygame.draw.polygon(self.surface, color, points)
 
-    def drawText(self,texts):
+    def drawText(self,texts,position):
         for text in texts:
             if len(text) > 0:
                 img = self.font.render(text[0],True,text[2])
-                pos = self.camera.coords2screen(text[1])
+                pos = self.camera.coords2screen(pf.vadd(text[1],position))
                 self.display.blit(img,pos)
 
     def drawPhobject(self,phobject):
-        if hasattr(phobject, 'lines'):
-            self.drawLines(phobject.lines, phobject.lineWidth)
         if hasattr(phobject, 'circles'):
-            self.drawCircles(phobject.circles)
+            self.drawCircles(phobject.circles, phobject.position)
+        if hasattr(phobject, 'lines'):
+            self.drawLines(phobject.lines, phobject.lineWidth, phobject.position)
         if hasattr(phobject,"polygons"):
-            self.drawPolygons(phobject.polygons,phobject.color)
+            self.drawPolygons(phobject.polygons,phobject.color, phobject.position)
         if hasattr(phobject, "texts"):
-            self.drawText(phobject.texts)
+            self.drawText(phobject.texts, phobject.position)
 
     def draw(self,*args):
         for arg in args:
@@ -152,7 +151,7 @@ class Screen():
     def drawCursor(self):
         radius = 10
         circle = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
-        pygame.draw.circle(circle, (255, 255, 255, 80), (radius, radius), radius)
+        pygame.draw.circle(circle, (150, 150, 150, 120), (radius, radius), radius)
         self.display.blit(circle,[self.cursorPositionScreen[0]-radius,self.cursorPositionScreen[1]-radius])
 
     def play(self,*args):

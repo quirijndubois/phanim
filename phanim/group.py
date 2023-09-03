@@ -3,6 +3,7 @@ from phanim import *
 class Group():
     def __init__(self,*objects):
         self.groupObjects = objects
+        self.position = [0,0]
     
     def createFunction(self,t,old):
         for i in range(len(self.groupObjects)):
@@ -14,3 +15,4 @@ class DGrid(Group):
             Grid(Xspacing,Yspacing,n_horizontal,n_vertical,position=[0.5,0.5],color=color2),
             Grid(Xspacing,Yspacing,n_horizontal,n_vertical,color=color)
         ]
+        self.position = [0,0]

@@ -157,4 +157,12 @@ def calculateSlope(func,x,h=0.0000001):
     slope = (func(x+h) - func(x))/h
     return slope
 
+def decimate(someList,desiredLength):
+    decreaseFactor = int(len(someList) / desiredLength)
+    returnList = []
+    for i in range(len(someList)):
+        if i%decreaseFactor == 0:
+            returnList.append(someList[i])
+    returnList.append(someList[-1])
+    return returnList
 

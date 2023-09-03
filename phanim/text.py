@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from svgpathtools import svg2paths
 import svgpathtools
+from copy import deepcopy
 from lxml import etree
 from urllib.parse import urlparse
 from .functions import *
@@ -11,13 +12,14 @@ class Tex:
 
     scale = 1/9600
 
-    def __init__(self,expression,color = (255,255,255),useLatex = True):
+    def __init__(self,expression,color = (255,255,255),useLatex = True,curveResolution = 3,lineWidth=3,position=[0,0]):
         self.filename = f"expression{np.random.randint(0,100)}.svg"
-        self.position = [0,0]
+        self.position = position
         self.color = color
         self.useLatex = useLatex
         self.expression = expression
-        self.lineWidth = 1
+        self.lineWidth = lineWidth
+        self.curveResolution = curveResolution
         self.generate()
     
     def generate(self):
@@ -34,7 +36,6 @@ class Tex:
 
     def setPosition(self,position):
         self.position = position
-        self.refresh()
 
     def latexToSvg(self):
         fig, ax = plt.subplots()
@@ -81,17 +82,17 @@ class Tex:
             if type(line) == svgpathtools.path.Line:
                 start = line.start
                 end = line.end
-                startX = start.real*self.scale+offset[0]*f + self.globalOffset[0]*f + self.position[0]
-                startY = start.imag*self.scale+offset[1]*f + self.globalOffset[1]*f + self.position[1]
-                endX = end.real*self.scale+offset[0]*f + self.globalOffset[0]*f + self.position[0]
-                endY = end.imag*self.scale+offset[1]*f + self.globalOffset[1]*f + self.position[1]
+                startX = start.real*self.scale+offset[0]*f + self.globalOffset[0]*f
+                startY = start.imag*self.scale+offset[1]*f + self.globalOffset[1]*f
+                endX = end.real*self.scale+offset[0]*f + self.globalOffset[0]*f
+                endY = end.imag*self.scale+offset[1]*f + self.globalOffset[1]*f
                 lines.append([
                     [startX, startY],
                     [endX, endY],
                     self.color
                 ])
             if type(line) == svgpathtools.path.CubicBezier:
-                n = 5
+                n = self.curveResolution
                 a = line.start
                 b = line.control1
                 c = line.control2
@@ -101,10 +102,10 @@ class Tex:
                     dt = 1/n
                     start = calculateBezier(a,b,c,d,t)
                     end = calculateBezier(a,b,c,d,t+dt)
-                    startX = start.real*self.scale+offset[0]*f + self.globalOffset[0]*f + self.position[0]
-                    startY = start.imag*self.scale+offset[1]*f + self.globalOffset[1]*f + self.position[1]
-                    endX = end.real*self.scale+offset[0]*f + self.globalOffset[0]*f + self.position[0]
-                    endY = end.imag*self.scale+offset[1]*f + self.globalOffset[1]*f + self.position[1]
+                    startX = start.real*self.scale+offset[0]*f + self.globalOffset[0]*f
+                    startY = start.imag*self.scale+offset[1]*f + self.globalOffset[1]*f
+                    endX = end.real*self.scale+offset[0]*f + self.globalOffset[0]*f
+                    endY = end.imag*self.scale+offset[1]*f + self.globalOffset[1]*f
                     lines.append([
                         [startX, startY],
                         [endX, endY],
@@ -132,4 +133,36 @@ class Tex:
 
     def createFunction(self,t,old):
         self.generateLines(t)
-    
+
+    def transformFunction(self,t,old,new):
+
+        r_old,g_old,b_old = old.color
+        r_new,g_new,b_new = new.color
+
+        self.color = (
+            interp(r_old, r_new, t),
+            interp(g_old, g_new, t),
+            interp(b_old, b_new, t)
+        )
+
+
+        minimal = min(len(old.lines),len(new.lines))
+        maximal = max(len(old.lines),len(new.lines))
+
+        if len(old.lines) < len(new.lines):
+            self.lines = deepcopy(new.lines)
+            for i in range(maximal-minimal):
+                self.lines[i+minimal][0] = interp2d(old.lines[i][0],new.lines[i+minimal][0],t)
+                self.lines[i+minimal][1] = interp2d(old.lines[i][1],new.lines[i+minimal][1],t)
+
+        for i in range(minimal):
+            self.lines[i][0] = interp2d(old.lines[i][0],new.lines[i][0],t)
+            self.lines[i][1] = interp2d(old.lines[i][1],new.lines[i][1],t)
+
+        if len(old.lines) > len(new.lines):
+            for i in range(maximal-minimal):
+                self.lines[minimal+i][0] = interp2d(old.lines[minimal+i][0],new.lines[(i)%minimal][0],t)
+                self.lines[minimal+i][1] = interp2d(old.lines[minimal+i][1],new.lines[(i)%minimal][1],t)
+        
+        for line in self.lines:
+            line[2] = self.color

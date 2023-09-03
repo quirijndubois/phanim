@@ -22,7 +22,7 @@ class Grid():
         x_range = np.arange(-self.n_horizontal,self.n_horizontal,self.Xspacing)
         y_range = np.arange(-self.n_vertical,self.n_vertical,self.Yspacing)
 
-        pos = np.array(self.position)
+        pos = [0,0]
         for x in x_range:
             self.lines.append([[x,ymax]+pos,[x,-ymax]+pos,self.color])
         for y in y_range:
@@ -36,8 +36,6 @@ class Grid():
 
     def setPosition(self,position):
         self.position = position
-        self.reset()
-        self.generateGrid()
 
     def reset(self):
         self.index = 0
@@ -47,6 +45,7 @@ class Arrow():
     def __init__(self,begin=[0,0],end=[0,1],color="blue",lineThickness=0.06,pointSize=0.2):
         self.begin = begin
         self.end = end
+        self.position = [0,0]
         self.lineThickness = lineThickness
         self.pointThickness = pointSize
         self.pointlength = pointSize
