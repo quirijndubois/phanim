@@ -1,45 +1,48 @@
-import phanim as ph
+from phanim import *
 
-myScreen = ph.Screen([1920*0.7,1080*0.7],zoom=6)
+screen = Screen(fullscreen=True)
 
-grid1 = ph.Grid(1,1,10,10)
-grid2 = ph.Grid(0.2,0.2,35,35,width=2)
+grid1 = Grid(1,1,10,10)
+grid2 = Grid(0.2,0.2,35,35,width=2)
 
-node1 = ph.Node(pos=[1,0],vel=[0,1])
-node2 = ph.Node(pos=[-1,0],vel=[0,-0.5],mass=2)
+node1 = Node(pos=[2,0],vel=[0,1.5],mass=1)
+node2 = Node(pos=[-2/3,0],vel=[0,-3/4],mass=2)
 
-velarrow1 = ph.Arrow(lineThickness=0.02,pointSize=0.1)
-accarrow1 = ph.Arrow(lineThickness=0.02,pointSize=0.1,color='red')
-velarrow2 = ph.Arrow(lineThickness=0.02,pointSize=0.1)
-accarrow2 = ph.Arrow(lineThickness=0.02,pointSize=0.1,color='red')
+velarrow1 = Arrow(lineThickness=0.02,pointSize=0.1)
+accarrow1 = Arrow(lineThickness=0.02,pointSize=0.1,color='red')
+velarrow2 = Arrow(lineThickness=0.02,pointSize=0.1)
+accarrow2 = Arrow(lineThickness=0.02,pointSize=0.1,color='red')
 
-G = 4
+G = 6
 r=0
 
 def update_physics(screen):
     if screen.t > 0.3:
-        force1 = ph.gravity(node1.position, node2.position, G*node1.mass*node2.mass)
+        force1 = gravity(node1.position, node2.position, G*node1.mass*node2.mass)
         force2 = -force1
         node1.eulerODESolver(force1,screen.dt)
         node2.eulerODESolver(force2,screen.dt)
 
 
 def update_screen(screen):
-    screen.draw(grid2)
-    screen.draw(grid1)
 
-    vectorscale = 0.5
-    velarrow1.setDirection(node1.position,node1.velocity,scale=vectorscale)
-    accarrow1.setDirection(node1.position,node1.accelaration,scale=vectorscale)
-    velarrow2.setDirection(node2.position,node2.velocity,scale=vectorscale)
-    accarrow2.setDirection(node2.position,node2.accelaration,scale=vectorscale)
+    velvectorscale = 0.5
+    accvectorscale = 0.3
 
-    screen.draw(velarrow1,accarrow1,velarrow2,accarrow2)
+    velarrow1.setDirection(node1.position,node1.velocity,scale=velvectorscale)
+    accarrow1.setDirection(node1.position,node1.accelaration,scale=accvectorscale)
+    velarrow2.setDirection(node2.position,node2.velocity,scale=velvectorscale)
+    accarrow2.setDirection(node2.position,node2.accelaration,scale=accvectorscale)
 
-    screen.draw(node1)
-    screen.draw(node2)
+    # screen.draw(velarrow1,accarrow1,velarrow2,accarrow2)
 
-
-myScreen.addUpdater(update_screen)
-myScreen.addUpdater(update_physics,substeps=1000)
-myScreen.run()
+screen.play(Create(DGrid()))
+screen.play(Create(node1))
+screen.play(Create(node2))
+screen.play(Create(velarrow1))
+screen.play(Create(velarrow2))
+screen.play(Create(accarrow1))
+screen.play(Create(accarrow2))
+screen.addUpdater(update_screen)
+screen.addUpdater(update_physics,substeps=1000)
+screen.run()

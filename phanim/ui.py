@@ -134,7 +134,8 @@ class Axes():
             self.texts[i][1] = interp2d([0,0],old.texts[i][1], t)
 
 class Line():
-    def __init__(self,start=[0,0],stop=[1,0],color = "white",lineWidth = 5):
+    def __init__(self,start=[0,0],stop=[1,0],color = "white",lineWidth = 5,position=[0,0]):
+        self.position=[0,0]
         self.start = start
         self.stop = stop
         self.color = color
@@ -142,9 +143,12 @@ class Line():
 
         self.setLines()
 
-    def setLines(self):
+    def setLines(self,ratio=1):
         self.lines = []
-        self.lines.append([self.start,self.stop,self.color])
+        if ratio == 1:
+            self.lines.append([self.start,self.stop,self.color])
+        else:
+            self.lines.append([self.start,interp2d(self.start,self.stop,ratio),self.color])
 
     def setEnds(self,start,stop):
         self.start = start
@@ -152,7 +156,7 @@ class Line():
         self.setLines()
     
     def createFunction(self,t,old):
-        self.setEnds(self.start,interp2d(old.start,old.stop,t))
+        self.setLines(ratio=t)
 
 class DottedLine(Line):
     def __init__(self,start=[0,0],stop=[1,0],color = "white",lineWidth = 5,stripeLength = 0.1):

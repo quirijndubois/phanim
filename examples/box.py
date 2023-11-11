@@ -1,8 +1,5 @@
 from phanim import *
 import numpy as np
-import copy
-
-grids = Grid(1,1,10,10,position=[0.5,0.5],color=(50,50,50)),Grid(1,1,10,10)
 
 circle = Circle(color=color.green,radius=1)
 box = Rectangle(width=8,height=4,color=color.blue)
@@ -33,7 +30,7 @@ screen = Screen([1360,765],zoom=11)
 screen.wait(60)
 screen.play(Create(circle))
 screen.play()
-screen.play(Transform(circle,box,duration=120),Create(grids[1]),Create(grids[0],duration=40))
+screen.play(Transform(circle,box,duration=120),Create(DGrid()))
 screen.play(Remove(circle),Add(circle))
 screen.play(Add(trail))
 screen.play(Create(node))

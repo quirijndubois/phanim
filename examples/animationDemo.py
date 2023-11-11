@@ -1,6 +1,6 @@
 from phanim import *
 
-scr = Screen([1360,765])
+scr = Screen(fullscreen=True)
 
 grids = Grid(1,1,10,10,position=[0.5,0.5],color=(50,50,50)),Grid(1,1,10,10)
 

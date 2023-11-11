@@ -1,35 +1,42 @@
-import phanim
+from phanim import *
 import numpy as np
 
-drawVectors = False
+drawVectors = True
 drawTrails = True
 
-screensize = 0.7
-screen = phanim.Screen([1600,900],zoom=18,fontSize=0.4)
+screen = Screen(fullscreen=True,zoom=20,fontSize=0.4)
 
-grid1 = phanim.Grid(1,1,10,10)
-grid2 = phanim.Grid(0.5,0.5,20,20,color=(30,30,30))
+trails = [
+    Trail(color="red"),
+    Trail(color="green"),
+    Trail(color="blue",lineWidth=3,length=50),
+]
 
-trail1 = phanim.Trail(color="red")
-trail2 = phanim.Trail(color="green")
-trail3 = phanim.Trail(color="blue",lineWidth=3,length=150)
+graphs = [
+    LiveGraph(pos=[3,2],xSize=[-2,2],color="red",liveRange=100),
+    LiveGraph(pos=[3,0],xSize=[-2,2],color="green",liveRange=100),
+    LiveGraph(pos=[3,-2],xSize=[-2,2],color="blue",liveRange=100),
+    LiveGraph(pos=[-3.5,2],xSize=[-2,2],color="yellow",liveRange=100),
+]
 
-graph1 = phanim.Graph(pos=[5,3],xSize=[-2,2],color="red")
-graph2 = phanim.Graph(pos=[5,0],xSize=[-2,2],color="green")
-graph3 = phanim.Graph(pos=[5,-3],xSize=[-2,2],color="blue")
-graph4 = phanim.Graph(pos=[-6,3],xSize=[-2,2],color="yellow")
+nodes = [
+    Node(pos=[-2,1],radius=0.2,vel=[0,0]),
+    Node(pos=[-2,3],radius=0.2,vel=[0.22,0]),
+    Node(pos=[-2,5],radius=0.2,vel=[0,0]),
+    Node(pos=[-2,7],radius=0.2,vel=[-0.2,0]),
+]
 
-node0 = phanim.Node(pos=[-2,1],radius=0.2)
-node1 = phanim.Node(pos=[-2,3],radius=0.2)
-node2 = phanim.Node(pos=[-2,5],radius=0.2)
-node3 = phanim.Node(pos=[-2,7],radius=0.2)
+lines = [
+    Line(start=nodes[0].position,stop=nodes[1].position),
+    Line(start=nodes[1].position,stop=nodes[2].position),
+    Line(start=nodes[2].position,stop=nodes[3].position),
+]
 
-node1.velocity = [0.22,0]
-node3.velocity = [-0.2,0]
-
-arrow1 = phanim.Arrow(color="red")
-arrow2 = phanim.Arrow(color="green")
-arrow3 = phanim.Arrow(color="blue")
+arrows = [
+    Arrow(color="red"),
+    Arrow(color="green"),
+    Arrow(color="blue"),
+]
 
 substeps = 100
 C = 10**7
@@ -37,80 +44,70 @@ l1 = 2
 l2 = 2
 l3 = 2
 g = 3
-screen.lastEnergy = 0
 
 def update_physics(screen):
     if screen.t > 0.3:
 
-        fz1 = [0,-node1.mass * g]
-        fz2 = [0,-node2.mass * g]
-        fz3 = [0,-node3.mass * g]
+        fz1 = [0,-nodes[1].mass * g]
+        fz2 = [0,-nodes[2].mass * g]
+        fz3 = [0,-nodes[3].mass * g]
 
-        force01 = phanim.springForce(C, l1, node0.position, node1.position)
-        force12 = phanim.springForce(C, l2, node1.position, node2.position)
-        force21 = phanim.springForce(C, l2, node2.position, node1.position)
-        forcemouse = phanim.springForce(10, 0, screen.mousePos, node2.position)*0
+        force01 = springForce(C, l1, nodes[0].position, nodes[1].position)
+        force12 = springForce(C, l2, nodes[1].position, nodes[2].position)
+        force21 = springForce(C, l2, nodes[2].position, nodes[1].position)
+        forcemouse = springForce(10, 0, screen.mousePos, nodes[2].position)*0
 
-        force23 = phanim.springForce(C, l3, node2.position, node3.position)
-        force32 = phanim.springForce(C, l3, node3.position, node2.position)
+        force23 = springForce(C, l3, nodes[2].position, nodes[3].position)
+        force32 = springForce(C, l3, nodes[3].position, nodes[2].position)
 
-        force1 = phanim.vadd(force01,fz1,force21)
-        force2 = phanim.vadd(force12,fz2,force32)
-        force3 = phanim.vadd(force23,fz3)
+        force1 = vadd(force01,fz1,force21)
+        force2 = vadd(force12,fz2,force32)
+        force3 = vadd(force23,fz3)
 
-        node1.eulerODESolver(force1, screen.dt)
-        node2.eulerODESolver(force2, screen.dt)
-        node3.eulerODESolver(force3, screen.dt)
+        nodes[1].eulerODESolver(force1, screen.dt)
+        nodes[2].eulerODESolver(force2, screen.dt)
+        nodes[3].eulerODESolver(force3, screen.dt)
         
-
 def update_screen(screen):
-    screen.draw(grid2,grid1)
-    springLines = [
-        [node0.position,node1.position,(80,80,80)],
-        [node1.position,node2.position,(80,80,80)],
-        [node2.position,node3.position,(80,80,80)],
-    ]
-    screen.drawLines(springLines,10)
+    arrows[0].setDirection(nodes[1].position,nodes[1].velocity,scale=0.2)
+    arrows[1].setDirection(nodes[2].position,nodes[2].velocity,scale=0.2)
+    arrows[2].setDirection(nodes[3].position,nodes[3].velocity,scale=0.2)
 
-    arrow1.setDirection(node1.position,node1.velocity,scale=0.2)
-    arrow2.setDirection(node2.position,node2.velocity,scale=0.2)
-    arrow3.setDirection(node3.position,node3.velocity,scale=0.2)
+    trails[0].add(nodes[1].position,(255,0,0,255))
+    trails[1].add(nodes[2].position,(0,255,0,255))
+    trails[2].add(nodes[3].position,(0,0,255,255))
 
-    if drawVectors:
-        screen.draw(arrow1,arrow2,arrow3)
-
-    trail1.add(node1.position,(255,0,0,255))
-    trail2.add(node2.position,(0,255,0,255))
-    trail3.add(node3.position,(0,0,255,255))
-
-    if drawTrails:
-        screen.draw(trail1,trail2,trail3)
-
-    screen.draw(node0,node1,node2,node3)
     
-    kinetic1 = 0.5 * node1.mass * phanim.magnitude(node1.velocity)**2
-    kinetic2 = 0.5 * node2.mass * phanim.magnitude(node2.velocity)**2
-    kinetic3 = 0.5 * node3.mass * phanim.magnitude(node3.velocity)**2
+    kinetic1 = 0.5 * nodes[1].mass * magnitude(nodes[1].velocity)**2
+    kinetic2 = 0.5 * nodes[2].mass * magnitude(nodes[2].velocity)**2
+    kinetic3 = 0.5 * nodes[3].mass * magnitude(nodes[3].velocity)**2
 
-    potential1 = node1.mass * g * node1.position[1]
-    potential2 = node2.mass * g * node2.position[1]
-    potential3 = node3.mass * g * node3.position[1]
+    potential1 = nodes[1].mass * g * nodes[1].position[1]
+    potential2 = nodes[2].mass * g * nodes[2].position[1]
+    potential3 = nodes[3].mass * g * nodes[3].position[1]
 
     energy1 = kinetic1+potential1
     energy2 = kinetic2+potential2
     energy3 = kinetic3+potential3
     energy = energy1+energy2+energy3
 
-    graph1.addDataPoint(energy1)
-    graph2.addDataPoint(energy2)
-    graph3.addDataPoint(energy3)
-    graph4.addDataPoint(energy)
+    graphs[0].addDataPoint(energy1)
+    graphs[1].addDataPoint(energy2)
+    graphs[2].addDataPoint(energy3)
+    graphs[3].addDataPoint(energy)
 
     screen.lastEnergy = energy
 
-    screen.draw(graph1,graph2,graph3,graph4)
-
-
 screen.addUpdater(update_physics,substeps=substeps)
 screen.addUpdater(update_screen)
+
+[screen.add(graph) for graph in graphs]
+if drawTrails:
+    [screen.add(trail) for trail in trails]
+if drawVectors:
+    [screen.add(arrow) for arrow in arrows]
+
+screen.play(Create(DGrid()))
+screen.play(*[Create(line) for line in lines],*[Create(node) for node in nodes])
+
 screen.run()

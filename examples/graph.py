@@ -10,7 +10,7 @@ x = np.linspace(-3,10,500)
 graph.setData(x,np.sin(x))
 graph2.setData(x,x**2/10)
 
-scr = Screen([1360,765],fontSize=0.3)
+scr = Screen(fullscreen=True,fontSize=0.3)
 scr.camera.setPosition([2.5,1.5])
 
 scr.play(Create(grid))
