@@ -50,7 +50,7 @@ grid = phanim.Grid(1,1,10,10) #This creates a grid with each line seperated by 1
 Now we can add some wait time and animate the grid being added to the screen by:
 
 ```python
-myScreen.wait(120) #This will add an empty animation for 120 frames or 2 seconds.
+myScreen.wait(60) #This will add an empty animation for 60 frames or 1 seconds.
 myScreen.play(Create(grid))
 ```
 Now we can run the script and a window with a simple grid should show up.
@@ -67,32 +67,54 @@ arrow = phanim.Arrow(color=color.blue)
 Now we will create an update function that will be called each frame and move the end of the arrow to the cursor.
 
 ```python
-def drawArrow(screen):
+def setArrow(screen):
   arrow.setDirection([0,0],screen.mousePos)
 ```
 
 Then add this function to the updater list and run the script:
 
 ```python
-myScreen.addUpdater(drawArrow)
+myScreen.addUpdater(setArrow)
 myScreen.play(Create(arrow))
 myScreen.run()
 ```
-We can also add some dotted lines to track the mouse position like this:
+Make sure you only add the .run() command once at the very end of your script. We can also add some dotted lines to track the mouse position like this:
 
 ```python
-lines = phanim.dottedLine(lineWidth=1),phanim.dottedLine(lineWidth=1)
+lines = DottedLine(),DottedLine()
 
-def drawLines(screen):
+def setLines(screen):
     lines[0].setEnds([screen.mousePos[0],0],screen.mousePos)
     lines[1].setEnds([0,screen.mousePos[1]],screen.mousePos)
-myScreen.addUpdater(drawLines)
+
+myScreen.play(Create(lines[0]),Create(lines[1]))
+myScreen.addUpdater(setLines)
 ```
 
 After combining the update functions the final script will look like this:
 
 ```python
+from phanim import *
 
+myScreen = Screen(fullscreen=True)
+
+grid = Grid(1,1,10,10)
+arrow =Arrow(color=color.blue)
+lines = DottedLine(),DottedLine()
+
+def update(screen):
+  arrow.setDirection([0,0],screen.mousePos)
+  lines[0].setEnds([screen.mousePos[0],0],screen.mousePos)
+  lines[1].setEnds([0,screen.mousePos[1]],screen.mousePos)
+
+myScreen.addUpdater(update)
+
+myScreen.wait(60)
+myScreen.play(Create(grid))
+myScreen.play(Create(arrow))
+myScreen.play(Create(lines[0]),Create(lines[1]))
+
+myScreen.run()
 ```
 
 

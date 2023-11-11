@@ -159,7 +159,8 @@ class Line():
         self.setLines(ratio=t)
 
 class DottedLine(Line):
-    def __init__(self,start=[0,0],stop=[1,0],color = "white",lineWidth = 5,stripeLength = 0.1):
+    def __init__(self,start=[0,0],stop=[1,0],color = "white",lineWidth = 5,stripeLength = 0.1,position=[0,0]):
+        self.position = [0,0]
         self.start = start
         self.stop = stop
         self.color = color
@@ -167,9 +168,13 @@ class DottedLine(Line):
         self.stripeLength = stripeLength
         self.setLines()
 
-    def setLines(self):
+    def setLines(self,ratio=1):
+
+        start = self.start
+        stop = interp2d(self.start,self.stop,ratio)
+
         self.lines = []
-        r = ((self.start[0]-self.stop[0])**2+(self.start[1]-self.stop[1])**2)**(0.5)
+        r = ((start[0]-stop[0])**2+(start[1]-stop[1])**2)**(0.5)
         
         if r != 0:
             res = self.stripeLength/r
@@ -179,9 +184,12 @@ class DottedLine(Line):
         array = np.arange(0,1,res)
         for index,t in enumerate(array):
             if index%2 == 1:
-                self.lines.append([interp2d(self.start,self.stop,t),interp2d(self.start,self.stop,lastt),self.color])
+                self.lines.append([interp2d(start,stop,t),interp2d(start,stop,lastt),self.color])
             else:
+                if index == len(array)-1:
+                    self.lines.append([interp2d(start,stop,t),interp2d(start,stop,1),self.color])
                 lastt = t
+
 
             
 
