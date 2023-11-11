@@ -8,7 +8,7 @@ from .functions import *
 import numpy as np
 import os
 
-class Tex:
+class Tex():
 
     scale = 1/9600
 
