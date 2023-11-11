@@ -1,7 +1,7 @@
 ![phanim logo](https://github.com/quirijndaboyy/phanim/blob/main/phanim/icon.png)
 
 PHysics ANIMations: 
-a bad Physics render library
+a (quite bad) Physics render library
 
 The project is still in the early stages of development, so larger simulation will be slow and features are very limited. Look at the example files to see what cool things you can already do!
 
@@ -26,7 +26,7 @@ pip install -r requirements.txt
 Clone the repository and put your own files in the base folder. Now simply:
 
 ```python
-import phanim
+from phanim import *
 ```
 
 ## Usage
@@ -34,23 +34,24 @@ import phanim
 After importing you can create a phanim screen as follows:
 
 ```python
-resolution = [400,400] #Or any other resolution you require.
-myScreen = phanim.Screen(resolution)
-
+myScreen = phanim.Screen()
 ```
+This will use the device screen resolution. We can also change some of the screen parameters.
+```python
+myScreen = phanim.Screen(fullscreen=False,resolution=(1920,1080))
+```
+
 Now we can create something to render on the screen. In this example we will create a simple grid, but the possibilities are endless.
 
 ```python
 grid = phanim.Grid(1,1,10,10) #This creates a grid with each line seperated by 1, and 10 lines to each side of the origin.
 ```
 
-Now we can define a update function that will be called each frame. Then we add the update function to the manim updater list.
+Now we can add some wait time and animate the grid being added to the screen by:
 
 ```python
-def updateFunction(screen):
-  screen.draw(grid)
-  
-myScreen.addUpdater(updateFunction)
+myScreen.wait(120) #This will add an empty animation for 120 frames or 2 seconds.
+myScreen.play(Create(grid))
 ```
 Now we can run the script and a window with a simple grid should show up.
 
@@ -61,19 +62,20 @@ We can also create different object. For example, a blue arrow, which points to 
 We can create the arrow by defining it like this:
 
 ```python
-arrow = phanim.Arrow(color="blue")
+arrow = phanim.Arrow(color=color.blue)
 ```
-We must draw it withing the update function. This can be done by either altering our first update function, or creating a new one. In this example we will create a new update function.
+Now we will create an update function that will be called each frame and move the end of the arrow to the cursor.
 
 ```python
 def drawArrow(screen):
   arrow.setDirection([0,0],screen.mousePos)
-  screen.draw(arrow)
 ```
+
 Then add this function to the updater list and run the script:
 
 ```python
 myScreen.addUpdater(drawArrow)
+myScreen.play(Create(arrow))
 myScreen.run()
 ```
 We can also add some dotted lines to track the mouse position like this:
@@ -90,23 +92,7 @@ myScreen.addUpdater(drawLines)
 After combining the update functions the final script will look like this:
 
 ```python
-import phanim
 
-myScreen = phanim.Screen([400,400])
-grid = phanim.Grid(1,1,10,10)
-arrow = phanim.Arrow(color="blue")
-lines = phanim.dottedLine(lineWidth=1),phanim.dottedLine(lineWidth=1)
-
-def updateFunction(screen):
-    lines[0].setEnds([screen.mousePos[0],0],screen.mousePos)
-    lines[1].setEnds([0,screen.mousePos[1]],screen.mousePos)
-    screen.draw(grid)
-    arrow.setDirection([0,0],screen.mousePos)
-    screen.draw(*lines)
-    screen.draw(arrow)
-
-myScreen.addUpdater(updateFunction)
-myScreen.run()
 ```
 
 
