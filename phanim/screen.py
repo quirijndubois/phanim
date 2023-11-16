@@ -207,6 +207,9 @@ class Screen():
                 animation.updateAndPrint()
                 if animation.mode == "add":
                     self.draw(animation)
+                if animation.mode == "wrapper":
+                    for wrappedAnimation in animation.animations:
+                        self.draw(wrappedAnimation)
                 if animation.currentFrame == animation.duration:
                     if animation.mode == "add":
                         self.add(animation.object)

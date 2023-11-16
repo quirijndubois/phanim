@@ -90,10 +90,13 @@ class Move(Animation):
     def __init__(self, phobject, target, duration=60,mode = "smooth"):
         super().__init__(phobject, duration, mode)
         self.target = target
-        # self.oldPosition = deepcopy(phobject.position)
     
     def update(self):
         self.object.setPosition(pf.interp2d(self.oldPhobject.position,self.target,self.t))
+
+class Shift(Move):    
+    def update(self):
+        self.object.setPosition(pf.interp2d(self.oldPhobject.position,pf.vadd(self.oldPhobject.position,self.target),self.t))    
     
 class AnimateValue(Animation):
     mode = None
@@ -106,6 +109,29 @@ class AnimateValue(Animation):
     
     def update(self):
         self.function(pf.interp(self.target[0],self.target[1],self.t))
+
+class laggedStart():
+    mode = "wrapper"
+    def __init__(self,*args,lagRatio = 0.1):
+        self.animations = args
+        self.playingAnimations = [self.animations[0]]
+        self.currentFrame = 0
+        self.duration = 0
+        for animation in self.animations:
+            self.duration+=int(animation.duration*lagRatio)
+        self.duration += int(self.animations[-1].duration*(1-lagRatio))
+
+        self.lagRatio = lagRatio
+    
+    def updateAndPrint(self):
+        if self.playingAnimations[-1].currentFrame/self.playingAnimations[-1].duration > self.lagRatio:
+            if len(self.playingAnimations)<len(self.animations):
+                self.playingAnimations.append(self.animations[len(self.playingAnimations)])
+
+        for animation in self.playingAnimations:
+            if animation.currentFrame < animation.duration:
+                animation.currentFrame +=1
+                animation.updateAndPrint()
 
 
 
