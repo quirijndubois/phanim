@@ -1,7 +1,7 @@
 import pygame
 from . import functions as pf
-from .camera import *
-from .animate import *
+from . camera import *
+from . animate import *
 import numpy as np
 import time
 from copy import deepcopy
@@ -14,7 +14,7 @@ icon = pygame.image.load('phanim/icon.png')
 pygame.display.set_icon(icon)
 
 class Screen():
-    def __init__(self,resolution=(0,0),zoom = 10,fullscreen=False,background=(10,15,20),fontSize=0.5):
+    def __init__(self,resolution=(0,0),zoom = 10,fullscreen=False,background=(10,15,20),fontSize=0.5,panning=False):
 
         infoObject = pygame.display.Info()
 
@@ -28,6 +28,8 @@ class Screen():
         self.surface = pygame.Surface(self.resolution,pygame.SRCALPHA)
         self.fontSize = int(fontSize*self.camera.pixelsPerUnit)
         self.font = pygame.font.SysFont(None,self.fontSize)
+
+        self.panning = panning
 
         if fullscreen:
             self.display = pygame.display.set_mode(self.resolution,pygame.FULLSCREEN | pygame.SCALED)
@@ -44,6 +46,9 @@ class Screen():
         self.clock = pygame.time.Clock()
         self.background = background
         self.dragging = False
+        self.mouseButtonDown = False
+        self.scroll = [0,0]
+        self.lastScroll = [0,0]
 
         self.mouseThightness = 0.4
 
@@ -61,10 +66,33 @@ class Screen():
     def addMouseDragUpdater(self,someFunction):
         self.mouseDragUpdaterList.append(someFunction)
 
+    def handlePanning(self,mouseDown,dragging):
+        if mouseDown:
+            self.panBeginCameraPosition = self.camera.position
+            self.panBeginMousePos = self.mousePos
+        if dragging:
+            self.camera.setPosition(pf.vadd(
+                pf.diff(self.panBeginMousePos,self.mousePos),
+                self.panBeginCameraPosition
+            ))
+
+        scroll = self.scroll
+        if abs(scroll[0]) == 1:
+            scroll[0] = 0
+        if abs(scroll[1]) == 1:
+            scroll[1] = 0
+        scroll[0] /= 30
+        scroll[1] /= 30
+        self.camera.setZoom(self.camera.zoom - self.camera.zoom*scroll[1])
+
     def drawLines(self,lines,width,position):
         for line in lines:
             start = self.camera.coords2screen(pf.vadd(line[0],position))
             stop = self.camera.coords2screen(pf.vadd(line[1],position))
+
+            pixelWidth = int(width/self.camera.zoom*20)
+            if pixelWidth < 1:
+                pixelWidth = 1
 
             if len(line) == 3:
                 color = line[2]
@@ -75,7 +103,7 @@ class Screen():
                 color,
                 start,
                 stop,
-                width=width
+                width=pixelWidth
             )
 
 
@@ -129,8 +157,11 @@ class Screen():
                         func(self)
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.dragging = True
+                    self.mouseButtonDown = True
                     for func in self.mouseDownUpdaterList:
                         func(self)
+                if event.type == pygame.MOUSEWHEEL:
+                    self.scroll = [event.x,event.y]
             
             if self.dragging:
                 for func in self.mouseDragUpdaterList:
@@ -206,6 +237,8 @@ class Screen():
             self.calculateCursor()
             self.drawDrawList()
             self.playAnimations()
+            if self.panning:
+                self.handlePanning(self.mouseButtonDown,self.dragging)
             self.performUpdateList()
 
             self.display.blit(self.surface,(0,0))
@@ -214,5 +247,6 @@ class Screen():
             pygame.display.update()
             self.frameDt = self.clock.tick(60) / 1000
 
-        pygame.quit()
+            self.mouseButtonDown = False #because this should only be True for a single frame
 
+        pygame.quit()
