@@ -37,6 +37,7 @@ class Screen():
         self.updaterList = []
         self.mouseClickUpdaterList = []
         self.mouseDragUpdaterList = []
+        self.mouseDownUpdaterList = []
         self.animationQueue = []
         self.drawList = []
         self.t0 = time.time()
@@ -53,6 +54,9 @@ class Screen():
 
     def addMouseClickUpdater(self,someFunction):
         self.mouseClickUpdaterList.append(someFunction)
+    
+    def addMouseDownUpdater(self,someFunction):
+        self.mouseDownUpdaterList.append(someFunction)
 
     def addMouseDragUpdater(self,someFunction):
         self.mouseDragUpdaterList.append(someFunction)
@@ -125,6 +129,8 @@ class Screen():
                         func(self)
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.dragging = True
+                    for func in self.mouseDownUpdaterList:
+                        func(self)
             
             if self.dragging:
                 for func in self.mouseDragUpdaterList:
