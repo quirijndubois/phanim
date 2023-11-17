@@ -203,8 +203,8 @@ class Screen():
 
                 if animation.mode == "wrapper":
                     animation.currentFrame+=1
-                    animation.updateAndPrint()
                     self.drawWrapperAnimation(animation)
+                    animation.updateAndPrint()
 
                     if animation.currentFrame == animation.duration:
                         for wrappedAnimation in animation.animations:
@@ -241,6 +241,9 @@ class Screen():
     
     def drawWrapperAnimation(self,animation):
         for index,wrappedAnimation in enumerate(animation.animations):
+            if wrappedAnimation.currentFrame == 0:
+                if hasattr(wrappedAnimation,"object"):
+                    wrappedAnimation.oldPhobject = deepcopy(wrappedAnimation.object)
             if wrappedAnimation.mode == "add":
                 self.draw(wrappedAnimation)
                 

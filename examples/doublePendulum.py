@@ -1,5 +1,5 @@
 from phanim import *
-screen = Screen(fullscreen=True,zoom=15)
+screen = Screen(fullscreen=True,zoom=15,panning=True)
 
 startPositions = [[0,1],[2,1],[4,1]]
 startVelocities = [[0,0],[0,3],[0,6]]
@@ -39,7 +39,7 @@ screen.addUpdater(update_physics,substeps=100)
 screen.addUpdater(update)
 
 screen.play(Create(DGrid()))
-screen.play(Create(lines[0]),Create(lines[1]))
-screen.play(Create(nodes[0]),Create(nodes[1]),Create(nodes[2]))
+screen.play(laggedStart(Create(lines[0]),Create(lines[1])))
+screen.play(laggedStart(Create(nodes[0]),Create(nodes[1]),Create(nodes[2])))
 
 screen.run()

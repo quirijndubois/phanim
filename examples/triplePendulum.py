@@ -4,7 +4,7 @@ import numpy as np
 drawVectors = True
 drawTrails = True
 
-screen = Screen(fullscreen=True,zoom=20,fontSize=0.4)
+screen = Screen(fullscreen=True,zoom=20,fontSize=0.4,panning=True)
 
 trails = [
     Trail(color="red"),
@@ -108,6 +108,6 @@ if drawVectors:
     [screen.add(arrow) for arrow in arrows]
 
 screen.play(Create(DGrid()))
-screen.play(*[Create(line) for line in lines],*[Create(node) for node in nodes])
+screen.play(laggedStart(*[Create(line) for line in lines],*[Create(node) for node in nodes],lagRatio=0.5))
 
 screen.run()

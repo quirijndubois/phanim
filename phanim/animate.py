@@ -125,9 +125,9 @@ class laggedStart():
                 self.playingAnimations.append(self.animations[len(self.playingAnimations)])
 
         for animation in self.playingAnimations:
+            animation.updateAndPrint()
             if animation.currentFrame < animation.duration:
                 animation.currentFrame +=1
-                animation.updateAndPrint()
     
     def setDuration(self):
         self.duration = 0
