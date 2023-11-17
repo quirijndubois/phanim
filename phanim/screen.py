@@ -200,24 +200,50 @@ class Screen():
     def playAnimations(self):
         if len(self.animationQueue) > 0:
             for index,animation in enumerate(self.animationQueue[0]):
-                if animation.currentFrame == 0:
-                    if hasattr(animation,"object"):
-                        animation.oldPhobject = deepcopy(animation.object)
-                animation.currentFrame += 1
-                animation.updateAndPrint()
-                if animation.mode == "add":
-                    self.draw(animation)
+
                 if animation.mode == "wrapper":
-                    for wrappedAnimation in animation.animations:
-                        self.draw(wrappedAnimation)
+                    animation.currentFrame+=1
+                    animation.updateAndPrint()
+                    self.drawWrapperAnimation(animation)
+
+                    if animation.currentFrame == animation.duration:
+                        for wrappedAnimation in animation.animations:
+                            if wrappedAnimation.mode == "add":
+                                self.add(wrappedAnimation.object)
+                            if wrappedAnimation.mode == "remove":
+                                self.remove(wrappedAnimation.object)
+
+
+                else:
+                    self.drawAnimation(animation)
+
                 if animation.currentFrame == animation.duration:
-                    if animation.mode == "add":
-                        self.add(animation.object)
-                    if animation.mode == "remove":
-                        self.remove(animation.object)
                     self.animationQueue[0].pop(index)
+
             if len(self.animationQueue[0]) == 0:
                 self.animationQueue.pop(0)
+        
+    def drawAnimation(self,animation):
+        if animation.currentFrame == 0:
+            if hasattr(animation,"object"):
+                animation.oldPhobject = deepcopy(animation.object)
+
+        animation.currentFrame += 1
+        animation.updateAndPrint()
+
+        if animation.mode == "add":
+            self.draw(animation)
+        if animation.currentFrame == animation.duration:
+            if animation.mode == "add":
+                self.add(animation.object)
+            if animation.mode == "remove":
+                self.remove(animation.object)
+    
+    def drawWrapperAnimation(self,animation):
+        for index,wrappedAnimation in enumerate(animation.animations):
+            if wrappedAnimation.mode == "add":
+                self.draw(wrappedAnimation)
+                
 
         
     def add(self,phobject):
@@ -251,5 +277,9 @@ class Screen():
             self.frameDt = self.clock.tick(60) / 1000
 
             self.mouseButtonDown = False #because this should only be True for a single frame
+            self.debug()
 
         pygame.quit()
+
+    def debug(self):
+        pass

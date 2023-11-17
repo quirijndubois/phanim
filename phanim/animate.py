@@ -116,12 +116,8 @@ class laggedStart():
         self.animations = args
         self.playingAnimations = [self.animations[0]]
         self.currentFrame = 0
-        self.duration = 0
-        for animation in self.animations:
-            self.duration+=int(animation.duration*lagRatio)
-        self.duration += int(self.animations[-1].duration*(1-lagRatio))
-
         self.lagRatio = lagRatio
+        self.setDuration()
     
     def updateAndPrint(self):
         if self.playingAnimations[-1].currentFrame/self.playingAnimations[-1].duration > self.lagRatio:
@@ -132,6 +128,12 @@ class laggedStart():
             if animation.currentFrame < animation.duration:
                 animation.currentFrame +=1
                 animation.updateAndPrint()
+    
+    def setDuration(self):
+        self.duration = 0
+        for animation in self.animations:
+            self.duration+=int(animation.duration*self.lagRatio)
+        self.duration += int(self.animations[-1].duration*(1-self.lagRatio))
 
 
 
