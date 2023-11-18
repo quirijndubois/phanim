@@ -1,4 +1,5 @@
 from phanim import *
+from phanim.ui import *
 
 class Group():
     def __init__(self,*objects):

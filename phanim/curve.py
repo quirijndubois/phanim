@@ -82,7 +82,7 @@ class BezierCurve(Curve):
         self.setBezier()
     
 
-class Graph(Curve):
+class PlotGraph(Curve):
     def __init__(self, position=[0,0], width=0.05,color=(255,255,255)):
         super().__init__(position,width,color)
     

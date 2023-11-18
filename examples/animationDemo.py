@@ -9,7 +9,7 @@ circle = Circle(color=color.purple,radius=2)
 square = Rectangle(color=color.red)
 square2 = Quadrilateral(corners=[[1,1.5],[-1,0.5],[-2,-1],[2,-2]],color=color.blue)
 
-graph = Graph(color=color.green)
+graph = PlotGraph(color=color.green)
 x = np.linspace(-2,2,100)
 graph.setData(x, np.sin(x*3)+x)
 axes = Axes()

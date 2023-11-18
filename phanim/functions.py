@@ -18,17 +18,7 @@ def screen2cords(res:list,pos:list,zoom):
     return [x,y]
 
 def normalize(vector):
-    s = 0
-    for dimension in vector:
-        s += dimension**2
-    s = s**(0.5)
-    newVector = []
-    for dimension in vector:
-        if s != 0:
-            newVector.append(dimension/s)
-        else:
-            newVector.append(0)
-    return np.array(newVector)
+    return np.array(vector)/magnitude(vector)
 
 def difference(v1,v2):
     return np.array([
@@ -42,7 +32,7 @@ def magnitude(vector):
     s = 0
     for dimension in vector:
         s += dimension**2
-    return s**(0.5)
+    return np.sqrt(s)
 
 def magSquared(vector):
     s = 0
@@ -165,4 +155,32 @@ def decimate(someList,desiredLength):
             returnList.append(someList[i])
     returnList.append(someList[-1])
     return returnList
+
+def rotateToAlign(positions):
+
+    if len(positions) < 2:
+        return positions  # Not enough nodes to align
+
+    # Calculate the angle required to align the first two nodes horizontally
+    delta_x = positions[1][0] - positions[0][0]
+    delta_y = positions[1][1] - positions[0][1]
+    angle = np.arctan2(delta_y, delta_x)
+
+    # Create a rotation matrix
+    rotation_matrix = np.array([[np.cos(-angle), -np.sin(-angle)],
+                                [np.sin(-angle),  np.cos(-angle)]])
+
+    # Apply the rotation to each position
+    rotated_positions = [np.dot(rotation_matrix, np.array(pos)).tolist() for pos in positions]
+    
+    return rotated_positions
+
+def randomColor(range = [0,255],greyScale=False):
+    r = int(mapRange(np.random.random(),0,1,range[0],range[1]))
+    g = int(mapRange(np.random.random(),0,1,range[0],range[1]))
+    b = int(mapRange(np.random.random(),0,1,range[0],range[1]))
+    if greyScale:
+        return r
+    else:
+        return r,g,b
 

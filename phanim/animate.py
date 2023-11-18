@@ -2,6 +2,9 @@ from . import functions as pf
 from copy import deepcopy
 import math
 
+from phanim.group import *
+from phanim.ui import *
+
 class Animation():
     def __init__(self,phobject,duration = 60,mode = "smoothstep"):
         self.object = phobject
@@ -132,9 +135,21 @@ class laggedStart():
     def setDuration(self):
         self.duration = 0
         for animation in self.animations:
-            self.duration+=int(animation.duration*self.lagRatio)
-        self.duration += int(self.animations[-1].duration*(1-self.lagRatio))
+            self.duration+=animation.duration*self.lagRatio
+        self.duration += self.animations[-1].duration*(1-self.lagRatio)
+        self.duration = int(self.duration)+len(self.animations)
 
+
+def makeGrid():
+    grids = DGrid(n_horizontal=8,n_vertical=5).groupObjects
+    animations = []
+    for grid in grids:
+        for line in grid.lines:
+            animations.append(Create(
+                Line(start=vadd(grid.position,line[0]),stop=vadd(grid.position,line[1]),lineWidth=grid.lineWidth,color=line[2]),
+                duration=30
+                ))
+    return laggedStart(*animations,lagRatio=0.01)
 
 
 
