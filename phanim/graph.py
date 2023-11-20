@@ -3,10 +3,10 @@ import numpy as np
 import itertools
 
 class Graph(Group):
-    def __init__(self,vertices,edges,position=[0,0],k=4,initalPositions = False,edgeWidth=3,setup = True):
+    def __init__(self,vertices,edges,position=[0,0],k=3,initalPositions = False,edgeWidth=2,setup = True,nodeRadius=0.15):
 
         self.initalPositions = initalPositions
-
+        self.nodeRadius = 0.15
         self.position = position
         self.rotation = 0
         self.vertices = vertices
@@ -49,7 +49,7 @@ class Graph(Group):
         self.lineList = []
 
         for i in range(self.vertices):
-            self.nodes.append(Node())
+            self.nodes.append(Node(radius=self.nodeRadius))
 
         for i in range(len(self.edges)):
             self.lineList.append(Line(color=randomColor(range=[200,255]),lineWidth=self.edgeWidth))
@@ -130,12 +130,12 @@ class Graph(Group):
         self.setNodesAndLines()
 
 class RandomGraph(Graph):
-    def __init__(self,vertices,chance=0.5,position=[0,0],k=4,initalPositions = False,edgeWidth=3,setup = True):
+    def __init__(self,vertices,chance=0.5,position=[0,0],k=3,initalPositions = False,edgeWidth=2,setup = True,nodeRadius=0.15):
         edges = []
         for edge in itertools.combinations(range(vertices),2):
             if np.random.random() < chance:
                 edges.append(list(edge))
-        super().__init__(vertices,edges,position=position,k=k,initalPositions=initalPositions,edgeWidth=edgeWidth,setup=setup)
+        super().__init__(vertices,edges,position=position,k=k,initalPositions=initalPositions,edgeWidth=edgeWidth,setup=setup,nodeRadius=nodeRadius)
 
 def CompleteGraph(vertices,chance=0.5,position=[0,0],k=4,initalPositions = False,edgeWidth=3,setup = True):
     return RandomGraph(vertices,chance=1,position=position,k=k,initalPositions = initalPositions,edgeWidth=edgeWidth,setup = setup)
