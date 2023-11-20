@@ -47,6 +47,14 @@ class Node():
         size = pf.calculateBezier([0,0],[0,3],[0.5,1.5],[1,1],t)[1]*old.radius
         self.setRadius(size)
 
+    def updateInteractivity(self,screen):
+        if self in screen.selectedObjects:
+            self.setColor((100,100,100))
+            if screen.dragging:
+                self.setPosition(pf.vadd(screen.mousePos,screen.camera.position))
+        else:
+            self.setColor((0,0,0))
+
 class Value():
     def __init__(self,value = 0):
         self.value = value

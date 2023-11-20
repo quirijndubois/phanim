@@ -8,12 +8,15 @@ class Graph(Group):
         self.initalPositions = initalPositions
 
         self.position = position
+        self.rotation = 0
         self.vertices = vertices
         self.edges = edges
         self.k = k/np.sqrt(vertices)
 
-        self.edgeWidth = edgeWidth
+        self.locked = False
 
+        self.edgeWidth = edgeWidth
+        self.interacting = False
         self.createNodesAndLines()
         self.setPositions()
         self.setNodesAndLines()
@@ -96,20 +99,34 @@ class Graph(Group):
             self.positions[i] = vadd(self.positions[i], force*dt)
 
         avaragePosition = [0,0]
-        for position in self.positions:
-            avaragePosition = vadd(avaragePosition,np.array(position)/len(self.positions))
-        
 
+        if self.locked:
+            for position in self.positions:
+                avaragePosition = vadd(avaragePosition,np.array(position)/len(self.positions))
 
-        for index,position in enumerate(self.positions):
-            self.positions[index] = diff(position,avaragePosition)
-        
-        self.positions = rotateToAlign(self.positions)
+            for index,position in enumerate(self.positions):
+                self.positions[index] = diff(position,avaragePosition)
+                
+        if not self.interacting:
+            self.positions = rotateToAlign(self.positions,self.rotation)
 
         self.setNodesAndLines()
 
     def setPosition(self,target):
         self.position=target
+        self.setNodesAndLines()
+
+    def updateInteractivity(self,screen):
+        self.interacting = False
+        for index,phobject in enumerate(self.nodes):
+            if phobject in screen.selectedObjects:
+                phobject.setColor((100,100,100))
+                if screen.dragging:
+                    self.positions[index] = vadd(screen.camera.position,screen.mousePos)
+                    self.interacting=True
+                    self.rotation = calculateRotation(diff(self.positions[1],self.positions[0]))
+            else:
+                phobject.setColor((0,0,0))
         self.setNodesAndLines()
 
 class RandomGraph(Graph):

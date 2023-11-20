@@ -40,12 +40,14 @@ class Screen():
         self.mouseClickUpdaterList = []
         self.mouseDragUpdaterList = []
         self.mouseDownUpdaterList = []
+        self.interativityList = []
         self.animationQueue = []
         self.drawList = []
         self.t0 = time.time()
         self.clock = pygame.time.Clock()
         self.background = background
         self.dragging = False
+        self.selectedObjects = []
         self.mouseButtonDown = False
         self.scroll = [0,0]
         self.lastScroll = [0,0]
@@ -67,6 +69,8 @@ class Screen():
         self.mouseDragUpdaterList.append(someFunction)
 
     def handlePanning(self,mouseDown,dragging):
+        if len(self.selectedObjects)>0:
+            dragging = False
         if mouseDown:
             self.panBeginCameraPosition = self.camera.position
             self.panBeginMousePos = self.mousePos
@@ -145,6 +149,31 @@ class Screen():
             else:
                 self.drawPhobject(arg)
 
+    def makeInteractive(self,*args):
+        for arg in args:
+            if type(arg) is list:
+                for phobject in arg:
+                    self.interativityList.append(phobject)
+            else:
+                self.interativityList.append(arg)
+
+    
+    def handleInteractivity(self):
+        if not self.dragging:
+            self.selectedObjects = []
+            for phobject in self.interativityList:
+                if hasattr(phobject,"groupObjects"):
+                    for phobject2 in phobject.groupObjects:
+                        if hasattr(phobject2,"radius"):
+                            if pf.magnitude(pf.diff(phobject2.position,pf.vadd(self.mousePos,self.camera.position))) < phobject2.radius:
+                                self.selectedObjects.append(phobject2)
+                else:
+                    if hasattr(phobject,"radius"):
+                        if pf.magnitude(pf.diff(phobject.position,pf.vadd(self.mousePos,self.camera.position))) < phobject.radius:
+                            self.selectedObjects.append(phobject)
+        for phobject in self.interativityList:
+            if hasattr(phobject,"updateInteractivity"):
+                phobject.updateInteractivity(self)
 
     def handleInput(self):
             self.keys = pygame.key.get_pressed()
@@ -273,6 +302,7 @@ class Screen():
             if self.panning:
                 self.handlePanning(self.mouseButtonDown,self.dragging)
             self.performUpdateList()
+            self.handleInteractivity()
 
             self.display.blit(self.surface,(0,0))
             self.drawCursor()

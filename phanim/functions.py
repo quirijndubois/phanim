@@ -156,7 +156,7 @@ def decimate(someList,desiredLength):
     returnList.append(someList[-1])
     return returnList
 
-def rotateToAlign(positions):
+def rotateToAlign(positions,desiredRotation):
 
     if len(positions) < 2:
         return positions  # Not enough nodes to align
@@ -167,13 +167,18 @@ def rotateToAlign(positions):
     angle = np.arctan2(delta_y, delta_x)
 
     # Create a rotation matrix
-    rotation_matrix = np.array([[np.cos(-angle), -np.sin(-angle)],
-                                [np.sin(-angle),  np.cos(-angle)]])
+    rotation_matrix = np.array([[np.cos(-angle+desiredRotation), -np.sin(-angle+desiredRotation)],
+                                [np.sin(-angle+desiredRotation),  np.cos(-angle+desiredRotation)]])
 
     # Apply the rotation to each position
     rotated_positions = [np.dot(rotation_matrix, np.array(pos)).tolist() for pos in positions]
     
     return rotated_positions
+
+def calculateRotation(vector):
+    delta_x = vector[0]
+    delta_y = vector[1]
+    return np.arctan2(delta_y, delta_x)
 
 def randomColor(range = [0,255],greyScale=False):
     r = int(mapRange(np.random.random(),0,1,range[0],range[1]))
