@@ -3,7 +3,7 @@ import numpy as np
 import itertools
 
 class Graph(Group):
-    def __init__(self,vertices,edges,position=[0,0],k=4,initalPositions = False,edgeWidth=3):
+    def __init__(self,vertices,edges,position=[0,0],k=4,initalPositions = False,edgeWidth=3,setup = True):
 
         self.initalPositions = initalPositions
 
@@ -17,11 +17,12 @@ class Graph(Group):
         self.createNodesAndLines()
         self.setPositions()
         self.setNodesAndLines()
-        self.setup()
+        if setup:
+            self.setup()
     
     def setup(self):
-        for i in range(1000):
-            self.update(1/60)
+        for i in range(100):
+            self.update(1/30)
         pass
 
 
@@ -111,51 +112,16 @@ class Graph(Group):
         self.position=target
         self.setNodesAndLines()
 
-class CompleteGraph(Graph):
-    def __init__(self,vertices,position=[0,0],k=4,initalPositions = False,edgeWidth=3):
-        edges = []
-        for edge in itertools.combinations(range(vertices),2):
-            edges.append(list(edge))
-        self.chance = 0.5
-
-        self.initalPositions = initalPositions
-
-        self.position = position
-        self.vertices = vertices
-        self.edges = edges
-        self.k = k/np.sqrt(vertices)
-
-        self.edgeWidth = edgeWidth
-
-        self.createNodesAndLines()
-        self.setPositions()
-        self.setNodesAndLines()
-        self.setup()
-            
-
 class RandomGraph(Graph):
-    def __init__(self,vertices,position=[0,0],k=4,chance=0.5,initalPositions = False,edgeWidth=3):
+    def __init__(self,vertices,chance=0.5,position=[0,0],k=4,initalPositions = False,edgeWidth=3,setup = True):
         edges = []
         for edge in itertools.combinations(range(vertices),2):
             if np.random.random() < chance:
                 edges.append(list(edge))
-        self.chance = 0.5
+        super().__init__(vertices,edges,position=position,k=k,initalPositions=initalPositions,edgeWidth=edgeWidth,setup=setup)
 
-        self.initalPositions = initalPositions
-
-        self.position = position
-        self.vertices = vertices
-        self.edges = edges
-        self.k = k/np.sqrt(vertices)
-
-        self.edgeWidth = edgeWidth
-
-        self.createNodesAndLines()
-        self.setPositions()
-        self.setNodesAndLines()
-        self.setup()
-
-
+def CompleteGraph(vertices,chance=0.5,position=[0,0],k=4,initalPositions = False,edgeWidth=3,setup = True):
+    return RandomGraph(vertices,chance=1,position=position,k=k,initalPositions = initalPositions,edgeWidth=edgeWidth,setup = setup)
     
 
 
