@@ -1,3 +1,4 @@
+import platform
 import pygame
 from . import functions as pf
 from . camera import *
@@ -5,7 +6,6 @@ from . animate import *
 import numpy as np
 import time
 from copy import deepcopy
-from pygame import gfxdraw
 
 pygame.init()
 pygame.mouse.set_visible(False)
@@ -77,10 +77,11 @@ class Screen():
             ))
 
         scroll = self.scroll
-        if abs(scroll[0]) == 1:
-            scroll[0] = 0
-        if abs(scroll[1]) == 1:
-            scroll[1] = 0
+        if platform.system() == "Darwin":
+            if abs(scroll[0]) == 1:
+                scroll[0] = 0
+            if abs(scroll[1]) == 1:
+                scroll[1] = 0
         scroll[0] /= 30
         scroll[1] /= 30
         self.camera.setZoom(self.camera.zoom - self.camera.zoom*scroll[1])
