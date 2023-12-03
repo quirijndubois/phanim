@@ -171,13 +171,13 @@ class Trail():
         self.length = length
         self.segmentLength = segmentLength
         
-    def add(self,position,color):
+    def add(self,position,color,connected=True):
         self.index += 1
         if self.index%self.segmentLength == 0:
             self.positions.append([position[0],position[1]])
             if len(self.positions) > 1:
                 line = [self.positions[-2],self.positions[-1],color]
-                if abs(line[0][0] - line[1][0]) < 0.5 and abs(line[0][1] - line[1][1]) < 0.5:
+                if connected:
                     self.lines.append(line)
                 else:
                     self.lines.append([line[1],line[1],color])

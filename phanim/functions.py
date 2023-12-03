@@ -29,10 +29,7 @@ def difference(v1,v2):
 diff = difference
 
 def magnitude(vector):
-    s = 0
-    for dimension in vector:
-        s += dimension**2
-    return np.sqrt(s)
+    return np.linalg.norm(vector)
 
 def magSquared(vector):
     s = 0

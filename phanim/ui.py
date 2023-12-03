@@ -54,11 +54,13 @@ class Arrow():
         self.polygons = [self.calculateVertices()]
 
     def calculateVertices(self):
-        end = interp2d(self.begin,self.end,self.sizeRatio)
-        direction = np.array([end[0] - self.begin[0],end[1] - self.begin[1]])
-        normal = normalize([-direction[1],direction[0]])
+        if self.sizeRatio != 1:
+            end = interp2d(self.begin,self.end,self.sizeRatio)
+        else:
+            end = self.end
+        direction = diff(end,self.begin)
         length = magnitude(direction)
-        # direction *= self.sizeRatio
+        normal = np.array([-direction[1],direction[0]])/length
         pointstart = interp2d(end, self.begin,self.pointlength)
 
         return [

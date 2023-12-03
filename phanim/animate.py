@@ -29,7 +29,7 @@ class Animation():
         if hasattr(self,"object"):
             if hasattr(self.object,"groupObjects"):
                 for obj in self.object.groupObjects:
-                    self.groupObjects = deepcopy(self.object.groupObjects)
+                    self.groupObjects = self.object.groupObjects
             else:
                 self.setAttributes(self.object)
 

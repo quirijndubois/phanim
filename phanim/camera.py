@@ -8,18 +8,21 @@ class Camera():
         self.position = position
         self.rotation = rotation
         self.pixelsPerUnit = self.resolution[0] / self.zoom
+        self.calculateBounds()
+
 
     def coords2screen(self,location):
-        x = location[0] - self.position[0]
-        y = location[1] - self.position[1]
-        a = self.rotation
-        if a < 0.01 and a > -0.01:
-            newLocation = [
-                x*np.cos(a) - y*np.sin(a),
-                x*np.sin(a) + y*np.cos(a),
-            ]
-        else:
-            newLocation = [x,y]
+        # x = location[0] - self.position[0]
+        # y = location[1] - self.position[1]
+        # a = self.rotation
+        # if a < 0.01 and a > -0.01:
+        #     newLocation = [
+        #         x*np.cos(a) - y*np.sin(a),
+        #         x*np.sin(a) + y*np.cos(a),
+        #     ]
+        # else:
+        # newLocation = [x,y]
+        newLocation = pf.diff(location,self.position)
 
         return pf.coords2screen(self.resolution,newLocation, self.pixelsPerUnit)
     
@@ -35,7 +38,16 @@ class Camera():
     
     def setPosition(self,position):
         self.position = position
+        self.calculateBounds()
     
+
     def setZoom(self,zoom):
         self.zoom = zoom
         self.pixelsPerUnit = self.resolution[0] / self.zoom
+        self.calculateBounds()
+
+    def calculateBounds(self):
+        self.bounds = [
+            [self.position[0]+self.zoom/2,self.position[0]-self.zoom/2],
+            [self.position[1]+self.zoom/2,self.position[1]-self.zoom/2]
+        ]

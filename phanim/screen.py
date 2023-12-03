@@ -206,8 +206,9 @@ class Screen():
         pos = pygame.mouse.get_pos()
         pos = pf.interp2d(pos,pygame.mouse.get_pos(),self.mouseThightness)
         self.cursorPositionScreen = pos
-        self.cursorPosition = self.camera.screen2cords(pos)
-        self.mousePos = self.cursorPosition #for version compatibility
+        self.LocalcursorPosition = self.camera.screen2cords(pos)
+        self.GlobalCursorPosition = vadd(self.LocalcursorPosition,self.camera.position)
+        self.mousePos = self.LocalcursorPosition #for version compatibility (should be discontinued)
 
     def performUpdateList(self):
         for func in self.updaterList:
@@ -284,7 +285,7 @@ class Screen():
 
     def remove(self,phobject):
         self.drawList.remove(phobject)
-        
+    
     def drawDrawList(self):
         self.draw(*self.drawList)
 

@@ -1,8 +1,62 @@
+from .group import *
 import numpy as np
 import phanim
 
-class Field():
+class Field(Group):
+    def __init__(self,fieldFunction = None,spacing = 1, size = [5,5],position=[0,0]):
+        super().__init__()
+
+        if fieldFunction == None:
+            self.fieldFunction = lambda x,y: normalize([x,y])*spacing*0.5
+        else: 
+            self.fieldFunction = fieldFunction
+        
+        self.position = position
+        self.spacing = spacing
+        self.size = size
+        self.setField(self.fieldFunction)
+
+    def setField(self,fieldFunction):
+        self.field = []
+        for y in range(self.size[1]):
+            fieldRow = []
+            for x in range(self.size[0]):
+                pos = [-(self.size[0]-1)*self.spacing/2+self.spacing*x,-(self.size[1]-1)*self.spacing/2+self.spacing*y]
+                fieldRow.append([pos,fieldFunction(pos[0],pos[1])])
+            self.field.append(fieldRow)
+        self.setArrows()
+
+    def setArrows(self):
+        self.groupObjects = []
+        for row in self.field:
+            for position in row:
+
+                magSQ = magSquared(position[1])
+                coloringMagSq = magSQ/50
+                if coloringMagSq < 1 and coloringMagSq > 0:
+                    color = (
+                        phanim.interp(0, 255,coloringMagSq**(1/4)),
+                        phanim.interp(55, 0,coloringMagSq),
+                        phanim.interp(200, 0,coloringMagSq)
+                    )
+                else:
+                    color = (255,0,0)
+                
+                if magSQ>self.spacing**2:
+                    direction = normalize(position[1])*self.spacing
+                else:
+                    direction = position[1]
+
+                self.groupObjects.append(Arrow(begin=position[0],end=vadd(position[0],direction),color=color))
+
+    def updateField(self):
+        self.setArrows()
+                
+        
+
+class OldField():
     def __init__(self,resolution=1,size=[5,3],vectorScale=50,maxVectorScale = 0.6,pointSize = 0.2,lineThickness=0.06):
+        self.position = [0,0]
         self.vectorScale = vectorScale/resolution
         self.maxVectorScale = maxVectorScale/resolution
         self.pointSize = pointSize/resolution
