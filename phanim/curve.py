@@ -161,7 +161,8 @@ class FPScounter(LiveGraph):
             self.addDataPoint(1/screen.dt)
 
 class Trail():
-    def __init__(self,color="white",lineWidth = 1,length=50,segmentLength=1):
+    def __init__(self,color="white",lineWidth = 1,length=50,segmentLength=1,opacity=1):
+        self.opacity = opacity
         self.positions = []
         self.position = [0,0]
         self.lines = []
@@ -184,12 +185,18 @@ class Trail():
             if len(self.positions) > self.length/self.segmentLength:
                 self.positions.pop(0)
                 self.lines.pop(0)
+        self.setLines()
+
+    def setLines(self):
         for i in range(len(self.lines)):
-            alpha = int(i/self.length*254)
+            alpha = int(i/self.length*254)*self.opacity
             self.lines[i][2] = (
                 self.lines[i][2][0],
                 self.lines[i][2][1],
                 self.lines[i][2][2],
                 alpha
             )
-
+    def createFunction(self,t,old):
+        print(t)
+        self.opacity = interp(0,1,t)
+        self.setLines()

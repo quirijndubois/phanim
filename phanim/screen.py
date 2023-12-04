@@ -6,6 +6,8 @@ from . animate import *
 import numpy as np
 import time
 from copy import deepcopy
+import copy
+from threading import Thread
 
 pygame.init()
 pygame.mouse.set_visible(False)
@@ -310,11 +312,10 @@ class Screen():
 
             pygame.display.update()
             self.frameDt = self.clock.tick(60) / 1000
-
             self.mouseButtonDown = False #because this should only be True for a single frame
             self.debug()
 
         pygame.quit()
 
     def debug(self):
-        pass
+        print(int(self.frameDt*1000))

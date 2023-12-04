@@ -55,7 +55,7 @@ class Field(Group):
         
 
 class OldField():
-    def __init__(self,resolution=1,size=[5,3],vectorScale=50,maxVectorScale = 0.6,pointSize = 0.2,lineThickness=0.06):
+    def __init__(self,resolution=1,size=[5,4],vectorScale=50,maxVectorScale = 0.6,pointSize = 0.2,lineThickness=0.06):
         self.position = [0,0]
         self.vectorScale = vectorScale/resolution
         self.maxVectorScale = maxVectorScale/resolution

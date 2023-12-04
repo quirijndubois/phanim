@@ -3,7 +3,6 @@ import numpy as np
 
 screen = Screen(fullscreen=True,panning=True)
 field = OldField(resolution=2,maxVectorScale=0.5)
-
 particles = Particles()
 
 nodes = Node(pos=[1,0]),Node(pos=[-1,0])
@@ -30,8 +29,8 @@ def dragUpdate(screen):
 
 screen.makeInteractive(nodes[0],nodes[1])
 screen.play(makeGrid())
-screen.play(*[Add(particle.trail) for particle in particles.particles])
-screen.play(Create(field),Create(nodes[0]),Create(nodes[1]))
+screen.play(Create(field,duration=120),Create(nodes[0],duration=120),Create(nodes[1],duration=120))
+screen.play(*[Create(particle.trail) for particle in particles.particles])
 screen.addUpdater(update)
 screen.addMouseDragUpdater(dragUpdate)
 
