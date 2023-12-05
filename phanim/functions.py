@@ -56,8 +56,8 @@ def vadd(*args):
         result[1] += arg[1]
     return np.array(result)
 
-def vadd(v1,v2):
-    return [v1[0]+v2[0],v1[1]+v2[1]]
+# def vadd(v1,v2):
+#     return [v1[0]+v2[0],v1[1]+v2[1]]
 
 
 def pointsToLines(points,color):

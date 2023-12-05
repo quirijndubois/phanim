@@ -318,4 +318,4 @@ class Screen():
         pygame.quit()
 
     def debug(self):
-        print(int(self.frameDt*1000))
+        pass

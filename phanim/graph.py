@@ -26,7 +26,16 @@ class Graph(Group):
     def setup(self):
         for i in range(100):
             self.update(1/30)
-        pass
+
+    def join(self,graph,setup=True):
+        for edge in graph.edges:
+            self.edges.append([edge[0]+self.vertices,edge[1]+self.vertices])
+        self.vertices+=graph.vertices
+        self.positions += graph.positions
+        self.createNodesAndLines()
+        self.setNodesAndLines()
+        if setup:
+            self.setup()
 
 
     def setPositions(self):

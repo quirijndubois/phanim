@@ -2,7 +2,7 @@ import phanim
 import numpy as np
 
 class Particles():
-    def __init__(self,n=200,lifetime=10,area=[[-5,5],[-5,5]],radius = 0,distribution = "even",trails=True,lineWidth=2,speed=100,maxspeed=2e-2,fadingtime=2):
+    def __init__(self,n=150,lifetime=20,area=[[-5,5],[-5,5]],radius = 0,distribution = "even",trails=True,lineWidth=2,speed=100,maxspeed=2e-2,fadingtime=2):
         self.lifetime = lifetime
         self.area = area
         self.distribution = distribution
