@@ -1,5 +1,5 @@
 from phanim import *
-from phanim.ui import *
+from phanim.phobject import Grid
 
 class Group():
     def __init__(self,*objects):

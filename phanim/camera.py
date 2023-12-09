@@ -42,6 +42,10 @@ class Camera():
     
     def setZoom(self,zoom):
         self.zoom = zoom
+        if self.zoom < 0.1:
+            self.zoom = 0.1
+        if self.zoom > 1000:
+            self.zoom = 1000
         self.pixelsPerUnit = self.resolution[0] / self.zoom
         self.__calculateBounds()
 

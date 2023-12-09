@@ -9,7 +9,6 @@ from copy import deepcopy
 import copy
 from threading import Thread
 
-
 class Screen():
 
     pygame.init()
@@ -164,15 +163,18 @@ class Screen():
         if not self.dragging:
             self.selectedObjects = []
             for phobject in self.interativityList:
-                if hasattr(phobject,"groupObjects"):
+                if hasattr(phobject,"radius"):
+                    if pf.magnitude(pf.diff(phobject.position,pf.vadd(self.mousePos,self.camera.position))) < phobject.radius:
+                        self.selectedObjects.append(phobject)
+                elif hasattr(phobject,"checkSelection"):
+                    if phobject.checkSelection(self):
+                        self.selectedObjects.append(phobject)
+                elif hasattr(phobject,"groupObjects"):
                     for phobject2 in phobject.groupObjects:
                         if hasattr(phobject2,"radius"):
                             if pf.magnitude(pf.diff(phobject2.position,pf.vadd(self.mousePos,self.camera.position))) < phobject2.radius:
                                 self.selectedObjects.append(phobject2)
-                else:
-                    if hasattr(phobject,"radius"):
-                        if pf.magnitude(pf.diff(phobject.position,pf.vadd(self.mousePos,self.camera.position))) < phobject.radius:
-                            self.selectedObjects.append(phobject)
+
         for phobject in self.interativityList:
             if hasattr(phobject,"updateInteractivity"):
                 phobject.updateInteractivity(self)

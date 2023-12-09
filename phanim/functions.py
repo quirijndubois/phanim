@@ -190,3 +190,10 @@ def randomColor(range = [0,255],greyScale=False):
     else:
         return r,g,b
 
+def clamp(value,min,max):
+    if value<min:
+        return min
+    elif value>max:
+        return max
+    else:
+        return value

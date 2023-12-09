@@ -1,4 +1,4 @@
-from . import functions as pf
+from phanim.functions import *
 from copy import deepcopy
 import math
 
@@ -16,12 +16,12 @@ class Animation():
     def updateAndPrint(self):
         t = self.currentFrame / self.duration
         if self.animationMode == "smoothstep":
-            self.t = pf.interp(t**2,math.sqrt(t),t)
+            self.t = interp(t**2,math.sqrt(t),t)
         if self.animationMode == "smooth":
-            a = pf.interp(0,1,t)
-            b = pf.interp(0,a,t)
-            c = pf.interp(a,1,t)
-            self.t = pf.interp(b,c,t)
+            a = interp(0,1,t)
+            b = interp(0,a,t)
+            c = interp(a,1,t)
+            self.t = interp(b,c,t)
         if self.animationMode == "linear":
             self.t = t
         self.update()
@@ -67,7 +67,7 @@ class Transform(Animation):
     
     def update(self):
         self.object.transformFunction(self.t,self.oldPhobject,self.newPhobject)
-        self.object.position = pf.interp2d(self.oldPhobject.position,self.newPhobject.position,self.t)
+        self.object.position = interp2d(self.oldPhobject.position,self.newPhobject.position,self.t)
 
 
 class Add(Animation):
@@ -95,11 +95,11 @@ class Move(Animation):
         self.target = target
     
     def update(self):
-        self.object.setPosition(pf.interp2d(self.oldPhobject.position,self.target,self.t))
+        self.object.setPosition(interp2d(self.oldPhobject.position,self.target,self.t))
 
 class Shift(Move):    
     def update(self):
-        self.object.setPosition(pf.interp2d(self.oldPhobject.position,pf.vadd(self.oldPhobject.position,self.target),self.t))    
+        self.object.setPosition(interp2d(self.oldPhobject.position,vadd(self.oldPhobject.position,self.target),self.t))    
     
 class AnimateValue(Animation):
     mode = None
@@ -111,7 +111,7 @@ class AnimateValue(Animation):
         self.target = target
     
     def update(self):
-        self.function(pf.interp(self.target[0],self.target[1],self.t))
+        self.function(interp(self.target[0],self.target[1],self.t))
 
 class laggedStart():
     mode = "wrapper"
