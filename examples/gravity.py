@@ -1,48 +1,88 @@
 from phanim import *
+import numpy as np
 
-screen = Screen(fullscreen=True)
-
-grid1 = Grid(1,1,10,10)
-grid2 = Grid(0.2,0.2,35,35,width=2)
-
-node1 = Node(pos=[2,0],vel=[0,1.5],mass=1)
-node2 = Node(pos=[-2/3,0],vel=[0,-3/4],mass=2)
-
-velarrow1 = Arrow(lineThickness=0.02,pointSize=0.1)
-accarrow1 = Arrow(lineThickness=0.02,pointSize=0.1,color='red')
-velarrow2 = Arrow(lineThickness=0.02,pointSize=0.1)
-accarrow2 = Arrow(lineThickness=0.02,pointSize=0.1,color='red')
-
-G = 6
-r=0
-
-def update_physics(screen):
-    if screen.t > 0.3:
-        force1 = gravity(node1.position, node2.position, G*node1.mass*node2.mass)
-        force2 = -force1
-        node1.eulerODESolver(force1,screen.dt)
-        node2.eulerODESolver(force2,screen.dt)
+s = Screen(panning=True,zoom=11,fullscreen=True)
 
 
-def update_screen(screen):
+nodes = [
+    Node(pos=[1,1],vel=[0,0],borderColor=color.red),
+    Node(pos=[2,-2],vel=[-1,4],borderColor=color.green),
+    Node(pos=[0,0],vel=[-1,-2],borderColor=color.blue)
+    ]
+trails = [
+    Trail(length=50),
+    Trail(length=50),
+    Trail(length=50),
+    ]
 
-    velvectorscale = 0.5
-    accvectorscale = 0.3
+def update(s):
+    G = 15
 
-    velarrow1.setDirection(node1.position,node1.velocity,scale=velvectorscale)
-    accarrow1.setDirection(node1.position,node1.accelaration,scale=accvectorscale)
-    velarrow2.setDirection(node2.position,node2.velocity,scale=velvectorscale)
-    accarrow2.setDirection(node2.position,node2.accelaration,scale=accvectorscale)
+    dist = 0.01
+    if magSquared(diff(nodes[0].position,nodes[1].position)) > dist:
+        toggle01 = 1
+    else:
+        toggle01 = 0
+        
+    if magSquared(diff(nodes[1].position,nodes[2].position)) > dist:
+        toggle12 = 1
+    else:
+        toggle12 = 0
 
-    # screen.draw(velarrow1,accarrow1,velarrow2,accarrow2)
+    if magSquared(diff(nodes[2].position,nodes[0].position)) > dist:
+        toggle20 = 1
+    else:
+        toggle20 = 0
 
-screen.play(Create(DGrid()))
-screen.play(Create(node1))
-screen.play(Create(node2))
-screen.play(Create(velarrow1))
-screen.play(Create(velarrow2))
-screen.play(Create(accarrow1))
-screen.play(Create(accarrow2))
-screen.addUpdater(update_screen)
-screen.addUpdater(update_physics,substeps=1000)
-screen.run()
+    nodes[0].eulerODESolver(
+        gravity(nodes[0].position,nodes[1].position,G*nodes[0].mass*nodes[1].mass)*toggle01+
+        gravity(nodes[0].position,nodes[2].position,G*nodes[0].mass*nodes[2].mass)*toggle20,s.dt
+        )
+    nodes[1].eulerODESolver(
+        gravity(nodes[1].position,nodes[0].position,G*nodes[0].mass*nodes[1].mass)*toggle01+
+        gravity(nodes[1].position,nodes[2].position,G*nodes[1].mass*nodes[2].mass)*toggle12,s.dt
+        )
+    nodes[2].eulerODESolver(
+        gravity(nodes[2].position,nodes[0].position,G*nodes[0].mass*nodes[2].mass)*toggle20+
+        gravity(nodes[2].position,nodes[1].position,G*nodes[2].mass*nodes[1].mass)*toggle12,s.dt
+        )
+
+    for node in nodes:
+        # if abs(node.position[0])>s.camera.bounds[0][1] or abs(node.position[1])>s.camera.bounds[1][1]:
+        x = 4-node.radius
+        y = 3-node.radius
+        e = 0.05
+        if node.position[0]>x:
+            node.velocity[0]*= -1
+            node.position[0] = x-e
+        elif node.position[0]<-x:
+            node.velocity[0]*= -1
+            node.position[0] = -x+e
+        elif node.position[1]>y:
+            node.velocity[1]*= -1
+            node.position[1] = y-e
+        elif node.position[1]<-y:
+            node.velocity[1]*= -1
+            node.position[1] = -y+e
+
+
+def frameUpdate(s):
+    s.camera.setPosition(nodes[2].position)
+    trails[0].add(nodes[0].position,nodes[0].borderColor)
+    trails[1].add(nodes[1].position,nodes[1].borderColor)
+    trails[2].add(nodes[2].position,nodes[2].borderColor)
+
+rectangle = Rectangle(width=8,height=6)
+
+s.addUpdater(update,substeps=100)
+s.addUpdater(frameUpdate)
+
+s.play(makeGrid())
+s.play(laggedStart(
+    Create(rectangle),
+    *[Create(trail) for trail in trails],
+    *[Create(node) for node in nodes],
+    lagRatio=0.5
+    ))
+
+s.run()

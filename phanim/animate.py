@@ -31,9 +31,9 @@ class Animation():
                 for obj in self.object.groupObjects:
                     self.groupObjects = self.object.groupObjects
             else:
-                self.setAttributes(self.object)
+                self.__setAttributes(self.object)
 
-    def setAttributes(self,obj):
+    def __setAttributes(self,obj):
         if hasattr(self.object, 'lines'):
             self.lines = self.object.lines
             self.lineWidth = self.object.lineWidth
@@ -120,7 +120,7 @@ class laggedStart():
         self.playingAnimations = [self.animations[0]]
         self.currentFrame = 0
         self.lagRatio = lagRatio
-        self.setDuration()
+        self.__setDuration()
     
     def updateAndPrint(self):
         if self.playingAnimations[-1].currentFrame/self.playingAnimations[-1].duration > self.lagRatio:
@@ -132,7 +132,7 @@ class laggedStart():
             if animation.currentFrame < animation.duration:
                 animation.currentFrame +=1
     
-    def setDuration(self):
+    def __setDuration(self):
         self.duration = 0
         for animation in self.animations:
             self.duration+=animation.duration*self.lagRatio
@@ -140,8 +140,8 @@ class laggedStart():
         self.duration = int(self.duration)+len(self.animations)
 
 
-def makeGrid():
-    grids = DGrid(n_horizontal=8,n_vertical=5).groupObjects
+def makeGrid(n_horizontal=8,n_vertical=5):
+    grids = DGrid(n_horizontal=n_horizontal,n_vertical=n_vertical).groupObjects
     animations = []
     for grid in grids:
         for line in grid.lines:

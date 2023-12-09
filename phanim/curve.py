@@ -9,13 +9,13 @@ class Curve():
     
     def setPoints(self,points):
         self.points = points
-        self.setNormals()
-        self.setPolygons()
+        self.__setNormals()
+        self.__setPolygons()
     
     def setPosition(self,position):
         self.position = position
 
-    def setNormals(self):
+    def __setNormals(self):
         self.pointsWithNormals = []
         if len(self.points) > 1:
             n = diff(self.points[0], self.points[1])
@@ -32,7 +32,7 @@ class Curve():
             n = [-n[1],n[0]]
             self.pointsWithNormals.append([self.points[-1],n])
 
-    def setPolygons(self):
+    def __setPolygons(self):
         self.polygons = []
         for i in range(len(self.pointsWithNormals)-1):
             self.polygons.append([
@@ -69,9 +69,9 @@ class BezierCurve(Curve):
         super().__init__(position,strokeWidth,color)
         self.corners = corners
         self.resolution = resolution
-        self.setBezier()
+        self.__setBezier()
 
-    def setBezier(self):
+    def __setBezier(self):
         points = []
         for t in np.linspace(0,1,self.resolution):
             points.append(calculateBezier(self.corners[0],self.corners[1],self.corners[2],self.corners[3], t))
@@ -79,7 +79,7 @@ class BezierCurve(Curve):
     
     def setHandles(self, points):
         self.corners = points
-        self.setBezier()
+        self.__setBezier()
     
 
 class PlotGraph(Curve):
@@ -185,9 +185,9 @@ class Trail():
             if len(self.positions) > self.length/self.segmentLength:
                 self.positions.pop(0)
                 self.lines.pop(0)
-        self.setLines()
+        self.__setLines()
 
-    def setLines(self):
+    def __setLines(self):
         for i in range(len(self.lines)):
             alpha = int(i/self.length*254)*self.opacity
             self.lines[i][2] = (
@@ -198,4 +198,4 @@ class Trail():
             )
     def createFunction(self,t,old):
         self.opacity = interp(0,1,t)
-        self.setLines()
+        self.__setLines()

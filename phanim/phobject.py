@@ -1,7 +1,7 @@
 import phanim.functions as pf
 
 class Node():
-    def __init__(self,pos=[0,0],vel=[0,0],radius = 0.2, color = (0,0,0), borderColor = (200,200,200),borderSize=0.3,mass = 1):
+    def __init__(self,pos=[0,0],vel=[0,0],radius = 0.2, color = (0,0,0), borderColor = (200,200,200),borderSize=0.3,mass = 1,charge=0):
         self.velocity = vel
         self.accelaration = [0,0]
         self.accelarationAVG = [0,0]
@@ -10,6 +10,8 @@ class Node():
         self.color = color
         self.borderColor = borderColor
         self.borderSize = borderSize
+        self.charge = charge
+        self.selected = False
         self.setPosition(pos)
     
     def setCircles(self):
@@ -49,9 +51,14 @@ class Node():
 
     def updateInteractivity(self,screen):
         if self in screen.selectedObjects:
+            if not self.selected:
+                self.offset = -pf.diff(screen.GlobalCursorPosition,self.position)
             self.setColor((100,100,100))
             if screen.dragging:
-                self.setPosition(pf.vadd(screen.mousePos,screen.camera.position))
+                self.setPosition(pf.vadd(screen.mousePos,screen.camera.position,self.offset))
+                self.selected = True
+            else:
+                self.selected = False
         else:
             self.setColor((0,0,0))
 

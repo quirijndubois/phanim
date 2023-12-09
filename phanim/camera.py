@@ -8,7 +8,7 @@ class Camera():
         self.position = position
         self.rotation = rotation
         self.pixelsPerUnit = self.resolution[0] / self.zoom
-        self.calculateBounds()
+        self.__calculateBounds()
 
 
     def coords2screen(self,location):
@@ -38,15 +38,14 @@ class Camera():
     
     def setPosition(self,position):
         self.position = position
-        self.calculateBounds()
+        self.__calculateBounds()
     
-
     def setZoom(self,zoom):
         self.zoom = zoom
         self.pixelsPerUnit = self.resolution[0] / self.zoom
-        self.calculateBounds()
+        self.__calculateBounds()
 
-    def calculateBounds(self):
+    def __calculateBounds(self):
         self.bounds = [
             [self.position[0]+self.zoom/2,self.position[0]-self.zoom/2],
             [self.position[1]+self.zoom/2,self.position[1]-self.zoom/2]

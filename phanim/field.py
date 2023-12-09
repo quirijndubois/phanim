@@ -1,6 +1,7 @@
 from .group import *
 import numpy as np
 import phanim
+from copy import copy
 
 class Field(Group):
     def __init__(self,fieldFunction = None,spacing = 1, size = [5,5],position=[0,0]):
@@ -103,7 +104,7 @@ class OldField():
 
 class ElectricLineField():
     def __init__(self,charges,lineWidth=4,linesPerCharge=20,color=(100,100,100)):
-        self.charges = charges
+        self.charges = copy(charges)
         self.lineWidth = lineWidth
         self.color = color
         self.radius = 0.1
@@ -112,8 +113,18 @@ class ElectricLineField():
         self.generateLines()
 
     def update(self,charges):
-        self.charges = charges
+        self.charges = copy(charges)
         self.generateLines()
+
+    def fieldFunction(self,x,y):
+        position = [x,y]
+        totalForce = [0,0]
+        for q in self.charges:
+            diff = phanim.diff(position,q[0])
+            magsq = phanim.magSquared(diff)
+            force = q[1]/magsq*diff
+            totalForce = phanim.vadd(force,totalForce)
+        return totalForce
 
     def generateLines(self):
         startPositionsPositive = []
@@ -143,15 +154,14 @@ class ElectricLineField():
                     dobreak = False
                     for q in self.charges:
                         diff = phanim.diff(positions[-1],q[0])
-                        if category == 1:
-                            diff = -diff
                         magsq = phanim.magSquared(diff)
                         if magsq < particleLimit:
                             dobreak = True
-                        force = q[1]/magsq*diff
-                        totalForce = phanim.vadd(force,totalForce)
                     if dobreak:
                         break
+                    totalForce = self.fieldFunction(positions[-1][0],positions[-1][1])
+                    if category == 1:
+                        totalForce = -totalForce
                     positions.append(phanim.vadd(positions[-1],phanim.normalize(totalForce)/8))
 
                 decimateAmount = 20
