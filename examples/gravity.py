@@ -3,6 +3,7 @@ import numpy as np
 
 s = Screen(panning=True,zoom=11,fullscreen=True)
 
+slider = Slider(position=[0,2.5],maxValue=np.sqrt(3))
 
 nodes = [
     Node(pos=[1,1],vel=[0,0],borderColor=color.red),
@@ -17,7 +18,7 @@ trails = [
 
 def update(s):
     G = 15
-
+    dt = s.dt*(slider.value**2)
     dist = 0.01
     if magSquared(diff(nodes[0].position,nodes[1].position)) > dist:
         toggle01 = 1
@@ -36,15 +37,15 @@ def update(s):
 
     nodes[0].eulerODESolver(
         gravity(nodes[0].position,nodes[1].position,G*nodes[0].mass*nodes[1].mass)*toggle01+
-        gravity(nodes[0].position,nodes[2].position,G*nodes[0].mass*nodes[2].mass)*toggle20,s.dt
+        gravity(nodes[0].position,nodes[2].position,G*nodes[0].mass*nodes[2].mass)*toggle20,dt
         )
     nodes[1].eulerODESolver(
         gravity(nodes[1].position,nodes[0].position,G*nodes[0].mass*nodes[1].mass)*toggle01+
-        gravity(nodes[1].position,nodes[2].position,G*nodes[1].mass*nodes[2].mass)*toggle12,s.dt
+        gravity(nodes[1].position,nodes[2].position,G*nodes[1].mass*nodes[2].mass)*toggle12,dt
         )
     nodes[2].eulerODESolver(
         gravity(nodes[2].position,nodes[0].position,G*nodes[0].mass*nodes[2].mass)*toggle20+
-        gravity(nodes[2].position,nodes[1].position,G*nodes[2].mass*nodes[1].mass)*toggle12,s.dt
+        gravity(nodes[2].position,nodes[1].position,G*nodes[2].mass*nodes[1].mass)*toggle12,dt
         )
 
     for node in nodes:
@@ -67,7 +68,7 @@ def update(s):
 
 
 def frameUpdate(s):
-    s.camera.setPosition(nodes[2].position)
+    # s.camera.setPosition(nodes[2].position)
     trails[0].add(nodes[0].position,nodes[0].borderColor)
     trails[1].add(nodes[1].position,nodes[1].borderColor)
     trails[2].add(nodes[2].position,nodes[2].borderColor)
@@ -82,7 +83,11 @@ s.play(laggedStart(
     Create(rectangle),
     *[Create(trail) for trail in trails],
     *[Create(node) for node in nodes],
+    Create(slider),
     lagRatio=0.5
     ))
+
+s.makeInteractive(slider,*nodes)
+
 
 s.run()
