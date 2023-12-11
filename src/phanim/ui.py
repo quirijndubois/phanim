@@ -5,11 +5,15 @@ from .phobject import *
 from .functions import *
 
 class Slider(Group):
-    def __init__(self,value=0.5,width=2,position=[0,0],color = (150,150,230),maxValue=1,minValue=0):
+    def __init__(self,value=None,width=2,position=[0,0],color = (150,150,230),maxValue=1,minValue=0):
         self.width=width
         self.position = position
         self.selected = False
-        self.value = value
+        if value == None:
+            self.value = interp(minValue,maxValue,0.5)
+        else:
+            self.value = value
+            
         self.color = color
         self.maxValue = maxValue
         self.minValue = minValue

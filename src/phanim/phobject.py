@@ -1,6 +1,7 @@
 import numpy as np
 import phanim.functions as pf
 from phanim.functions import *
+from copy import copy
 
 class Node():
     def __init__(self,pos=[0,0],vel=[0,0],radius = 0.2, color = (0,0,0), borderColor = (200,200,200),borderSize=0.3,mass = 1,charge=0):
@@ -55,10 +56,14 @@ class Node():
         if self in screen.selectedObjects:
             if not self.selected:
                 self.offset = -pf.diff(screen.GlobalCursorPosition,self.position)
+
             self.setColor((100,100,100))
             if screen.dragging:
                 self.setPosition(pf.vadd(screen.mousePos,screen.camera.position,self.offset))
+                if self.selected:
+                    self.velocity = diff(self.position,self.lasPos)/screen.dt/2
                 self.selected = True
+                self.lasPos = copy(self.position)
             else:
                 self.selected = False
         else:
