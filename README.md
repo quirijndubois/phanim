@@ -16,20 +16,20 @@ A simulation of a triple pendulum with the use of stiff springs can be found in 
 Or just a simple double pendulum(looks better imo):
 ![double pendulum](https://github.com/quirijndaboyy/phanim/blob/main/gifs/double_pendulum.gif)
 
-## Requirements
-To install the requirements run the following command:
-```
-pip install -r requirements.txt
-```
 
 ## Installation
-Clone the repository and put your own files in the base folder. Now simply:
+Install with pip:
+```
+pip install phanim
+```
+If you want to use the very latest version you can also clone the repository and import the phanim folder within python.
 
+## Usage
+
+First import the library with:
 ```python
 from phanim import *
 ```
-
-## Usage
 
 After importing you can create a phanim screen as follows:
 
