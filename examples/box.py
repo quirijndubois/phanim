@@ -17,15 +17,19 @@ def updateNode(screen):
         if node.position[0] < -4 + node.radius or node.position[0] > 4 - node.radius:
             node.velocity[0] *= -1
 
-def updateCamera(screen):
-    if screen.t > 10:
-        t = (screen.t-10)/5
-        tnew = interp(t**2,t**0.5,t)
-        screen.camera.setPosition(interp2d([0,0],node.position,tnew))
-    if screen.t > 15:
-        screen.camera.setPosition(node.position)
 
-screen = Screen([1360,765],zoom=11)
+def updateCamera(screen):
+    if screen.t<=10:
+        t = 0
+    if screen.t > 10 and screen.t<15:
+        t = (screen.t-10)/7
+    if screen.t >=15:
+        t = 5/7
+
+    tnew = interp(t**2,t**0.5,t)
+    screen.camera.setPosition(interp2d([0,0],node.position,tnew))
+
+screen = Screen(zoom=11)
 
 screen.wait(60)
 screen.play(Create(circle))
