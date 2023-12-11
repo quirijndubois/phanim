@@ -1,4 +1,4 @@
-![phanim logo](https://github.com/quirijndaboyy/phanim/blob/main/phanim/icon.png)
+![phanim logo](https://github.com/quirijndaboyy/phanim/blob/main/src/phanim/icon.png)
 
 PHysics ANIMations: 
 a (quite bad) Physics render library
