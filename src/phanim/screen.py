@@ -217,10 +217,11 @@ class Screen():
         self.mousePos = self.LocalcursorPosition #for version compatibility (should be discontinued)
 
     def __performUpdateList(self):
-        for func in self.updaterList:
-            for i in range(func[1]):
-                self.dt = self.frameDt/func[1]
-                func[0](self)
+        if self.t > 1:
+            for func in self.updaterList:
+                for i in range(func[1]):
+                    self.dt = self.frameDt/func[1]
+                    func[0](self)
 
     def __drawCursor(self):
         radius = 10

@@ -18,7 +18,11 @@ def screen2cords(res:list,pos:list,zoom):
     return [x,y]
 
 def normalize(vector):
-    return np.array(vector)/magnitude(vector)
+    mag = magnitude(vector)
+    if mag == 0:
+        return np.array([0,0])
+    else:
+        return np.array(vector)/magnitude(vector)
 
 def difference(v1,v2):
     return np.array([
