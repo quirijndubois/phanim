@@ -6,11 +6,14 @@ from . animate import *
 import numpy as np
 import time
 from copy import deepcopy
-import copy
-from threading import Thread
+import threading
+from IPython import start_ipython
+import os,sys
 
 class Screen():
 
+    os.environ['SDL_VIDEO_WINDOW_POS'] = '0,0'
+    os.environ['SDL_VIDEO_FULLSCREEN_DISPLAY'] = '0'
     pygame.init()
     pygame.mouse.set_visible(False)
     pygame.display.set_caption("Phanims")
@@ -291,6 +294,15 @@ class Screen():
     
     def __drawDrawList(self):
         self.draw(*self.drawList)
+
+    def run_interactive(self,globals):
+        def thread_loop():
+            start_ipython(argv=[], user_ns=globals)
+
+        print_thread = threading.Thread(target=thread_loop)
+        print_thread.daemon = True
+        print_thread.start()
+        self.run()
 
     def run(self):
         self.frameDt = 0

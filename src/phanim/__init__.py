@@ -1,4 +1,5 @@
 from os import environ
+import sys
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 
 import pygame
@@ -15,4 +16,4 @@ from phanim.shapes import *
 from phanim.group import *
 from phanim.text import *
 import phanim.color as color
-print("phanim imported!")
+
