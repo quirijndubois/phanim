@@ -143,7 +143,7 @@ class Grid():
         self.lines = []
 
 class Arrow():
-    def __init__(self,begin=[0,0],end=[0,1],color="blue",lineThickness=0.06,pointSize=0.2):
+    def __init__(self,begin=[0,0],end=[0,1],color=(0,0,255),lineThickness=0.06,pointSize=0.2):
         self.begin = begin
         self.end = end
         self.position = [0,0]
@@ -161,7 +161,10 @@ class Arrow():
             end = self.end
         direction = diff(end,self.begin)
         length = magnitude(direction)
-        normal = np.array([-direction[1],direction[0]])/length
+        if length != 0:
+            normal = np.array([-direction[1],direction[0]])/length
+        else:
+            normal = np.array([0,0])
         pointstart = interp2d(end, self.begin,self.pointlength)
 
         return [
@@ -237,7 +240,7 @@ class Axes():
             self.texts[i][1] = interp2d([0,0],old.texts[i][1], t)
 
 class Line():
-    def __init__(self,start=[0,0],stop=[1,0],color = "white",lineWidth = 5,position=[0,0]):
+    def __init__(self,start=[0,0],stop=[1,0],color = (255,255,255),lineWidth = 5,position=[0,0]):
         self.position=[0,0]
         self.start = start
         self.stop = stop
@@ -262,7 +265,7 @@ class Line():
         self.setLines(ratio=t)
 
 class DottedLine(Line):
-    def __init__(self,start=[0,0],stop=[1,0],color = "white",lineWidth = 5,stripeLength = 0.1,position=[0,0]):
+    def __init__(self,start=[0,0],stop=[1,0],color = (255,255,255),lineWidth = 5,stripeLength = 0.1,position=[0,0]):
         self.position = [0,0]
         self.start = start
         self.stop = stop

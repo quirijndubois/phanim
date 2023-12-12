@@ -1,8 +1,8 @@
 import platform
-import pygame
 from . import functions as pf
 from . camera import *
 from . animate import *
+from . renderer import *
 import numpy as np
 import time
 from copy import deepcopy
@@ -14,29 +14,23 @@ class Screen():
 
     os.environ['SDL_VIDEO_WINDOW_POS'] = '0,0'
     os.environ['SDL_VIDEO_FULLSCREEN_DISPLAY'] = '0'
-    pygame.init()
-    pygame.mouse.set_visible(False)
-    pygame.display.set_caption("Phanims")
-    # pygame.display.set_icon(pygame.image.load('phanim/icon.png'))
 
-    def __init__(self,resolution=None,zoom = 10,fullscreen=False,background=(10,15,20),fontSize=0.5,panning=False):
+    def __init__(self,resolution=None,zoom = 10,fullscreen=False,background=(10,15,20),fontSize=0.5,panning=False,renderer="pygame"):
 
-        infoObject = pygame.display.Info()
-        if resolution == None:
-            self.resolution = (infoObject.current_w, infoObject.current_h)
+        
+        if renderer == "pygame":
+            self.renderer = PygameRenderer(resolution,fontSize,fullscreen)
+        elif renderer == "moderngl":
+            self.renderer = ModernGLRenderer(resolution,fontSize,fullscreen)
         else:
-            self.resolution = resolution
+            raise "Render engine not found!"
+        self.rendererName = renderer
+
+        self.resolution = self.renderer.resolution
 
         self.camera = Camera(zoom,self.resolution)
-        self.surface = pygame.Surface(self.resolution,pygame.SRCALPHA)
         self.fontSize = int(fontSize*self.camera.pixelsPerUnit)
-        self.font = pygame.font.SysFont(None,self.fontSize)
 
-        if fullscreen:
-            self.display = pygame.display.set_mode(self.resolution,pygame.FULLSCREEN | pygame.SCALED)
-        else:
-            self.display = pygame.display.set_mode(self.resolution,flags=pygame.SCALED,vsync=1)
-        
         #Setting static settings
         self.panning = panning
         self.background = background
@@ -56,7 +50,6 @@ class Screen():
         self.dragging = False
         self.mouseButtonDown = False
         self.t0 = time.time()
-        self.clock = pygame.time.Clock()
         self.scroll = [0,0]
         self.lastScroll = [0,0]
 
@@ -107,26 +100,20 @@ class Screen():
                 color = line[2]
             else:
                 color = (255,255,255)
-            pygame.draw.line(
-                self.surface,
-                color,
-                start,
-                stop,
-                width=pixelWidth
-            )
+            self.renderer.drawLine(color,start,stop,pixelWidth)
 
 
     def __drawCircles(self,circles,position):
             for circle in circles:
                 pos = self.camera.coords2screen(pf.vadd(circle[1],position))
-                pygame.draw.circle(self.surface, circle[2], pos, circle[0]*self.camera.pixelsPerUnit)
+                self.renderer.drawCircle(circle[2], pos, circle[0]*self.camera.pixelsPerUnit)
 
     def __drawPolygons(self,polygons,color,position):
         for polygon in polygons:
             points = []
             for point in polygon:
                 points.append(self.camera.coords2screen(pf.vadd(point,position)))
-            pygame.draw.polygon(self.surface, color, points)
+            self.renderer.drawPolygon(color, points)
 
     def __drawText(self,texts,position):
         for text in texts:
@@ -163,6 +150,7 @@ class Screen():
 
     
     def __handleInteractivity(self):
+        self.dt = self.frameDt
         if not self.dragging:
             self.selectedObjects = []
             for phobject in self.interativityList:
@@ -183,10 +171,11 @@ class Screen():
                 phobject.updateInteractivity(self)
 
     def __handleInput(self):
+        if self.rendererName == "pygame":
             self.keys = pygame.key.get_pressed()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    self.running = False
+                    self.renderer.isRunning = False
                     print("Window closed!")
                 if event.type == pygame.MOUSEBUTTONUP:
                     self.dragging = False
@@ -200,17 +189,15 @@ class Screen():
                 if event.type == pygame.MOUSEWHEEL:
                     self.scroll = [event.x,event.y]
             
-            if self.dragging:
-                for func in self.mouseDragUpdaterList:
-                    func(self)
+        if self.dragging:
+            for func in self.mouseDragUpdaterList:
+                func(self)
 
     def __resetDisplay(self):
-            self.display.fill(self.background)
-            self.surface.fill((0,0,0,0))
+            self.renderer.reset(self.background)
 
     def __calculateCursor(self):
-        pos = pygame.mouse.get_pos()
-        pos = pf.interp2d(pos,pygame.mouse.get_pos(),self.mouseThightness)
+        pos = self.renderer.getMousePos()
         self.cursorPositionScreen = pos
         self.LocalcursorPosition = self.camera.screen2cords(pos)
         self.GlobalCursorPosition = vadd(self.LocalcursorPosition,self.camera.position)
@@ -225,9 +212,11 @@ class Screen():
 
     def __drawCursor(self):
         radius = 10
-        circle = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
-        pygame.draw.circle(circle, (150, 150, 150, 120), (radius, radius), radius)
-        self.display.blit(circle,[self.cursorPositionScreen[0]-radius,self.cursorPositionScreen[1]-radius])
+        # color = (150, 150, 150, 120)
+        color = (150, 150, 150)
+        center = self.cursorPositionScreen
+        # self.renderer.setCursor(color,center,radius)
+        self.renderer.drawCircle(color,center,radius,segments=10)
 
     def play(self,*args):
         self.animationQueue.append(list(args))
@@ -307,12 +296,11 @@ class Screen():
 
     def run(self):
         self.frameDt = 0
-        self.running = True
-        while self.running:
+        while self.renderer.running():
             self.t = time.time() - self.t0
 
             self.__handleInput()
-            self.__resetDisplay()
+            # self.__resetDisplay()
             self.__calculateCursor()
             self.__drawDrawList()
             self.__playAnimations()
@@ -321,15 +309,15 @@ class Screen():
             self.__performUpdateList()
             self.__handleInteractivity()
 
-            self.display.blit(self.surface,(0,0))
-            self.__drawCursor()
 
-            pygame.display.update()
-            self.frameDt = self.clock.tick(60) / 1000
+            self.__drawCursor()
+            self.renderer.update()
+
+            self.frameDt = self.renderer.getFrameDeltaTime()
             self.mouseButtonDown = False #because this should only be True for a single frame
             self.__debug()
 
-        pygame.quit()
+        self.renderer.quit()
 
     def __debug(self):
         pass

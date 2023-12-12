@@ -85,7 +85,7 @@ class OldField():
                     phanim.interp(200, 0,mag**2)
                 )
             else:
-                color = "red"
+                color = (255,0,0)
 
             arrow = phanim.Arrow(pointSize=0.4,lineThickness=0.1,color=color)
             direction = np.array(point[1])*self.vectorScale*self.sizeRatio

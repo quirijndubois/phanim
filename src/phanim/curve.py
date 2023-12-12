@@ -153,7 +153,7 @@ class LiveGraph():
             self.data.pop(0)
 
 class FPScounter(LiveGraph):
-    def __init__(self,pos=[-3.5,2],xSize=[-1,1],ySize=[-1,1],yRange=[0,100],liveRange=360,lineWidth = 2,color="white",numbers=False):
+    def __init__(self,pos=[-3.5,2],xSize=[-1,1],ySize=[-1,1],yRange=[0,100],liveRange=360,lineWidth = 2,color=(255,255,255),numbers=False):
         super().__init__(pos,xSize,ySize,yRange,liveRange,lineWidth,color,numbers)
 
     def update(self,screen):
@@ -161,7 +161,7 @@ class FPScounter(LiveGraph):
             self.addDataPoint(1/screen.dt)
 
 class Trail():
-    def __init__(self,color="white",lineWidth = 3,length=150,segmentLength=1,opacity=1):
+    def __init__(self,color=(255,255,255),lineWidth = 3,length=150,segmentLength=1,opacity=1):
         self.opacity = opacity
         self.positions = []
         self.position = [0,0]
