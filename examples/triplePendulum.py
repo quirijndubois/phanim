@@ -7,16 +7,16 @@ drawTrails = True
 screen = Screen(fullscreen=True,zoom=20,fontSize=0.4,panning=True)
 
 trails = [
-    Trail(color="red"),
-    Trail(color="green"),
-    Trail(color="blue",lineWidth=3,length=50),
+    Trail(color=color.red),
+    Trail(color=color.green),
+    Trail(color=color.blue,lineWidth=3,length=50),
 ]
 
 graphs = [
-    LiveGraph(pos=[3,2],xSize=[-2,2],color="red",liveRange=100),
-    LiveGraph(pos=[3,0],xSize=[-2,2],color="green",liveRange=100),
-    LiveGraph(pos=[3,-2],xSize=[-2,2],color="blue",liveRange=100),
-    LiveGraph(pos=[-3.5,2],xSize=[-2,2],color="yellow",liveRange=100),
+    LiveGraph(pos=[3,2],xSize=[-2,2],color=color.red,liveRange=100),
+    LiveGraph(pos=[3,0],xSize=[-2,2],color=color.green,liveRange=100),
+    LiveGraph(pos=[3,-2],xSize=[-2,2],color=color.blue,liveRange=100),
+    LiveGraph(pos=[-3.5,2],xSize=[-2,2],color=color.yellow,liveRange=100),
 ]
 
 nodes = [
@@ -33,9 +33,9 @@ lines = [
 ]
 
 arrows = [
-    Arrow(color="red"),
-    Arrow(color="green"),
-    Arrow(color="blue"),
+    Arrow(color=color.red),
+    Arrow(color=color.green),
+    Arrow(color=color.blue),
 ]
 
 substeps = 100
@@ -101,7 +101,7 @@ def update_screen(screen):
 screen.addUpdater(update_physics,substeps=substeps)
 screen.addUpdater(update_screen)
 
-[screen.add(graph) for graph in graphs]
+# [screen.add(graph) for graph in graphs]
 if drawTrails:
     [screen.add(trail) for trail in trails]
 if drawVectors:

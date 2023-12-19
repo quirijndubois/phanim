@@ -6,6 +6,7 @@ blue = (100,100,255)
 purple = (153, 51, 255)
 white = (255,255,255)
 black = (0,0,0,0)
+yellow = (255,250,102)
 
 
 def NaturalColorMap(value):

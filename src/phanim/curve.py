@@ -1,5 +1,6 @@
 from .functions import *
 import math
+from .color import *
 
 class Curve():
     def __init__(self,position=[0,0],strokeWidth=0.05,color=(255,255,255)):
@@ -94,7 +95,7 @@ class PlotGraph(Curve):
         self.setPoints(points)
 
 class LiveGraph():
-    def __init__(self,pos=[0,0],xSize=[-1,1],ySize=[-1,1],yRange=[0,0],liveRange=500,lineWidth = 2,color="red",numbers=True):
+    def __init__(self,pos=[0,0],xSize=[-1,1],ySize=[-1,1],yRange=[0,0],liveRange=500,lineWidth = 2,color=red,numbers=False):
         self.position = pos
         self.data = []
         self.xSize = xSize
