@@ -51,6 +51,6 @@ class Camera():
 
     def __calculateBounds(self):
         self.bounds = [
-            [self.position[0]+self.zoom/2,self.position[0]-self.zoom/2],
-            [self.position[1]+self.zoom/2,self.position[1]-self.zoom/2]
+            [self.position[0]-self.zoom/2,self.position[0]+self.zoom/2],
+            [self.position[1]-self.zoom/2,self.position[1]+self.zoom/2]
         ]

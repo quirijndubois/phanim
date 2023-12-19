@@ -9,13 +9,14 @@ from copy import deepcopy
 import threading
 from IPython import start_ipython
 import os,sys
+import math
 
 class Screen():
 
     os.environ['SDL_VIDEO_WINDOW_POS'] = '0,0'
     os.environ['SDL_VIDEO_FULLSCREEN_DISPLAY'] = '0'
 
-    def __init__(self,resolution=None,zoom = 10,fullscreen=False,background=(10,15,20),fontSize=0.5,panning=False,renderer="pygame"):
+    def __init__(self,resolution=None,zoom = 10,fullscreen=False,background=(10,15,20),fontSize=0.5,panning=False,renderer="pygame",grid=False,gridResolution=15,gridBrightness=150):
 
         
         if renderer == "pygame":
@@ -52,6 +53,9 @@ class Screen():
         self.t0 = time.time()
         self.scroll = [0,0]
         self.lastScroll = [0,0]
+        self.grid = grid
+        self.gridResolution = gridResolution
+        self.gridBrightness = gridBrightness
 
     def addUpdater(self,someFunction,substeps=1):
         self.updaterList.append([someFunction,substeps])
@@ -87,7 +91,7 @@ class Screen():
         scroll[1] /= 30
         self.camera.setZoom(self.camera.zoom - self.camera.zoom*scroll[1])
 
-    def __drawLines(self,lines,width,position):
+    def drawLines(self,lines,width,position):
         for line in lines:
             start = self.camera.coords2screen(pf.vadd(line[0],position))
             stop = self.camera.coords2screen(pf.vadd(line[1],position))
@@ -126,7 +130,7 @@ class Screen():
         if hasattr(phobject, 'circles'):
             self.__drawCircles(phobject.circles, phobject.position)
         if hasattr(phobject, 'lines'):
-            self.__drawLines(phobject.lines, phobject.lineWidth, phobject.position)
+            self.drawLines(phobject.lines, phobject.lineWidth, phobject.position)
         if hasattr(phobject,"polygons"):
             self.__drawPolygons(phobject.polygons,phobject.color, phobject.position)
         if hasattr(phobject, "texts"):
@@ -139,6 +143,40 @@ class Screen():
                     self.__drawPhobject(phobject)
             else:
                 self.__drawPhobject(arg)
+
+    def __drawGrid(self,spacing,color=(255,255,255)):
+        group = Group()
+        boundX = self.camera.bounds[0]
+        boundY = self.camera.bounds[1]
+        
+        amountX = math.ceil((boundX[1]-boundX[0])/spacing)
+        amountY = math.ceil((boundY[1]-boundY[0])/spacing)
+
+        for i in range(amountX):
+            group.add(Line(
+                start=[math.ceil(boundX[0]/spacing)*spacing+i*spacing,boundY[0]],
+                stop=[math.ceil(boundX[0]/spacing)*spacing+i*spacing,boundY[1]],
+                lineWidth=0,
+                color=color
+                )
+            )
+        for i in range(amountY):
+            group.add(Line(
+                start=[boundX[0],math.ceil(boundY[0]/spacing)*spacing+i*spacing],
+                stop=[boundX[1],math.ceil(boundY[0]/spacing)*spacing+i*spacing],
+                lineWidth=0,
+                color=color
+                )
+            )
+
+        self.draw(group)
+
+    def __createGrid(self):
+        width = self.camera.bounds[0][1]-self.camera.bounds[0][0]
+        closestPower,distance = round_to_power_of_2(width/self.gridResolution)
+        self.__drawGrid(closestPower/4,color=(255,255,255,interp(0,self.gridBrightness/3,distance)))
+        self.__drawGrid(closestPower/2,color=(255,255,255,interp(self.gridBrightness/3,self.gridBrightness,distance)))
+        self.__drawGrid(closestPower,color=(255,255,255,self.gridBrightness))
 
     def makeInteractive(self,*args):
         for arg in args:
@@ -302,6 +340,8 @@ class Screen():
             self.__handleInput()
             # self.__resetDisplay()
             self.__calculateCursor()
+            if self.grid:
+                self.__createGrid()
             self.__drawDrawList()
             self.__playAnimations()
             if self.panning:
