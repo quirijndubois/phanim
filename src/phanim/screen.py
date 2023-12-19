@@ -82,11 +82,6 @@ class Screen():
             ))
 
         scroll = self.scroll
-        if platform.system() == "Darwin":
-            if abs(scroll[0]) == 1:
-                scroll[0] = 0
-            if abs(scroll[1]) == 1:
-                scroll[1] = 0
         scroll[0] /= 30
         scroll[1] /= 30
         self.camera.setZoom(self.camera.zoom - self.camera.zoom*scroll[1])
@@ -174,9 +169,15 @@ class Screen():
     def __createGrid(self):
         width = self.camera.bounds[0][1]-self.camera.bounds[0][0]
         closestPower,distance = round_to_power_of_2(width/self.gridResolution)
-        self.__drawGrid(closestPower/4,color=(255,255,255,interp(0,self.gridBrightness/3,distance)))
-        self.__drawGrid(closestPower/2,color=(255,255,255,interp(self.gridBrightness/3,self.gridBrightness,distance)))
-        self.__drawGrid(closestPower,color=(255,255,255,self.gridBrightness))
+        # self.__drawGrid(closestPower/4,color=(255,255,255,interp(0,self.gridBrightness/3,distance)))
+        # self.__drawGrid(closestPower/2,color=(255,255,255,interp(self.gridBrightness/3,self.gridBrightness,distance)))
+        # self.__drawGrid(closestPower,color=(255,255,255,self.gridBrightness))
+        color1 = interp(0,self.gridBrightness/3,distance)
+        color2 = interp(self.gridBrightness/3,self.gridBrightness,distance)
+        color3 = self.gridBrightness
+        self.__drawGrid(closestPower/4,color=(color1,color1,color1))
+        self.__drawGrid(closestPower/2,color=(color2,color2,color2))
+        self.__drawGrid(closestPower,color=(color3,color3,color3))
 
     def makeInteractive(self,*args):
         for arg in args:
@@ -229,12 +230,10 @@ class Screen():
         
         if self.rendererName == "moderngl":
             if self.renderer.BUTTONUP:
-                print("up")
                 self.dragging = False
                 for func in self.mouseClickUpdaterList:
                     func(self)
             if self.renderer.BUTTONUP:
-                print("up")
                 self.dragging = True
                 self.mouseButtonDown = True
                 for func in self.mouseDownUpdaterList:

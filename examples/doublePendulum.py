@@ -1,5 +1,5 @@
 from phanim import *
-screen = Screen(fullscreen=True,zoom=15,panning=True,renderer="moderngl")
+screen = Screen(fullscreen=True,zoom=15,panning=True)
 
 startPositions = [[0,1],[2,1],[4,1]]
 startVelocities = [[0,0],[0,3],[0,6]]
