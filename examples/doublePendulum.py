@@ -1,5 +1,5 @@
 from phanim import *
-screen = Screen(fullscreen=True,zoom=15,panning=True)
+screen = Screen(fullscreen=True,zoom=15,panning=True,renderer="moderngl")
 
 startPositions = [[0,1],[2,1],[4,1]]
 startVelocities = [[0,0],[0,3],[0,6]]
@@ -13,9 +13,9 @@ lines = (
     Line(start=startPositions[1],stop=startPositions[2]),
 )
 
-trail = Trail(length=150,lineWidth=3)
+trail = Trail(length=1,lineWidth=3)
 
-C = 10**6
+C = 10**5
 l = 2
 G = 10
 
@@ -35,7 +35,7 @@ def update(screen):
     screen.draw(trail)
     # screen.camera.position = nodes[2].position
 
-screen.addUpdater(update_physics,substeps=100)
+screen.addUpdater(update_physics,substeps=20)
 screen.addUpdater(update)
 
 screen.play(Create(DGrid()))

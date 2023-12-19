@@ -1,6 +1,6 @@
 from phanim import *
 
-s = Screen(fullscreen=True,panning=True)
+s = Screen(fullscreen=True,panning=True,renderer="pygame")
 
 slider = Slider(position=[-3,2],minValue=0.05,maxValue=2)
 s.makeInteractive(slider)

@@ -188,6 +188,20 @@ class Screen():
                         func(self)
                 if event.type == pygame.MOUSEWHEEL:
                     self.scroll = [event.x,event.y]
+        
+        if self.rendererName == "moderngl":
+            if self.renderer.BUTTONUP:
+                print("up")
+                self.dragging = False
+                for func in self.mouseClickUpdaterList:
+                    func(self)
+            if self.renderer.BUTTONUP:
+                print("up")
+                self.dragging = True
+                self.mouseButtonDown = True
+                for func in self.mouseDownUpdaterList:
+                    func(self)
+            self.scroll = self.renderer.scroll
             
         if self.dragging:
             for func in self.mouseDragUpdaterList:
@@ -273,8 +287,6 @@ class Screen():
                     wrappedAnimation.oldPhobject = deepcopy(wrappedAnimation.object)
             if wrappedAnimation.mode == "add":
                 self.draw(wrappedAnimation)
-                
-
         
     def add(self,phobject):
         self.drawList.append(phobject)
@@ -300,7 +312,6 @@ class Screen():
             self.t = time.time() - self.t0
 
             self.__handleInput()
-            # self.__resetDisplay()
             self.__calculateCursor()
             self.__drawDrawList()
             self.__playAnimations()
@@ -311,7 +322,7 @@ class Screen():
 
 
             self.__drawCursor()
-            self.renderer.update()
+            self.renderer.update(self.background)
 
             self.frameDt = self.renderer.getFrameDeltaTime()
             self.mouseButtonDown = False #because this should only be True for a single frame

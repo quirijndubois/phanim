@@ -39,6 +39,7 @@ class Circle(Curve):
     def __init__(self,position=[0,0],strokeWidth=0.05,color=(255,255,255),radius=1,resolution=100):
         super().__init__(position,strokeWidth,color)
         self.setCircle(radius, resolution)
+        self.radius = radius
     
     def setCircle(self,radius,resolution):
         points = []

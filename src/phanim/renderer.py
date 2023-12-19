@@ -62,12 +62,12 @@ class PygameRenderer():
     def getMousePos(self):
         return pygame.mouse.get_pos()
 
-    def update(self):
+    def update(self,backgroundColor):
         self.blit()
         self.setCursor((100,100,100),self.getMousePos(),10)
         self.drawCursor()
         pygame.display.update()
-        self.reset((10,10,10))
+        self.reset(backgroundColor)
 
     def getFrameDeltaTime(self):
         return self.clock.tick(60) / 1000
@@ -82,6 +82,11 @@ class ModernGLRenderer:
     def __init__(self, resolution,fontsize, fullscreen):
         if not glfw.init():
             raise Exception("GLFW can't be initialized")
+
+        glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 3)
+        glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 3)
+        glfw.window_hint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
+        glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, 1)
 
         self.resolution = resolution
         self.last_frame_time = time.time()
@@ -125,6 +130,13 @@ class ModernGLRenderer:
             }
             """
         )
+        self.BUTTONDOWN = False
+        self.BUTTONUP = False
+        self.scroll = [0,0]
+        glfw.set_input_mode(self.window, glfw.CURSOR, glfw.CURSOR_HIDDEN)
+        glfw.set_mouse_button_callback(self.window, self.mouse_button_callback)
+        glfw.set_scroll_callback(self.window, self.scroll_callback)
+
         self.aspect_ratio = self.resolution[0] / self.resolution[1]
         self.shapes_to_draw = []
 
@@ -156,7 +168,7 @@ class ModernGLRenderer:
         perp_dy *= self.aspect_ratio
 
         # Calculate the vertices of the rectangle (thin quad) representing the line
-        half_width = width / self.resolution[1]  # Convert pixel width to NDC
+        half_width = width / self.resolution[1] / 2  # Convert pixel width to NDC
         vertices = [
             start[0] + perp_dx * half_width, start[1] + perp_dy * half_width,
             end[0] + perp_dx * half_width, end[1] + perp_dy * half_width,
@@ -205,23 +217,44 @@ class ModernGLRenderer:
     def getMousePos(self):
         return glfw.get_cursor_pos(self.window)
 
+    def mouse_button_callback(self, window, button, action, mods):
+        self.BUTTONDOWN = False
+        self.BUTTONUP = False
+        if button == glfw.MOUSE_BUTTON_LEFT:
+            if action == glfw.PRESS:
+                self.BUTTONDOWN = True
+            elif action == glfw.RELEASE:
+                self.BUTTONUP = True
+
+    def scroll_callback(self, window, xoffset, yoffset):
+        self.scroll = [xoffset,yoffset]
+
     def quit(self):
         glfw.terminate()
 
     def running(self):
         return not glfw.window_should_close(self.window)
 
-    def update(self):
-        current_time = time.time()
-        self.delta_time = current_time - self.last_frame_time
-        self.last_frame_time = current_time
+    def update(self,color):
+        color = color[0]/255, color[1]/255, color[2]/255
+        # Calculate the time spent on the last frame
+        self.delta_time = time.time() - self.last_frame_time
 
-        self.ctx.clear(0.1, 0.1, 0.1, 1.0)
+        # Update last_frame_time to the current time
+        self.last_frame_time = time.time()
+
+        # Rendering operations
+        self.ctx.clear(*color, 1.0)
         for vao, color, mode in self.shapes_to_draw:
             self.prog['color'].value = color
             vao.render(mode)
+
+        # Swap buffers
         glfw.swap_buffers(self.window)
+
+        # Handle events
         glfw.poll_events()
+
         self.shapes_to_draw = []
 
 
@@ -229,10 +262,14 @@ if __name__ == "__main__":
     renderer = ModernGLRenderer((1920, 1080),0, fullscreen=True)
 
     while not glfw.window_should_close(renderer.window):
-        renderer.drawPolygon((0.0, 0.0, 1.0), [(200, -0.5*1920), (200, 0.5*1920), (0.5*1920, 0.5*1920), (0.5*1920, 200)])
-        renderer.drawLine((1.0, 0.0, 0.0), (np.random.random()*2000, 800), (100, 1000),10)
-        renderer.drawCircle((1, 0.0, 0.0), renderer.getMousePos(), 20, segments=50)
-        renderer.update()
+        for i in range(1000):
+            renderer.drawLine(
+                (np.random.random()*255,np.random.random()*255,np.random.random()*255),
+                [np.random.random()*renderer.resolution[0],np.random.random()*renderer.resolution[1]],
+                [np.random.random()*renderer.resolution[0],np.random.random()*renderer.resolution[1]],
+                0.1,
+            )
+        renderer.update((0,0,0))
 
 
 
