@@ -3,8 +3,12 @@ from phanim.phobject import Grid
 
 class Group():
     def __init__(self,*objects):
-        self.groupObjects = objects
+        self.groupObjects = list(objects)
         self.position = [0,0]
+
+    def add(self,*objects):
+        for obj in objects:
+            self.groupObjects.append(obj)
     
     def createFunction(self,t,old):
         for i in range(len(self.groupObjects)):

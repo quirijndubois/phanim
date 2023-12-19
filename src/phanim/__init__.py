@@ -15,5 +15,6 @@ from phanim.curve import *
 from phanim.shapes import *
 from phanim.group import *
 from phanim.text import *
+from phanim.physics_solver import *
 import phanim.color as color
 
