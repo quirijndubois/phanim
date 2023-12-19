@@ -306,8 +306,8 @@ class Screen():
             self.__playAnimations()
             if self.panning:
                 self.__handlePanning(self.mouseButtonDown,self.dragging)
-            self.__performUpdateList()
             self.__handleInteractivity()
+            self.__performUpdateList()
 
 
             self.__drawCursor()
