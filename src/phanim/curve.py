@@ -1,5 +1,4 @@
 from .functions import *
-import math
 from .color import *
 
 class Curve():

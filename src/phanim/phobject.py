@@ -1,5 +1,3 @@
-import numpy as np
-import phanim.functions as pf
 from phanim.functions import *
 from copy import copy
 
@@ -15,6 +13,7 @@ class Node():
         self.borderSize = borderSize
         self.charge = charge
         self.selected = False
+        self.force = [0.0,0.0]
         self.setPosition(pos)
     
     def setCircles(self):
@@ -37,7 +36,7 @@ class Node():
         self.accelaration[1] = force[1] / self.mass
 
         AVGlength = 10000
-        self.accelarationAVG = pf.interp2d(self.accelarationAVG, self.accelaration, 1/AVGlength)
+        self.accelarationAVG = interp2d(self.accelarationAVG, self.accelaration, 1/AVGlength)
 
         self.velocity[0] += self.accelaration[0] * dt
         self.velocity[1] += self.accelaration[1] * dt
@@ -49,17 +48,17 @@ class Node():
         pass
 
     def createFunction(self,t,old):
-        size = pf.calculateBezier([0,0],[0,3],[0.5,1.5],[1,1],t)[1]*old.radius
+        size = calculateBezier([0,0],[0,3],[0.5,1.5],[1,1],t)[1]*old.radius
         self.setRadius(size)
 
     def updateInteractivity(self,screen):
         if self in screen.selectedObjects:
             if not self.selected:
-                self.offset = -pf.diff(screen.GlobalCursorPosition,self.position)
+                self.offset = -diff(screen.GlobalCursorPosition,self.position)
 
             self.setColor((100,100,100))
             if screen.dragging:
-                self.setPosition(pf.vadd(screen.mousePos,screen.camera.position,self.offset))
+                self.setPosition(vadd(screen.mousePos,screen.camera.position,self.offset))
                 if self.selected:
                     self.velocity = diff(self.position,self.lasPos)/screen.dt/2
                 self.selected = True

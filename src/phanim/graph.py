@@ -1,5 +1,4 @@
 from phanim import *
-import numpy as np
 import itertools
 from copy import copy
 

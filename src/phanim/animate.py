@@ -1,9 +1,7 @@
 from phanim.functions import *
-from copy import deepcopy
-import math
-
 from phanim.group import *
 from phanim.ui import *
+from copy import copy
 
 class Animation():
     def __init__(self,phobject,duration = 60,mode = "smoothstep"):
@@ -11,12 +9,12 @@ class Animation():
         self.position = phobject.position
         self.duration = duration
         self.currentFrame = 0
-        self.oldPhobject = deepcopy(phobject)
+        self.oldPhobject = copy(phobject)
         self.animationMode = mode
     def updateAndPrint(self):
         t = self.currentFrame / self.duration
         if self.animationMode == "smoothstep":
-            self.t = interp(t**2,math.sqrt(t),t)
+            self.t = interp(t**2,np.sqrt(t),t)
         if self.animationMode == "smooth":
             a = interp(0,1,t)
             b = interp(0,a,t)

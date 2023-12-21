@@ -1,23 +1,17 @@
-import platform
-from . import functions as pf
+from . functions import *
 from . camera import *
 from . animate import *
 from . renderer import *
-import numpy as np
 import time
-from copy import deepcopy
+from copy import copy
 import threading
-from IPython import start_ipython
-import os,sys
-import math
 
 class Screen():
 
-    os.environ['SDL_VIDEO_WINDOW_POS'] = '0,0'
-    os.environ['SDL_VIDEO_FULLSCREEN_DISPLAY'] = '0'
+    # os.environ['SDL_VIDEO_WINDOW_POS'] = '0,0'
+    # os.environ['SDL_VIDEO_FULLSCREEN_DISPLAY'] = '0'
 
     def __init__(self,resolution=None,zoom = 10,fullscreen=False,background=(10,15,20),fontSize=0.5,panning=False,renderer="pygame",grid=False,gridResolution=15,gridBrightness=150):
-
         
         if renderer == "pygame":
             self.renderer = PygameRenderer(resolution,fontSize,fullscreen)
@@ -76,8 +70,8 @@ class Screen():
             self.panBeginCameraPosition = self.camera.position
             self.panBeginMousePos = self.mousePos
         if dragging:
-            self.camera.setPosition(pf.vadd(
-                pf.diff(self.panBeginMousePos,self.mousePos),
+            self.camera.setPosition(vadd(
+                diff(self.panBeginMousePos,self.mousePos),
                 self.panBeginCameraPosition
             ))
 
@@ -88,12 +82,12 @@ class Screen():
 
     def drawLines(self,lines,width,position):
         for line in lines:
-            start = self.camera.coords2screen(pf.vadd(line[0],position))
-            stop = self.camera.coords2screen(pf.vadd(line[1],position))
+            start = self.camera.coords2screen(vadd(line[0],position))
+            stop = self.camera.coords2screen(vadd(line[1],position))
 
             pixelWidth = int(width/self.camera.zoom*20)
             if pixelWidth < 1:
-                pixelWidth = 1
+                pixelWidth = 1.5
 
             if len(line) == 3:
                 color = line[2]
@@ -104,21 +98,21 @@ class Screen():
 
     def __drawCircles(self,circles,position):
             for circle in circles:
-                pos = self.camera.coords2screen(pf.vadd(circle[1],position))
+                pos = self.camera.coords2screen(vadd(circle[1],position))
                 self.renderer.drawCircle(circle[2], pos, circle[0]*self.camera.pixelsPerUnit)
 
     def __drawPolygons(self,polygons,color,position):
         for polygon in polygons:
             points = []
             for point in polygon:
-                points.append(self.camera.coords2screen(pf.vadd(point,position)))
+                points.append(self.camera.coords2screen(vadd(point,position)))
             self.renderer.drawPolygon(color, points)
 
     def __drawText(self,texts,position):
         for text in texts:
             if len(text) > 0:
                 img = self.font.render(text[0],True,text[2])
-                pos = self.camera.coords2screen(pf.vadd(text[1],position))
+                pos = self.camera.coords2screen(vadd(text[1],position))
                 self.display.blit(img,pos)
 
     def __drawPhobject(self,phobject):
@@ -144,21 +138,21 @@ class Screen():
         boundX = self.camera.bounds[0]
         boundY = self.camera.bounds[1]
         
-        amountX = math.ceil((boundX[1]-boundX[0])/spacing)
-        amountY = math.ceil((boundY[1]-boundY[0])/spacing)
+        amountX = int(np.ceil((boundX[1]-boundX[0])/spacing))
+        amountY = int(np.ceil((boundY[1]-boundY[0])/spacing))
 
         for i in range(amountX):
             group.add(Line(
-                start=[math.ceil(boundX[0]/spacing)*spacing+i*spacing,boundY[0]],
-                stop=[math.ceil(boundX[0]/spacing)*spacing+i*spacing,boundY[1]],
+                start=[np.ceil(boundX[0]/spacing)*spacing+i*spacing,boundY[0]],
+                stop=[np.ceil(boundX[0]/spacing)*spacing+i*spacing,boundY[1]],
                 lineWidth=0,
                 color=color
                 )
             )
         for i in range(amountY):
             group.add(Line(
-                start=[boundX[0],math.ceil(boundY[0]/spacing)*spacing+i*spacing],
-                stop=[boundX[1],math.ceil(boundY[0]/spacing)*spacing+i*spacing],
+                start=[boundX[0],np.ceil(boundY[0]/spacing)*spacing+i*spacing],
+                stop=[boundX[1],np.ceil(boundY[0]/spacing)*spacing+i*spacing],
                 lineWidth=0,
                 color=color
                 )
@@ -169,15 +163,17 @@ class Screen():
     def __createGrid(self):
         width = self.camera.bounds[0][1]-self.camera.bounds[0][0]
         closestPower,distance = round_to_power_of_2(width/self.gridResolution)
-        # self.__drawGrid(closestPower/4,color=(255,255,255,interp(0,self.gridBrightness/3,distance)))
-        # self.__drawGrid(closestPower/2,color=(255,255,255,interp(self.gridBrightness/3,self.gridBrightness,distance)))
-        # self.__drawGrid(closestPower,color=(255,255,255,self.gridBrightness))
-        color1 = interp(0,self.gridBrightness/3,distance)
-        color2 = interp(self.gridBrightness/3,self.gridBrightness,distance)
-        color3 = self.gridBrightness
-        self.__drawGrid(closestPower/4,color=(color1,color1,color1))
-        self.__drawGrid(closestPower/2,color=(color2,color2,color2))
-        self.__drawGrid(closestPower,color=(color3,color3,color3))
+        if self.rendererName == "pygame":
+            self.__drawGrid(closestPower/4,color=(255,255,255,interp(0,self.gridBrightness/3,distance)))
+            self.__drawGrid(closestPower/2,color=(255,255,255,interp(self.gridBrightness/3,self.gridBrightness,distance)))
+            self.__drawGrid(closestPower,color=(255,255,255,self.gridBrightness))
+        elif self.rendererName == "moderngl":
+            color1 = interp(0,self.gridBrightness/3,distance)
+            color2 = interp(self.gridBrightness/3,self.gridBrightness,distance)
+            color3 = self.gridBrightness
+            self.__drawGrid(closestPower/4,color=(color1,color1,color1))
+            self.__drawGrid(closestPower/2,color=(color2,color2,color2))
+            self.__drawGrid(closestPower,color=(color3,color3,color3))
 
     def makeInteractive(self,*args):
         for arg in args:
@@ -194,7 +190,7 @@ class Screen():
             self.selectedObjects = []
             for phobject in self.interativityList:
                 if hasattr(phobject,"radius"):
-                    if pf.magnitude(pf.diff(phobject.position,pf.vadd(self.mousePos,self.camera.position))) < phobject.radius:
+                    if magnitude(diff(phobject.position,vadd(self.mousePos,self.camera.position))) < phobject.radius:
                         self.selectedObjects.append(phobject)
                 elif hasattr(phobject,"checkSelection"):
                     if phobject.checkSelection(self):
@@ -202,7 +198,7 @@ class Screen():
                 elif hasattr(phobject,"groupObjects"):
                     for phobject2 in phobject.groupObjects:
                         if hasattr(phobject2,"radius"):
-                            if pf.magnitude(pf.diff(phobject2.position,pf.vadd(self.mousePos,self.camera.position))) < phobject2.radius:
+                            if magnitude(diff(phobject2.position,vadd(self.mousePos,self.camera.position))) < phobject2.radius:
                                 self.selectedObjects.append(phobject2)
 
         for phobject in self.interativityList:
@@ -304,7 +300,7 @@ class Screen():
     def __drawAnimation(self,animation):
         if animation.currentFrame == 0:
             if hasattr(animation,"object"):
-                animation.oldPhobject = deepcopy(animation.object)
+                animation.oldPhobject = copy(animation.object)
 
         animation.currentFrame += 1
         animation.updateAndPrint()
@@ -321,7 +317,7 @@ class Screen():
         for index,wrappedAnimation in enumerate(animation.animations):
             if wrappedAnimation.currentFrame == 0:
                 if hasattr(wrappedAnimation,"object"):
-                    wrappedAnimation.oldPhobject = deepcopy(wrappedAnimation.object)
+                    wrappedAnimation.oldPhobject = copy(wrappedAnimation.object)
             if wrappedAnimation.mode == "add":
                 self.draw(wrappedAnimation)
         
@@ -335,6 +331,8 @@ class Screen():
         self.draw(*self.drawList)
 
     def run_interactive(self,globals):
+        from IPython import start_ipython
+        
         def thread_loop():
             start_ipython(argv=[], user_ns=globals)
 

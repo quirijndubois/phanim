@@ -1,6 +1,6 @@
 from .group import *
-import numpy as np
-import phanim
+from . functions import *
+from .phobject import *
 from copy import copy
 
 class Field(Group):
@@ -36,9 +36,9 @@ class Field(Group):
                 coloringMagSq = magSQ/50
                 if coloringMagSq < 1 and coloringMagSq > 0:
                     color = (
-                        phanim.interp(0, 255,coloringMagSq**(1/4)),
-                        phanim.interp(55, 0,coloringMagSq),
-                        phanim.interp(200, 0,coloringMagSq)
+                        interp(0, 255,coloringMagSq**(1/4)),
+                        interp(55, 0,coloringMagSq),
+                        interp(200, 0,coloringMagSq)
                     )
                 else:
                     color = (255,0,0)
@@ -77,21 +77,21 @@ class OldField():
     def generateArrows(self):
         self.arrows = []
         for point in self.field:
-            mag = phanim.magnitude(point[1])
+            mag = magnitude(point[1])
             if mag < 1 and mag > 0:
                 color = (
-                    phanim.interp(0, 255,mag**0.5),
-                    phanim.interp(55, 0,mag),
-                    phanim.interp(200, 0,mag**2)
+                    interp(0, 255,mag**0.5),
+                    interp(55, 0,mag),
+                    interp(200, 0,mag**2)
                 )
             else:
                 color = (255,0,0)
 
-            arrow = phanim.Arrow(pointSize=0.4,lineThickness=0.1,color=color)
+            arrow = Arrow(pointSize=0.4,lineThickness=0.1,color=color)
             direction = np.array(point[1])*self.vectorScale*self.sizeRatio
 
             if direction[0]**2+direction[1]**2 > 1:
-                arrow.setDirection(point[0],phanim.functions.normalize(direction),scale=self.maxVectorScale)
+                arrow.setDirection(point[0],functions.normalize(direction),scale=self.maxVectorScale)
             else:
                 arrow.setDirection(point[0],(direction),scale=self.maxVectorScale)
 
@@ -120,10 +120,10 @@ class ElectricLineField():
         position = [x,y]
         totalForce = [0,0]
         for q in self.charges:
-            diff = phanim.diff(position,q[0])
-            magsq = phanim.magSquared(diff)
+            diff = diff(position,q[0])
+            magsq = magSquared(diff)
             force = q[1]/magsq*diff
-            totalForce = phanim.vadd(force,totalForce)
+            totalForce = vadd(force,totalForce)
         return totalForce
 
     def generateLines(self):
@@ -153,8 +153,8 @@ class ElectricLineField():
                     totalForce = [0,0]
                     dobreak = False
                     for q in self.charges:
-                        diff = phanim.diff(positions[-1],q[0])
-                        magsq = phanim.magSquared(diff)
+                        diff = diff(positions[-1],q[0])
+                        magsq = magSquared(diff)
                         if magsq < particleLimit:
                             dobreak = True
                     if dobreak:
@@ -162,11 +162,11 @@ class ElectricLineField():
                     totalForce = self.fieldFunction(positions[-1][0],positions[-1][1])
                     if category == 1:
                         totalForce = -totalForce
-                    positions.append(phanim.vadd(positions[-1],phanim.normalize(totalForce)/8))
+                    positions.append(vadd(positions[-1],normalize(totalForce)/8))
 
                 decimateAmount = 20
                 if len(positions) > decimateAmount:
-                    positions = phanim.decimate(positions,decimateAmount)
-                lines = phanim.pointsToLines(positions,self.color)
+                    positions = decimate(positions,decimateAmount)
+                lines = pointsToLines(positions,self.color)
                 for line in lines:
                     self.lines.append(line)

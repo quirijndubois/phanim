@@ -1,5 +1,4 @@
 import numpy as np
-import math
 
 def interp(a,b,t):
     return a + (b-a) * t
@@ -206,10 +205,10 @@ def clamp(value,min,max):
 def round_to_power_of_2(value):    
     # Calculate the logarithm base 2 of the value
     
-    log_value = math.log2(abs(value))
+    log_value = np.log2(abs(value))
     
     # Round the logarithmic value to the nearest integer
-    rounded_log = math.ceil(log_value)
+    rounded_log = np.ceil(log_value)
     
     # Calculate the closest power of 2
     result = 2 ** rounded_log

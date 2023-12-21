@@ -1,16 +1,22 @@
 
-import moderngl
-import glfw
 import numpy as np
-import pygame  
 import time
 
+import moderngl
+import glfw
+
+from os import environ
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+import pygame  
+
 class PygameRenderer():
-    pygame.init()
-    pygame.mouse.set_visible(False)
-    pygame.display.set_caption("Phanim")
     # pygame.display.set_icon(pygame.image.load('phanim/icon.png'))
     def __init__(self,resolution,fontSize,fullscreen):
+        pygame.init()
+        pygame.mouse.set_visible(False)
+        pygame.display.set_caption("Phanim")
+
+
         infoObject = pygame.display.Info()
         if resolution == None:
             self.resolution = (infoObject.current_w, infoObject.current_h)
@@ -32,7 +38,7 @@ class PygameRenderer():
             color,
             start,
             stop,
-            width=pixelWidth
+            width=int(pixelWidth)
         )
     def running(self):
         return self.isRunning
@@ -80,6 +86,7 @@ class PygameRenderer():
 
 class ModernGLRenderer:
     def __init__(self, resolution,fontsize, fullscreen):
+
         if not glfw.init():
             raise Exception("GLFW can't be initialized")
 

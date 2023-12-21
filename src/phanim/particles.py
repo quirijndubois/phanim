@@ -1,7 +1,7 @@
-import phanim
-import numpy as np
+from .functions import *
+from .curve import *
+from .phobject import *
 from phanim.color import NaturalColorMap
-import random
 from copy import copy
 
 class Particles():
@@ -16,18 +16,18 @@ class Particles():
         self.distribution = distribution
         for i in range(n):
             pos = self.distrubute()
-            node = phanim.Node(pos=pos,radius=radius)
+            node = Node(pos=pos,radius=radius)
             node.age = np.random.randint(0,self.lifetime)
             if trails:
-                node.trail = phanim.Trail(length=self.lifetime*fadingtime)
+                node.trail = Trail(length=self.lifetime*fadingtime)
             self.particles.append(node)
     
     def setVelocity(self,velcityFieldFunction):
         for particle in self.particles:
             vel = velcityFieldFunction(particle.position[0],particle.position[1])
-            particle.velocitymag = phanim.magnitude(vel)
+            particle.velocitymag = magnitude(vel)
             if particle.velocitymag > self.maxspeed:
-                particle.velocity = phanim.normalize(vel)*self.maxspeed
+                particle.velocity = normalize(vel)*self.maxspeed
             else: 
                 particle.velocity = vel
 
@@ -55,13 +55,13 @@ class Particles():
             random1 = np.random.rand()
             random2 = np.random.rand()
             pos = [
-                phanim.mapRange(random1, 0, 1,self.area[0][0],self.area[0][1]),
-                phanim.mapRange(random2, 0, 1,self.area[1][0],self.area[1][1])
+                mapRange(random1, 0, 1,self.area[0][0],self.area[0][1]),
+                mapRange(random2, 0, 1,self.area[1][0],self.area[1][1])
             ]
             return pos
         
         if type(self.distribution) == list:
-            pos = copy(random.choice(self.distribution))
+            pos = copy(np.random.choice(self.distribution))
             pos[0]+=(np.random.rand()*2-1)/10
             pos[1]+=(np.random.rand()*2-1)/10
             return pos
