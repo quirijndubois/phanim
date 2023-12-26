@@ -1,5 +1,6 @@
 from phanim import *
-screen = Screen(fullscreen=True,zoom=15,grid=True,renderer="pygame",panning=True)
+
+s = Screen(fullscreen=True,zoom=15,grid=True,renderer="pygame",panning=True)
 
 startPositions = [[0,1],[2,1],[4,1]]
 startVelocities = [[0,0],[0,3],[0,6]]
@@ -39,9 +40,9 @@ def update(screen):
     lines[1].setEnds(nodes[1].position,nodes[2].position)
     trail.add(nodes[2].position,(255,150,100))
 
-screen.addUpdater(update_physics,substeps=50)
-screen.addUpdater(update)
-screen.play(laggedStart(
+s.addUpdater(update_physics,substeps=50)
+s.addUpdater(update)
+s.play(laggedStart(
     Add(trail),
     *[Create(line) for line in lines],
     *[Create(node) for node in nodes],
@@ -50,7 +51,7 @@ screen.play(laggedStart(
 )
 
 
-screen.makeInteractive(slider,nodes[1],nodes[2])
+s.makeInteractive(slider,nodes[1],nodes[2])
 
 
-screen.run()
+s.run()
