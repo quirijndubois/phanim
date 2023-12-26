@@ -110,4 +110,6 @@ if drawVectors:
 screen.play(Create(DGrid()))
 screen.play(laggedStart(*[Create(line) for line in lines],*[Create(node) for node in nodes],lagRatio=0.5))
 
+screen.makeInteractive(nodes[2])
+
 screen.run()

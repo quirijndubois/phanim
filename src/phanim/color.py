@@ -1,6 +1,6 @@
 from .functions import interp
 
-red = (255,100,100)
+red = (255,150,100)
 green = (100,255,100)
 blue = (100,100,255)
 purple = (153, 51, 255)

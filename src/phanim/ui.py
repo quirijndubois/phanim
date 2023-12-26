@@ -35,7 +35,7 @@ class Slider(Group):
     def updateInteractivity(self,screen):
         if self in screen.selectedObjects:
             if not self.selected:
-                self.offset = -pf.diff(screen.GlobalCursorPosition,self.groupObjects[1].position)
+                self.offset = -diff(screen.GlobalCursorPosition,self.groupObjects[1].position)
             if len(self.color) == 3:
                 self.groupObjects[1].setColor(
                     (self.color[0]/3,self.color[1]/3,self.color[2]/3)
@@ -44,7 +44,7 @@ class Slider(Group):
                 maximimPos = self.position[0]+self.width/2
                 minimumPos = self.position[0]-self.width/2
                 self.groupObjects[1].setPosition(
-                    [pf.clamp(pf.vadd(screen.GlobalCursorPosition,self.offset)[0],minimumPos,maximimPos),self.position[1]]
+                    [clamp(vadd(screen.GlobalCursorPosition,self.offset)[0],minimumPos,maximimPos),self.position[1]]
                     )
                 self.value = interp(self.minValue,self.maxValue,((self.groupObjects[1].position[0]-self.position[0])/(self.width/2)+1)/2)
                 self.selected = True
@@ -54,7 +54,7 @@ class Slider(Group):
             self.groupObjects[1].setColor((0,0,0))
     
     def checkSelection(self,screen):
-        if pf.magnitude(pf.diff(self.groupObjects[1].position,pf.vadd(screen.mousePos,screen.camera.position))) < self.groupObjects[1].radius:
+        if magnitude(diff(self.groupObjects[1].position,vadd(screen.mousePos,screen.camera.position))) < self.groupObjects[1].radius:
             return True
             print(selected)
         else:
