@@ -4,6 +4,7 @@ from . animate import *
 from . renderer import *
 import time
 from copy import copy
+from copy import deepcopy
 import threading
 
 class Screen():
@@ -300,7 +301,7 @@ class Screen():
     def __drawAnimation(self,animation):
         if animation.currentFrame == 0:
             if hasattr(animation,"object"):
-                animation.oldPhobject = copy(animation.object)
+                animation.oldPhobject = deepcopy(animation.object)
 
         animation.currentFrame += 1
         animation.updateAndPrint()
