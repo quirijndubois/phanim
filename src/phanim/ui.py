@@ -60,6 +60,11 @@ class Slider(Group):
         else:
             return False
     
+    def setValue(self,value):
+        self.value = clamp(value,self.minValue,self.maxValue)
+        self.groupObjects[1].setPosition(vadd(self.position,interp2d([-self.width/2,0],[self.width/2,0],(self.value-self.minValue)/(self.maxValue-self.minValue))))
+
+    
     def setPosition(self,position):
         self.position = position
         self.setPhobjects()

@@ -5,7 +5,7 @@ s = Screen(fullscreen=True,zoom=15,grid=True,renderer="pygame",panning=True)
 startPositions = [[0,1],[2,1],[4,1]]
 startVelocities = [[0,0],[0,3],[0,6]]
 
-slider = Slider(position=[0,-3.5],value=1,color=color.red)
+slider = Slider(position=[0,-3.5],value=1,maxValue=2,color=color.red)
 
 nodeRadius = 0.3
 
@@ -21,7 +21,7 @@ lines = (
 
 trail = Trail(length=100,lineWidth=3)
 
-C = 10**6
+C = 1e6
 l = 2
 G = 10
 
@@ -53,5 +53,12 @@ s.play(laggedStart(
 
 s.makeInteractive(slider,nodes[1],nodes[2])
 
+s.wait(60)
+s.play(AnimateValue(lambda value: slider.setValue(value),[1,2]))
+s.wait(60)
+s.play(AnimateValue(lambda value: slider.setValue(value),[2,0.4]))
+s.wait(60)
+s.play(AnimateValue(lambda value: slider.setValue(value),[0.4,1.2]))
+s.play(AnimateValue(lambda value: slider.setValue(value),[1.2,1]))
 
 s.run()

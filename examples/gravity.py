@@ -1,7 +1,7 @@
 from phanim import *
 import numpy as np
 
-s = Screen(panning=True,zoom=11,fullscreen=True)
+s = Screen(panning=False,zoom=11,fullscreen=True,grid=True)
 
 slider = Slider(position=[0,2.5],maxValue=np.sqrt(3))
 
@@ -67,23 +67,27 @@ def update(s):
             node.position[1] = -y+e
 
 
+
+
 def frameUpdate(s):
     # s.camera.setPosition(nodes[2].position)
     trails[0].add(nodes[0].position,nodes[0].borderColor)
     trails[1].add(nodes[1].position,nodes[1].borderColor)
     trails[2].add(nodes[2].position,nodes[2].borderColor)
 
+circle = Circle()
 rectangle = Rectangle(width=8,height=6)
 
 s.addUpdater(update,substeps=100)
 s.addUpdater(frameUpdate)
 
-s.play(makeGrid())
+s.play(Create(circle))
 s.play(laggedStart(
-    Create(rectangle),
+    Transform(circle,rectangle),
     *[Create(trail) for trail in trails],
     *[Create(node) for node in nodes],
-    Create(slider),
+    Create(slider.groupObjects[0]),
+    Create(slider.groupObjects[1]),
     lagRatio=0.5
     ))
 
