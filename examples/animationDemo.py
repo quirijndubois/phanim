@@ -1,6 +1,6 @@
 from phanim import *
 
-scr = Screen(fullscreen=True)
+scr = Screen(fullscreen=True,grid=True)
 
 grids = Grid(1,1,10,10,position=[0.5,0.5],color=(50,50,50)),Grid(1,1,10,10)
 
@@ -13,13 +13,9 @@ graph = PlotGraph(color=color.green)
 x = np.linspace(-2,2,100)
 graph.setData(x, np.sin(x*3)+x)
 axes = Axes()
-
-scr.play(Create(grids[1]))
-scr.play(Create(grids[0]))
 scr.play(Create(circle,duration=120))
 scr.play(Transform(circle,square))
 scr.play(Transform(circle,square2))
 scr.play(Transform(circle,graph),Create(axes))
-scr.play(Destroy(grids[0]),Destroy(grids[1]))
 scr.play(Move(scr.camera,[1,1]))
 scr.run()

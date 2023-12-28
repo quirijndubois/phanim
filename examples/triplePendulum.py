@@ -4,7 +4,7 @@ import numpy as np
 drawVectors = True
 drawTrails = True
 
-screen = Screen(fullscreen=True,zoom=20,fontSize=0.4,panning=True)
+screen = Screen(fullscreen=True,zoom=12,fontSize=0.4,panning=True,grid=True)
 
 trails = [
     Trail(color=color.red),
@@ -20,10 +20,10 @@ graphs = [
 ]
 
 nodes = [
-    Node(pos=[-2,1],radius=0.2,vel=[0,0]),
-    Node(pos=[-2,3],radius=0.2,vel=[0.22,0]),
-    Node(pos=[-2,5],radius=0.2,vel=[0,0]),
-    Node(pos=[-2,7],radius=0.2,vel=[-0.2,0]),
+    Node(pos=[0,1],radius=0.4,vel=[0,0],interactivityType="force"),
+    Node(pos=[0,3],radius=0.4,vel=[0.22,0],interactivityType="force"),
+    Node(pos=[0,5],radius=0.4,vel=[0,0],interactivityType="force"),
+    Node(pos=[0,7],radius=0.4,vel=[-0.2,0],interactivityType="force"),
 ]
 
 lines = [
@@ -38,7 +38,7 @@ arrows = [
     Arrow(color=color.blue),
 ]
 
-substeps = 100
+substeps = 50
 C = 10**6
 l1 = 2
 l2 = 2
@@ -82,24 +82,26 @@ def update_screen(screen):
     kinetic2 = 0.5 * nodes[2].mass * magnitude(nodes[2].velocity)**2
     kinetic3 = 0.5 * nodes[3].mass * magnitude(nodes[3].velocity)**2
 
-    potential1 = nodes[1].mass * g * nodes[1].position[1]
-    potential2 = nodes[2].mass * g * nodes[2].position[1]
-    potential3 = nodes[3].mass * g * nodes[3].position[1]
+    # potential1 = nodes[1].mass * g * nodes[1].position[1]
+    # potential2 = nodes[2].mass * g * nodes[2].position[1]
+    # potential3 = nodes[3].mass * g * nodes[3].position[1]
 
-    energy1 = kinetic1+potential1
-    energy2 = kinetic2+potential2
-    energy3 = kinetic3+potential3
-    energy = energy1+energy2+energy3
+    # energy1 = kinetic1+potential1
+    # energy2 = kinetic2+potential2
+    # energy3 = kinetic3+potential3
+    # energy = energy1+energy2+energy3
 
-    graphs[0].addDataPoint(energy1)
-    graphs[1].addDataPoint(energy2)
-    graphs[2].addDataPoint(energy3)
-    graphs[3].addDataPoint(energy)
+    # graphs[0].addDataPoint(energy1)
+    # graphs[1].addDataPoint(energy2)
+    # graphs[2].addDataPoint(energy3)
+    # graphs[3].addDataPoint(energy)
 
-    screen.lastEnergy = energy
+    # screen.lastEnergy = energy
 
 screen.addUpdater(update_physics,substeps=substeps)
 screen.addUpdater(update_screen)
+
+screen.makeInteractive(*nodes)
 
 # [screen.add(graph) for graph in graphs]
 if drawTrails:
@@ -107,7 +109,6 @@ if drawTrails:
 if drawVectors:
     [screen.add(arrow) for arrow in arrows]
 
-screen.play(Create(DGrid()))
 screen.play(laggedStart(*[Create(line) for line in lines],*[Create(node) for node in nodes],lagRatio=0.5))
 
 screen.makeInteractive(nodes[2])

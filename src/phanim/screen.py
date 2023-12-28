@@ -12,7 +12,7 @@ class Screen():
     # os.environ['SDL_VIDEO_WINDOW_POS'] = '0,0'
     # os.environ['SDL_VIDEO_FULLSCREEN_DISPLAY'] = '0'
 
-    def __init__(self,resolution=None,zoom = 10,fullscreen=False,background=(10,15,20),fontSize=0.5,panning=False,renderer="pygame",grid=False,gridResolution=15,gridBrightness=150):
+    def __init__(self,resolution=None,zoom = 6,fullscreen=False,background=(10,15,20),fontSize=0.5,panning=False,renderer="pygame",grid=False,gridResolution=15,gridBrightness=150):
         
         if renderer == "pygame":
             self.renderer = PygameRenderer(resolution,fontSize,fullscreen)
