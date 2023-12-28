@@ -7,7 +7,8 @@ class Camera():
         self.resolution = resolution
         self.position = position
         self.rotation = rotation
-        self.pixelsPerUnit = self.resolution[0] / self.zoom
+        self.aspectRatio = self.resolution[0]/self.resolution[1]
+        self.pixelsPerUnit = self.resolution[1] / self.zoom
         self.__calculateBounds()
 
 
@@ -46,11 +47,11 @@ class Camera():
             self.zoom = 0.1
         if self.zoom > 1000:
             self.zoom = 1000
-        self.pixelsPerUnit = self.resolution[0] / self.zoom
+        self.pixelsPerUnit = self.resolution[1] / self.zoom
         self.__calculateBounds()
 
     def __calculateBounds(self):
         self.bounds = [
-            [self.position[0]-self.zoom/2,self.position[0]+self.zoom/2],
+            [self.position[0]-self.zoom/2*self.aspectRatio,self.position[0]+self.zoom/2*self.aspectRatio],
             [self.position[1]-self.zoom/2,self.position[1]+self.zoom/2]
         ]
