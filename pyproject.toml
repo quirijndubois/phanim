@@ -18,7 +18,7 @@ classifiers = [
 ]
 keywords = ["render", "physics", "simulation"]
 requires-python = ">=3.9"
-dependencies = ["numpy","pygame","svgpathtools"]
+dependencies = ["numpy","pygame","svgpathtools","glfw","moderngl"]
 
 [project.urls]
 Homepage = "https://github.com/quirijndubois/phanim"

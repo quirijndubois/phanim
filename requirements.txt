@@ -1,3 +1,5 @@
 pygame
 numpy
 svgpathtools
+glfw
+moderngl
