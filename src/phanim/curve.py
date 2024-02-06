@@ -2,10 +2,12 @@ from .functions import *
 from .color import *
 
 class Curve():
-    def __init__(self,position=[0,0],strokeWidth=0.05,color=(255,255,255)):
+    def __init__(self,position=[0,0],strokeWidth=0.05,color=(255,255,255),points = None):
         self.position = position
         self.strokeWidth = strokeWidth
         self.color = color
+        if points:
+            self.setPoints(points)
     
     def setPoints(self,points):
         self.points = points

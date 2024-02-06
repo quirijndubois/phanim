@@ -3,7 +3,7 @@ import numpy as np
 
 screen = Screen(fullscreen=True,panning=True)
 field = OldField(resolution=2,maxVectorScale=0.5)
-particles = Particles(n=100,lifetime=15)
+particles = ParticlesOld(n=100,lifetime=15)
 
 nodes = Node(pos=[1,0]),Node(pos=[-1,0])
 

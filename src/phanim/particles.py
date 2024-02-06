@@ -4,7 +4,7 @@ from .phobject import *
 from phanim.color import NaturalColorMap
 from copy import copy
 
-class Particles():
+class ParticlesOld():
     def __init__(self,n=150,lifetime=20,area=[[-5,5],[-5,5]],radius = 0,colorMap=NaturalColorMap,trails=True,lineWidth=2,speed=100,maxspeed=2e-2,fadingtime=2,distribution = "even"):
         self.lifetime = lifetime
         self.area = area
@@ -65,3 +65,33 @@ class Particles():
             pos[0]+=(np.random.rand()*2-1)/10
             pos[1]+=(np.random.rand()*2-1)/10
             return pos
+
+class Particles():
+    def __init__(self,n=10,area = [[-1,1],[-1,1]],particle_radius = 0.03,particle_updater = None,m=1,speed=5):
+        self.position = [0,0]
+        self.n = n
+        self.q = np.random.rand(n,2)*2 - 1 
+        self.q_d = (np.random.rand(n,2)*2 - 1)*speed
+        self.F = np.zeros((n,2))
+        self.m = np.array([m]*n)
+        self.r = particle_radius
+        if particle_updater:
+            self.update_particles = particle_updater
+        self.set_circles()
+    
+    def set_circles(self):
+        self.circles = []
+        for pos in self.q:
+            self.circles.append([self.r,pos,(255,255,255)])
+
+
+    def update(self,screen):
+
+        if hasattr(self,"update_particles"):
+            for i in range(self.n):
+                self.q[i],self.q_d[i],self.F[i],self.m[i] = self.update_particles(self.q[i],self.q_d[i],self.F[i],self.m[i])
+
+        self.q_d += self.F * screen.dt
+        self.q += self.q_d * screen.dt
+
+        self.set_circles

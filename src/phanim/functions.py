@@ -53,6 +53,17 @@ def springForce(C,l,begin,end):
     mag = magnitude(difference) - l
     return direction * mag * C
 
+def dampenedSpringForce(C,l,dampFactor,begin,end,vel):
+
+    vel_direction = np.array(normalize(vel))
+    vel_mag = magnitude(vel)
+
+    difference = np.array(begin) - np.array(end)
+    direction = np.array(normalize(difference))
+    mag = magnitude(difference)
+
+    return direction * (mag * C) - vel_direction*vel_mag*dampFactor
+
 def vadd(*args):
     result = [0,0]
     for arg in args:
