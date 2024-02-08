@@ -53,12 +53,12 @@ s.play(laggedStart(
 
 s.makeInteractive(slider,nodes[1],nodes[2])
 
-s.wait(60)
-s.play(AnimateValue(lambda value: slider.setValue(value),[1,2]))
-s.wait(60)
-s.play(AnimateValue(lambda value: slider.setValue(value),[2,0.4]))
-s.wait(60)
-s.play(AnimateValue(lambda value: slider.setValue(value),[0.4,1.2]))
-s.play(AnimateValue(lambda value: slider.setValue(value),[1.2,1]))
+#s.wait(60)
+#s.play(AnimateValue(lambda value: slider.setValue(value),[1,2]))
+#s.wait(60)
+#s.play(AnimateValue(lambda value: slider.setValue(value),[2,0.4]))
+#s.wait(60)
+#s.play(AnimateValue(lambda value: slider.setValue(value),[0.4,1.2]))
+#s.play(AnimateValue(lambda value: slider.setValue(value),[1.2,1]))
 
 s.run()
