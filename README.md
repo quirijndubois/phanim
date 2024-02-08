@@ -18,10 +18,10 @@ Or just a simple double pendulum(looks better imo):
 
 
 ## Installation
-Install with pip:
+Install with pip (old shitty version):
 ```
 pip install phanim
-```
+``` 
 If you want to use the very latest version you can also clone the repository and import the phanim folder within python.
 
 ## Usage
