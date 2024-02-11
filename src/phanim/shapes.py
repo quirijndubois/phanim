@@ -16,7 +16,7 @@ class Quadrilateral(Curve):
                     pos = interp2d(self.corners[i],self.corners[0], t)
                 else:
                     pos = interp2d(self.corners[i],self.corners[i+1], t)
-                points.append(np.array(pos)+self.position)
+                points.append(np.array(pos))
 
         self.setPoints(points)
 
@@ -27,10 +27,10 @@ class Rectangle(Quadrilateral):
         self.height = height
         self.setRectange()
     def setRectange(self):
-        a = [self.position[0]+self.width/2,self.position[1]+self.height/2]
-        b = [self.position[0]-self.width/2,self.position[1]+self.height/2]
-        c = [self.position[0]-self.width/2,self.position[1]-self.height/2]
-        d = [self.position[0]+self.width/2,self.position[1]-self.height/2]
+        a = [+self.width/2,+self.height/2]
+        b = [-self.width/2,+self.height/2]
+        c = [-self.width/2,-self.height/2]
+        d = [+self.width/2,-self.height/2]
         self.corners = [a,b,c,d]
         self.setQuadrilateral()
 

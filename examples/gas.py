@@ -1,8 +1,8 @@
 from phanim import *
 
-particle_amount = 500
-particle_speed = 5
-particle_mass = 0.02
+particle_amount = 100
+particle_speed = 50
+particle_mass = 0.001
 particle_radius = 0.05
 
 plate_force = 10
@@ -10,17 +10,18 @@ plate_mass = 2
 
 substeps = 10
 
+bounce_radius = particle_radius/100
+bounce_radius_squared = bounce_radius**2
 
 s = Screen(grid=True, panning=True, fullscreen=False)
 
-plate_node = Node(pos=[1, 0], interactivityType="force")
+plate_node = Node(pos=[0, 0], interactivityType="force")
 plate = Line(start=[0, -2], stop=[0, 2])
 plate.position = plate_node.position
 
-box = Curve(points=[[4, 2], [-4, 2], [-4, -2], [4, -2]], color=color.blue)
+box = Rectangle(position=[18,0],width=44,height=4)
 
 s.play(Create(plate), Create(box), Create(plate_node))
-
 
 def update(s):
     f = [-plate_force, 0]
@@ -30,9 +31,12 @@ def update(s):
     plate_node.position[1] = 0
     plate.position = plate_node.position
 
+    if plate_node.position[0] > 40:
+        plate_node.position[0] = 40 - 0.01
+        plate_node.velocity[0] *=-1
 
 def update_particle_collisions(s):
-    intersection = intersecting_particles(particles.q, particles.r)
+    intersection = intersecting_particles(particles.q, bounce_radius_squared)
 
     if len(intersection) > 0:
         for particle_pair in intersection:
@@ -41,7 +45,7 @@ def update_particle_collisions(s):
                 particles.q_d[particle_pair[0]],
                 particles.q[particle_pair[1]],
                 particles.q_d[particle_pair[1]],
-                particles.r,
+                bounce_radius,
                 1
             )
             particles.q[particle_pair[0]] = p1
@@ -59,26 +63,28 @@ s.addUpdater(
 
 def update_particles(x, v, F, m):
 
-    if x[0] < -4:
-        v[0] *= -1
-        x[0] = -3.99
+    # Handle left wall boundary
+    mask_left = x[:, 0] < -4
+    v[mask_left, 0] *= -1
+    x[mask_left, 0] = -3.9
 
-    if x[0] > plate_node.position[0]-0.05:
+    # Handle right wall boundary (assuming plate_node is a global variable)
+    mask_right = x[:, 0] > plate_node.position[0] -0.05
+    v1, v2 = elastic_collision_1d(particle_mass, plate_mass, v[mask_right, 0], plate_node.velocity[0])
+    v[mask_right, 0] = v1
+    if len(v2)>0:
+        plate_node.velocity[0] = v2[0]
+    x[mask_right, 0] = plate_node.position[0] - 0.05
 
-        v1, v2 = elastic_collision_1d(
-            m, plate_mass, v[0], plate_node.velocity[0])
-        v[0] = v1
-        plate_node.velocity[0] = v2
+    # Handle bottom boundary
+    mask_bottom = x[:, 1] < -2
+    v[mask_bottom, 1] *= -1
+    x[mask_bottom, 1] = -1.99
 
-        x[0] = plate_node.position[0] - 0.05
-
-    if x[1] < -2:
-        v[1] *= -1
-        x[1] = -1.99
-
-    if x[1] > 2:
-        v[1] *= -1
-        x[1] = 1.99
+    # Handle top boundary
+    mask_top = x[:, 1] > 2
+    v[mask_top, 1] *= -1
+    x[mask_top, 1] = 1.99
 
     return x, v, F, m
 

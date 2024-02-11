@@ -73,8 +73,8 @@ class Particles():
     def __init__(self, n=10, area=[[-1, 1], [-1, 1]], particle_radius=0.03, particle_updater=None, m=1, speed=5, start_pos=[0, 0], color=(255, 255, 255)):
         self.position = [0, 0]
         self.n = n
-        self.q = np.random.rand(n, 2)*2 - 1
-        # self.q = np.zeros((n, 2)) + start_pos
+        self.q = np.zeros((n, 2)) + start_pos
+        self.q = np.random.rand(n, 2)*2 - 1 + start_pos
         self.q_d = (np.random.rand(n, 2)*2 - 1)*speed
         self.F = np.zeros((n, 2))
         self.m = np.array([m]*n)
@@ -92,9 +92,11 @@ class Particles():
     def update(self, screen):
 
         if hasattr(self, "update_particles"):
-            for i in range(self.n):
-                self.q[i], self.q_d[i], self.F[i], self.m[i] = self.update_particles(
-                    self.q[i], self.q_d[i], self.F[i], self.m[i])
+            q_updated, q_d_updated, F_updated, m_updated = self.update_particles(self.q, self.q_d, self.F, self.m)
+            self.q = q_updated
+            self.q_d = q_d_updated
+            self.F = F_updated
+            self.m = m_updated
 
         self.q_d += self.F * screen.dt
         self.q += self.q_d * screen.dt

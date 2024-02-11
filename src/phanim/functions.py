@@ -259,7 +259,6 @@ def round_to_power_of_2(value):
 
 
 def elastic_collision_1d(m1, m2, v1_initial, v2_initial):
-
     v1_final = ((m1 - m2) / (m1 + m2)) * v1_initial + \
         ((2 * m2) / (m1 + m2)) * v2_initial
     v2_final = ((2 * m1) / (m1 + m2)) * v1_initial - \
@@ -268,12 +267,12 @@ def elastic_collision_1d(m1, m2, v1_initial, v2_initial):
     return v1_final, v2_final
 
 
-def intersecting_particles(locations, radius):
+def intersecting_particles(locations, radius_squared):
     # Compute the pairwise Euclidean distance between all particles
-    distances = np.sqrt(np.sum((locations[:, None] - locations) ** 2, axis=-1))
+    distances = (np.sum((locations[:, None] - locations) ** 2, axis=-1))
 
     # Create a boolean mask where True indicates intersecting particles
-    intersecting_mask = distances <= 2 * radius
+    intersecting_mask = distances <= 4 * radius_squared
 
     # Exclude self-intersections
     np.fill_diagonal(intersecting_mask, False)
