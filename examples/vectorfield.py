@@ -1,7 +1,7 @@
 from phanim import *
 import numpy as np
 
-screen = Screen(fullscreen=True,panning=True)
+screen = Screen(fullscreen=True,panning=True,grid=True)
 field = OldField(resolution=2,maxVectorScale=0.5)
 particles = ParticlesOld(n=100,lifetime=15)
 
@@ -27,10 +27,6 @@ def update(screen):
     )
     field.setField(func)
 
-    # screen.selected = findClosest([nodes[0].position,nodes[1].position],screen.mousePos)
-    # if distance(nodes[screen.selected].position,screen.mousePos) > 1:
-    #     screen.selected = -1
-
     particles.area = screen.camera.bounds
     particles.lineWidth = 2*screen.camera.zoom/10
     particles.updatePosition(screen.dt,func)
@@ -39,7 +35,6 @@ def dragUpdate(screen):
     field.generateArrows()
 
 screen.makeInteractive(nodes[0],nodes[1])
-screen.play(makeGrid())
 screen.play(
     Create(nodes[0],duration=120),
     Create(nodes[1],duration=120),

@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 def interp(a, b, t):
     return a + (b-a) * t
@@ -15,8 +16,10 @@ def screen2cords(res, pos, zoom):
     return np.array([x, y])
 
 
-def normalize(vector):
-    mag = magnitude(vector)
+def normalize(vector,mag=None):
+    if mag != None:
+        mag = magnitude(vector)
+
     if mag == 0:
         return np.zeros(len(vector))
     else:
@@ -24,7 +27,10 @@ def normalize(vector):
 
 
 def magnitude(vector):
-    return np.linalg.norm(vector)
+    if len(vector) == 2:
+        return math.sqrt(vector[0]**2+vector[1]**2)
+    else:
+        return np.linalg.norm(vector)
 
 
 def magSquared(vector):
@@ -100,7 +106,7 @@ def swirlForce(pos1, pos2, G):
     return np.array(force)
 
 
-def calulateNormal(vector):
+def calculateNormal(vector):
     return np.array(normalize([
         -vector[1],
         vector[0]

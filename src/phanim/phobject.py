@@ -166,12 +166,10 @@ class Arrow():
             end = interp(self.begin,self.end,self.sizeRatio)
         else:
             end = self.end
+
         direction = end - self.begin
         length = magnitude(direction)
-        if length != 0:
-            normal = np.array([-direction[1],direction[0]])/length
-        else:
-            normal = np.array([0,0])
+        normal = np.array(normalize(np.array([-direction[1],direction[0]]),mag=length))
         pointstart = interp(end, self.begin,self.pointlength)
 
         return [
