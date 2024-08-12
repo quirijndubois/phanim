@@ -17,13 +17,14 @@ def screen2cords(res, pos, zoom):
 
 
 def normalize(vector,mag=None):
-    if mag != None:
+    vector = np.array(vector)
+    if mag == None:
         mag = magnitude(vector)
 
     if mag == 0:
         return np.zeros(len(vector))
     else:
-        return vector/magnitude(vector)
+        return vector/mag
 
 
 def magnitude(vector):
