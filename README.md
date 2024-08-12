@@ -26,7 +26,7 @@ If you want to use the very latest version you can also clone the repository and
 
 You can also install phanim systemwide with pip from this repo by doing the following:
 ```
-git clone https://github.com/quirijn/phanim
+git clone https://github.com/quirijndubois/phanim
 ```
 ```
 cd phanim
