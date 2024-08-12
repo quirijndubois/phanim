@@ -3,14 +3,14 @@ from .color import *
 
 class Curve():
     def __init__(self,position=[0,0],strokeWidth=0.05,color=(255,255,255),points = None):
-        self.position = position
+        self.position = np.array(position)
         self.strokeWidth = strokeWidth
         self.color = color
         if points:
             self.setPoints(points)
     
     def setPoints(self,points):
-        self.points = points
+        self.points = np.array(points)
         self.__setNormals()
         self.__setPolygons()
     
@@ -20,17 +20,17 @@ class Curve():
     def __setNormals(self):
         self.pointsWithNormals = []
         if len(self.points) > 1:
-            n = diff(self.points[0], self.points[1])
+            n = self.points[0] - self.points[1]
             n = [-n[1],n[0]]
             self.pointsWithNormals.append([self.points[0],n])
             for i in range(1,len(self.points)-1):
-                n1 = diff(self.points[i-1], self.points[i])
+                n1 = self.points[i-1] - self.points[i]
                 n1 = np.array([-n1[1],n1[0]])
-                n2 = diff(self.points[i], self.points[i+1])
+                n2 = self.points[i] - self.points[i+1]
                 n2 = np.array([-n2[1],n2[0]])
                 normal = (n1+n2)/2
                 self.pointsWithNormals.append([self.points[i],normal])
-            n = diff(self.points[-2], self.points[-1])
+            n = self.points[-2] - self.points[-1]
             n = [-n[1],n[0]]
             self.pointsWithNormals.append([self.points[-1],n])
 
@@ -43,6 +43,7 @@ class Curve():
                 self.pointsWithNormals[i+1][0] - normalize(self.pointsWithNormals[i+1][1])*self.strokeWidth/2,
                 self.pointsWithNormals[i+1][0] + normalize(self.pointsWithNormals[i+1][1])*self.strokeWidth/2
             ])
+        self.polygons = np.array(self.polygons)
         
     def createFunction(self,t,old):
         res = len(old.points)
@@ -60,16 +61,16 @@ class Curve():
             interp(b_old, b_new, t)
         )
 
-        self.setPosition(interp2d(old.position,new.position,t))
+        self.setPosition(interp(old.position,new.position,t))
 
         for i in range(len(old.points)):
-            newpoints.append(interp2d(old.points[i],new.points[i],t))
+            newpoints.append(interp(old.points[i],new.points[i],t))
         self.setPoints(newpoints)
 
 class BezierCurve(Curve):
     def __init__(self,position=[0,0],strokeWidth=0.05,color=(255,255,255),corners=[[1,1],[-1,1],[-1,-1],[1,-1]],resolution=100):
         super().__init__(position,strokeWidth,color)
-        self.corners = corners
+        self.corners = np.array(corners)
         self.resolution = resolution
         self.__setBezier()
 
@@ -88,6 +89,7 @@ class PlotGraph(Curve):
     def __init__(self, position=[0,0], width=0.05,color=(255,255,255)):
         super().__init__(position,width,color)
     
+    #TODO make this easier with arrays!
     def setData(self,x,y):
         points = []
         if len(x) == len(y):
@@ -97,11 +99,11 @@ class PlotGraph(Curve):
 
 class LiveGraph():
     def __init__(self,pos=[0,0],xSize=[-1,1],ySize=[-1,1],yRange=[0,0],liveRange=500,lineWidth = 2,color=red,numbers=False):
-        self.position = pos
+        self.position = np.array(pos)
         self.data = []
-        self.xSize = xSize
-        self.ySize = ySize
-        self.yRange = yRange
+        self.xSize = np.array(xSize)
+        self.ySize = np.array(ySize)
+        self.yRange = np.array(yRange)
         self.color = color
         self.lineWidth = lineWidth
         self.liveRange = liveRange
@@ -166,7 +168,7 @@ class Trail():
     def __init__(self,color=(255,255,255),lineWidth = 3,length=150,segmentLength=1,opacity=1):
         self.opacity = opacity
         self.positions = []
-        self.position = [0,0]
+        self.position = np.array([0,0])
         self.lines = []
         self.index = 0
         self.color = color

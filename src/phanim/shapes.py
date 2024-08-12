@@ -4,7 +4,7 @@ class Quadrilateral(Curve):
 
     def __init__(self,position=[0,0],strokeWidth=0.05,color=(255,255,255),corners=[[1,1],[-1,1],[-1,-1],[1,-1]],resolution=100):
         super().__init__(position,strokeWidth,color)
-        self.corners = corners
+        self.corners = np.array(corners)
         self.resolution = resolution
         self.setQuadrilateral()
 
@@ -13,9 +13,9 @@ class Quadrilateral(Curve):
         for i in range(4):
             for t in np.linspace(0,1,int(self.resolution/4)):
                 if i == 3:
-                    pos = interp2d(self.corners[i],self.corners[0], t)
+                    pos = interp(self.corners[i],self.corners[0], t)
                 else:
-                    pos = interp2d(self.corners[i],self.corners[i+1], t)
+                    pos = interp(self.corners[i],self.corners[i+1], t)
                 points.append(np.array(pos))
 
         self.setPoints(points)
@@ -31,7 +31,7 @@ class Rectangle(Quadrilateral):
         b = [-self.width/2,+self.height/2]
         c = [-self.width/2,-self.height/2]
         d = [+self.width/2,-self.height/2]
-        self.corners = [a,b,c,d]
+        self.corners = np.array([a,b,c,d])
         self.setQuadrilateral()
 
 
@@ -61,9 +61,9 @@ class Triangle(Curve):
         rest = self.resolution%3
         points = []
         for t in np.linspace(0,1,int(self.resolution/3)+rest):
-            points.append(interp2d(self.corners[0],self.corners[1], t))
+            points.append(interp(self.corners[0],self.corners[1], t))
         for t in np.linspace(0,1,int(self.resolution/3)):
-            points.append(interp2d(self.corners[1],self.corners[2], t))
+            points.append(interp(self.corners[1],self.corners[2], t))
         for t in np.linspace(0,1,int(self.resolution/3)):
-            points.append(interp2d(self.corners[2],self.corners[0], t))
+            points.append(interp(self.corners[2],self.corners[0], t))
         self.setPoints(points)

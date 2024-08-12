@@ -1,6 +1,6 @@
 from phanim import *
 
-s = Screen(fullscreen=True,panning=True,renderer="pygame")
+s = Screen(fullscreen=True,grid=True,panning=True,renderer="pygame")
 
 slider = Slider(position=[-3,2],minValue=0.05,maxValue=2)
 s.makeInteractive(slider)
@@ -27,7 +27,6 @@ graph = Graph(12,
 graph = RandomGraph(15,chance=0.17)
 
 
-s.add(DGrid(n_horizontal=100,n_vertical=100))
 s.play(Create(graph))
 s.makeInteractive(graph)
 s.addUpdater(lambda s: graph.update(s.dt))

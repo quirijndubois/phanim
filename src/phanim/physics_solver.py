@@ -14,8 +14,8 @@ class Physics():
 
     @staticmethod
     def integrate(node, dt):
-        node.velocity = vadd(node.velocity,node.force) * dt
-        node.position = vadd(node.position,node.velocity) * dt
+        node.velocity = (node.velocity+node.force) * dt
+        node.position = (node.position+node.velocity) * dt
 
     @staticmethod
     def satisfyContraints(constraint):
@@ -40,10 +40,10 @@ class DoublePendulumConstraint:
         self.length = length
 
     def evaluate(self):
-        distance = diff(self.nodes[0].position,self.nodes[1].position)
+        distance = self.nodes[0].position-self.nodes[1].position
         mag = magnitude(distance)
         return mag-self.length
 
     def gradient(self, node):
-        dif = diff(self.nodes[0].position,self.nodes[1].position)
+        dif = self.nodes[0].position-self.nodes[1].position
         return normalize(dif) if node == self.nodes[0] else -normalize(dif)

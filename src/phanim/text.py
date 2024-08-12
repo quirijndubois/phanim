@@ -152,17 +152,17 @@ class Tex():
         if len(old.lines) < len(new.lines):
             self.lines = deepcopy(new.lines)
             for i in range(maximal-minimal):
-                self.lines[i+minimal][0] = interp2d(old.lines[i][0],new.lines[i+minimal][0],t)
-                self.lines[i+minimal][1] = interp2d(old.lines[i][1],new.lines[i+minimal][1],t)
+                self.lines[i+minimal][0] = interp(old.lines[i][0],new.lines[i+minimal][0],t)
+                self.lines[i+minimal][1] = interp(old.lines[i][1],new.lines[i+minimal][1],t)
 
         for i in range(minimal):
-            self.lines[i][0] = interp2d(old.lines[i][0],new.lines[i][0],t)
-            self.lines[i][1] = interp2d(old.lines[i][1],new.lines[i][1],t)
+            self.lines[i][0] = interp(old.lines[i][0],new.lines[i][0],t)
+            self.lines[i][1] = interp(old.lines[i][1],new.lines[i][1],t)
 
         if len(old.lines) > len(new.lines):
             for i in range(maximal-minimal):
-                self.lines[minimal+i][0] = interp2d(old.lines[minimal+i][0],new.lines[(i)%minimal][0],t)
-                self.lines[minimal+i][1] = interp2d(old.lines[minimal+i][1],new.lines[(i)%minimal][1],t)
+                self.lines[minimal+i][0] = interp(old.lines[minimal+i][0],new.lines[(i)%minimal][0],t)
+                self.lines[minimal+i][1] = interp(old.lines[minimal+i][1],new.lines[(i)%minimal][1],t)
         
         for line in self.lines:
             line[2] = self.color

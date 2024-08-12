@@ -5,7 +5,7 @@ class Camera():
     def __init__(self,zoom,resolution,position = [0,0],rotation = 0):
         self.zoom = zoom
         self.resolution = resolution
-        self.position = position
+        self.position = np.array(position)
         self.rotation = rotation
         self.aspectRatio = self.resolution[0]/self.resolution[1]
         self.pixelsPerUnit = self.resolution[1] / self.zoom
@@ -13,32 +13,15 @@ class Camera():
 
 
     def coords2screen(self,location):
-        # x = location[0] - self.position[0]
-        # y = location[1] - self.position[1]
-        # a = self.rotation
-        # if a < 0.01 and a > -0.01:
-        #     newLocation = [
-        #         x*np.cos(a) - y*np.sin(a),
-        #         x*np.sin(a) + y*np.cos(a),
-        #     ]
-        # else:
-        # newLocation = [x,y]
-        newLocation = pf.diff(location,self.position)
-
+        newLocation = location - self.position
         return pf.coords2screen(self.resolution,newLocation, self.pixelsPerUnit)
     
     def screen2cords(self,location):
-        x = location[0] - self.position[0]
-        y = location[1] - self.position[1]
-        a = self.rotation
-        newLocation = [
-            x*np.cos(a) - y*np.sin(a),
-            x*np.sin(a) + y*np.cos(a),
-        ]
+        newLocation = location - self.position
         return pf.screen2cords(self.resolution,newLocation, self.pixelsPerUnit)
     
     def setPosition(self,position):
-        self.position = position
+        self.position = np.array(position)
         self.__calculateBounds()
     
     def setZoom(self,zoom):
@@ -51,7 +34,7 @@ class Camera():
         self.__calculateBounds()
 
     def __calculateBounds(self):
-        self.bounds = [
+        self.bounds = np.array([
             [self.position[0]-self.zoom/2*self.aspectRatio,self.position[0]+self.zoom/2*self.aspectRatio],
             [self.position[1]-self.zoom/2,self.position[1]+self.zoom/2]
-        ]
+        ])

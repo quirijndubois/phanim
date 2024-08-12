@@ -5,9 +5,9 @@ from copy import copy
 class Graph(Group):
     def __init__(self,vertices,edges,position=[0,0],k=3,initalPositions = False,edgeWidth=2,setup = True,nodeRadius=0.15):
 
-        self.initalPositions = initalPositions
+        self.initalPositions = np.array(initalPositions)
         self.nodeRadius = 0.15
-        self.position = position
+        self.position = np.array(position)
         self.rotation = 0
         self.vertices = vertices
         self.edges = edges
@@ -52,6 +52,7 @@ class Graph(Group):
                     (np.random.random()-0.5)*3,
                 ])
                 self.velocities.append([0,0])
+        self.positions = np.array(self.positions)
     
     def createNodesAndLines(self):
         self.nodes = []
@@ -70,10 +71,10 @@ class Graph(Group):
         self.groupObjects = []
 
         for i in range(self.vertices):
-            self.nodes[i].setPosition(vadd(self.positions[i],self.position))
+            self.nodes[i].setPosition(self.positions[i]+self.position)
 
         for i,edge in enumerate(self.edges):
-            self.lineList[i].setEnds(vadd(self.positions[edge[0]],self.position),vadd(self.position,self.positions[edge[1]]))
+            self.lineList[i].setEnds(self.positions[edge[0]]+self.position,self.position+self.positions[edge[1]])
 
         for line in self.lineList:
             self.groupObjects.append(line)
@@ -87,41 +88,41 @@ class Graph(Group):
 
             for j in range(len(self.positions)):
                 if j!=i:
-                    distance = magnitude(diff(self.positions[i],self.positions[j]))
-                    direction = normalize(diff(self.positions[i],self.positions[j]))
-                    repulsiveForce = vadd(repulsiveForce,direction*self.k**2/distance)
+                    distance = magnitude(self.positions[i]-self.positions[j])
+                    direction = normalize(self.positions[i]-self.positions[j])
+                    repulsiveForce = repulsiveForce+direction*self.k**2/distance
 
             for edge in self.edges:
                 if edge[0] == i:
-                    distance = magnitude(diff(self.positions[i],self.positions[edge[1]]))
-                    direction = normalize(diff(self.positions[i],self.positions[edge[1]]))
+                    distance = magnitude(self.positions[i]-self.positions[edge[1]])
+                    direction = normalize(self.positions[i]-self.positions[edge[1]])
                 if edge[1] == i:
-                    distance = magnitude(diff(self.positions[i],self.positions[edge[0]]))
-                    direction = normalize(diff(self.positions[i],self.positions[edge[0]]))
+                    distance = magnitude(self.positions[i]-self.positions[edge[0]])
+                    direction = normalize(self.positions[i]-self.positions[edge[0]])
                 if edge[1] == i or edge[0] == i:
-                    attractiveForce = vadd(attractiveForce,-direction*distance/self.k)
+                    attractiveForce = attractiveForce+-direction*distance/self.k
 
 
 
             centerForce = -normalize(self.positions[i])*magnitude(self.positions[i])/2
 
-            force = vadd(attractiveForce,repulsiveForce,centerForce)
+            force = attractiveForce+repulsiveForce+centerForce
 
             positionalForce = [0,0]
             if self.initalPositions:
                 k1=0
                 k2=10
-                attractivePoint = diff(self.initalPositions[i],normalize(force)*k1)
-                distance = magnitude(diff(attractivePoint,self.positions[i]))
-                direction = normalize(diff(attractivePoint,self.positions[i]))
+                attractivePoint = self.initalPositions[i]-normalize(force)*k1
+                distance = magnitude(attractivePoint-self.positions[i])
+                direction = normalize(attractivePoint-self.positions[i])
                 positionalForce = direction*distance*k2
 
-            force = vadd(force,positionalForce)
+            force = force+positionalForce
 
             randomizeSize = 0.1
-            force = vadd(force,[(np.random.random()-0.5)*randomizeSize,(np.random.random()-0.5)*randomizeSize])
+            force = force+[(np.random.random()-0.5)*randomizeSize+(np.random.random()-0.5)*randomizeSize]
 
-            self.positions[i] = vadd(self.positions[i], force*dt)
+            self.positions[i] = self.positions[i] + force*dt
 
         avaragePosition = [0,0]
 
@@ -147,11 +148,11 @@ class Graph(Group):
             if phobject in screen.selectedObjects:
                 phobject.setColor((100,100,100))
                 if screen.dragging:
-                    self.positions[index] = vadd(screen.camera.position,screen.mousePos)
+                    self.positions[index] = screen.camera.position+screen.mousePos
                     if self.initalPositions:
                         self.initalPositions[index] = copy(self.positions[index])
                     self.interacting=True
-                    self.rotation = calculateRotation(diff(self.positions[1],self.positions[0]))
+                    self.rotation = calculateRotation(self.positions[1]-self.positions[0])
             else:
                 phobject.setColor((0,0,0))
         self.setNodesAndLines()

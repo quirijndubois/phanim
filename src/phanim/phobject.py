@@ -3,9 +3,9 @@ from copy import copy
 
 class Node():
     def __init__(self,pos=[0,0],vel=[0,0],radius = 0.2, color = (0,0,0), borderColor = (200,200,200),borderSize=0.3,mass = 1,charge=0,interactivityType="position"):
-        self.velocity = vel
-        self.accelaration = [0,0]
-        self.accelarationAVG = [0,0]
+        self.velocity = np.array(vel,dtype='float64')
+        self.accelaration = np.array([0.0,0.0])
+        self.accelarationAVG = np.array([0.0,0.0])
         self.mass = mass
         self.radius = radius
         self.color = color
@@ -14,8 +14,8 @@ class Node():
         self.interactivityType = interactivityType
         self.charge = charge
         self.selected = False
-        self.force = [0.0,0.0]
-        self.interactiveForce = [0,0]
+        self.force = np.array([0.0,0.0])
+        self.interactiveForce = np.array([0.0,0.0])
         self.setPosition(pos)
     
     def setCircles(self):
@@ -26,7 +26,7 @@ class Node():
         self.setCircles()
 
     def setPosition(self,position):
-        self.position = position
+        self.position = np.array(position,dtype='float64')
     
     def setRadius(self,radius):
         self.radius = radius
@@ -34,19 +34,16 @@ class Node():
 
     def eulerODESolver(self,force,dt):
 
-        force = vadd(force,self.interactiveForce)
+        force = np.array(force)+self.interactiveForce
 
-        self.accelaration[0] = force[0] / self.mass
-        self.accelaration[1] = force[1] / self.mass
+        self.accelaration = force / self.mass
 
         AVGlength = 10000
-        self.accelarationAVG = interp2d(self.accelarationAVG, self.accelaration, 1/AVGlength)
+        self.accelarationAVG = interp(self.accelarationAVG, self.accelaration, 1/AVGlength)
 
-        self.velocity[0] += self.accelaration[0] * dt
-        self.velocity[1] += self.accelaration[1] * dt
+        self.velocity += self.accelaration * dt
 
-        self.position[0] += self.velocity[0] * dt
-        self.position[1] += self.velocity[1] * dt
+        self.position += self.velocity * dt
 
     def rkODESolver(self,force,dt):
         pass
@@ -59,20 +56,20 @@ class Node():
         self.interactiveForce = [0,0]
         if self in screen.selectedObjects:
             if not self.selected:
-                self.offset = -diff(screen.GlobalCursorPosition,self.position)
+                self.offset = self.position - screen.GlobalCursorPosition
 
             self.setColor((100,100,100))
             if screen.dragging:
                 if self.interactivityType == "position":
-                    self.setPosition(vadd(screen.mousePos,screen.camera.position,self.offset))
+                    self.setPosition(screen.mousePos+screen.camera.position+self.offset)
                     if self.selected:
-                        self.velocity = diff(self.position,self.lasPos)/screen.dt/2
+                        self.velocity = (self.position-self.lasPos)/screen.dt/2
                     self.selected = True
                     self.lasPos = copy(self.position)
                 if self.interactivityType == "force":
                     screen.draw(Line(start=screen.GlobalCursorPosition,stop=self.position))
-                    self.interactiveForce = diff(screen.GlobalCursorPosition,self.position)*300
-                    self.velocity=np.array(self.velocity)*0.80
+                    self.interactiveForce = (screen.GlobalCursorPosition-self.position)*300
+                    self.velocity=self.velocity*0.80
             else:
                 self.selected = False
         else:
@@ -114,7 +111,7 @@ class Electron(Node):
 
 class Grid():
     def __init__(self, Xspacing, Yspacing, n_horizontal, n_vertical, color = (100,100,100), width = 1,position = [0,0]):
-        self.position = position
+        self.position = np.array(position)
         self.lines = []
         self.color = color
         self.lineWidth = width
@@ -127,22 +124,23 @@ class Grid():
         self.generateGrid()
         
     def generateGrid(self):
+        self.lines = []
         xmax = self.n_horizontal * self.Xspacing
         ymax = self.n_vertical * self.Yspacing
         x_range = np.arange(-self.n_horizontal,self.n_horizontal,self.Xspacing)
         y_range = np.arange(-self.n_vertical,self.n_vertical,self.Yspacing)
 
-        pos = [0,0]
+        pos = np.array([0,0])
         for x in x_range:
-            self.lines.append([[x,ymax]+pos,[x,-ymax]+pos,self.color])
+            self.lines.append([np.array([x,ymax])+pos,np.array([x,-ymax])+pos,self.color])
         for y in y_range:
-            self.lines.append([[xmax,y]+pos,[-xmax,y]+pos,self.color])
+            self.lines.append([np.array([xmax,y])+pos,np.array([-xmax,y])+pos,self.color])
 
     def createFunction(self,t,old):
         for i in range(len(self.lines)):
             startIndex = 0
             endIndex = 1
-            self.lines[i][startIndex] = list((interp2d(self.lines[i][endIndex],old.lines[i][startIndex],t)))  
+            self.lines[i][startIndex] = list((interp(self.lines[i][endIndex],old.lines[i][startIndex],t)))  
 
     def setPosition(self,position):
         self.position = position
@@ -153,8 +151,8 @@ class Grid():
 
 class Arrow():
     def __init__(self,begin=[0,0],end=[0,1],color=(0,0,255),lineThickness=0.06,pointSize=0.2):
-        self.begin = begin
-        self.end = end
+        self.begin = np.array(begin)
+        self.end = np.array(end)
         self.position = [0,0]
         self.lineThickness = lineThickness
         self.pointThickness = pointSize
@@ -165,16 +163,16 @@ class Arrow():
 
     def calculateVertices(self):
         if self.sizeRatio != 1:
-            end = interp2d(self.begin,self.end,self.sizeRatio)
+            end = interp(self.begin,self.end,self.sizeRatio)
         else:
             end = self.end
-        direction = diff(end,self.begin)
+        direction = end - self.begin
         length = magnitude(direction)
         if length != 0:
             normal = np.array([-direction[1],direction[0]])/length
         else:
             normal = np.array([0,0])
-        pointstart = interp2d(end, self.begin,self.pointlength)
+        pointstart = interp(end, self.begin,self.pointlength)
 
         return [
             self.begin - normal*(self.lineThickness*length)/2,
@@ -200,7 +198,7 @@ class Arrow():
 
 class Axes():
     def __init__(self,position=[0,0],xRange=[-4,4],yRange=[-2,2],lineWidth=1,color=(255,255,255),step=1,numbers=False):
-        self.position = position
+        self.position = np.array(position)
         self.xRange = xRange
         self.yRange = yRange
         self.lineWidth = lineWidth
@@ -231,10 +229,10 @@ class Axes():
         self.lines = []
         self.texts = []
         for line in self.relativeLines:
-            self.lines.append([vadd(line[0],self.position),vadd(line[1],self.position),line[2]])
+            self.lines.append([line[0]+self.position,line[1]+self.position,line[2]])
         if self.showNumbers:
             for text in self.relativeTexts:
-                self.texts.append([text[0],vadd(text[1],self.position),text[2]])
+                self.texts.append([text[0],text[1]+self.position,text[2]])
     
     def setPosition(self,position):
         self.position = position
@@ -244,15 +242,15 @@ class Axes():
         for i in range(len(self.lines)):
             startIndex = 1
             endIndex = 0
-            self.lines[i][startIndex] = list((interp2d(self.lines[i][endIndex],old.lines[i][startIndex],t)))
+            self.lines[i][startIndex] = list((interp(self.lines[i][endIndex],old.lines[i][startIndex],t)))
         for i in range(len(self.texts)):
-            self.texts[i][1] = interp2d([0,0],old.texts[i][1], t)
+            self.texts[i][1] = interp([0,0],old.texts[i][1], t)
 
 class Line():
     def __init__(self,start=[0,0],stop=[1,0],color = (255,255,255),lineWidth = 5,position=[0,0]):
-        self.position=[0,0]
-        self.start = start
-        self.stop = stop
+        self.position = np.array([0,0])
+        self.start = np.array(start)
+        self.stop = np.array(stop)
         self.color = color
         self.lineWidth = lineWidth
 
@@ -263,7 +261,7 @@ class Line():
         if ratio == 1:
             self.lines.append([self.start,self.stop,self.color])
         else:
-            self.lines.append([self.start,interp2d(self.start,self.stop,ratio),self.color])
+            self.lines.append([self.start,interp(self.start,self.stop,ratio),self.color])
 
     def setEnds(self,start,stop):
         self.start = start
@@ -275,9 +273,9 @@ class Line():
 
 class DottedLine(Line):
     def __init__(self,start=[0,0],stop=[1,0],color = (255,255,255),lineWidth = 5,stripeLength = 0.1,position=[0,0]):
-        self.position = [0,0]
-        self.start = start
-        self.stop = stop
+        self.position = np.array([0,0])
+        self.start = np.array(start)
+        self.stop = np.array(stop)
         self.color = color
         self.lineWidth = lineWidth
         self.stripeLength = stripeLength
@@ -286,7 +284,7 @@ class DottedLine(Line):
     def setLines(self,ratio=1):
 
         start = self.start
-        stop = interp2d(self.start,self.stop,ratio)
+        stop = interp(self.start,self.stop,ratio)
 
         self.lines = []
         r = ((start[0]-stop[0])**2+(start[1]-stop[1])**2)**(0.5)
@@ -299,10 +297,10 @@ class DottedLine(Line):
         array = np.arange(0,1,res)
         for index,t in enumerate(array):
             if index%2 == 1:
-                self.lines.append([interp2d(start,stop,t),interp2d(start,stop,lastt),self.color])
+                self.lines.append([interp(start,stop,t),interp(start,stop,lastt),self.color])
             else:
                 if index == len(array)-1:
-                    self.lines.append([interp2d(start,stop,t),interp2d(start,stop,1),self.color])
+                    self.lines.append([interp(start,stop,t),interp(start,stop,1),self.color])
                 lastt = t
 
 

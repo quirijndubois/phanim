@@ -65,7 +65,7 @@ class Transform(Animation):
     
     def update(self):
         self.object.transformFunction(self.t,self.oldPhobject,self.newPhobject)
-        self.object.position = interp2d(self.oldPhobject.position,self.newPhobject.position,self.t)
+        self.object.position = interp(self.oldPhobject.position,self.newPhobject.position,self.t)
 
 
 class Add(Animation):
@@ -93,11 +93,11 @@ class Move(Animation):
         self.target = target
     
     def update(self):
-        self.object.setPosition(interp2d(self.oldPhobject.position,self.target,self.t))
+        self.object.setPosition(interp(self.oldPhobject.position,self.target,self.t))
 
 class Shift(Move):    
     def update(self):
-        self.object.setPosition(interp2d(self.oldPhobject.position,vadd(self.oldPhobject.position,self.target),self.t))    
+        self.object.setPosition(interp(self.oldPhobject.position,self.oldPhobject.position+self.target,self.t))    
     
 class AnimateValue(Animation):
     mode = None
@@ -144,7 +144,7 @@ def makeGrid(n_horizontal=8,n_vertical=5):
     for grid in grids:
         for line in grid.lines:
             animations.append(Create(
-                Line(start=vadd(grid.position,line[0]),stop=vadd(grid.position,line[1]),lineWidth=grid.lineWidth,color=line[2]),
+                Line(start=grid.position+line[0],stop=grid.position+line[1],lineWidth=grid.lineWidth,color=line[2]),
                 duration=30
                 ))
     return laggedStart(*animations,lagRatio=0.01)

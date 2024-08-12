@@ -71,10 +71,7 @@ class Screen():
             self.panBeginCameraPosition = self.camera.position
             self.panBeginMousePos = self.mousePos
         if dragging:
-            self.camera.setPosition(vadd(
-                diff(self.panBeginMousePos,self.mousePos),
-                self.panBeginCameraPosition
-            ))
+            self.camera.setPosition((self.panBeginMousePos-self.mousePos)+(self.panBeginCameraPosition))
 
         scroll = self.scroll
         scroll[0] /= 30
@@ -83,8 +80,8 @@ class Screen():
 
     def drawLines(self,lines,width,position):
         for line in lines:
-            start = self.camera.coords2screen(vadd(line[0],position))
-            stop = self.camera.coords2screen(vadd(line[1],position))
+            start = self.camera.coords2screen(line[0] + position)
+            stop = self.camera.coords2screen(line[1] + position)
 
             pixelWidth = int(width/self.camera.zoom*20)
             if pixelWidth < 1:
@@ -99,21 +96,21 @@ class Screen():
 
     def __drawCircles(self,circles,position):
             for circle in circles:
-                pos = self.camera.coords2screen(vadd(circle[1],position))
+                pos = self.camera.coords2screen(circle[1]+position)
                 self.renderer.drawCircle(circle[2], pos, circle[0]*self.camera.pixelsPerUnit)
 
     def __drawPolygons(self,polygons,color,position):
         for polygon in polygons:
             points = []
             for point in polygon:
-                points.append(self.camera.coords2screen(vadd(point,position)))
+                points.append(self.camera.coords2screen(point+position))
             self.renderer.drawPolygon(color, points)
 
     def __drawText(self,texts,position):
         for text in texts:
             if len(text) > 0:
                 img = self.font.render(text[0],True,text[2])
-                pos = self.camera.coords2screen(vadd(text[1],position))
+                pos = self.camera.coords2screen(text[1]+position)
                 self.display.blit(img,pos)
 
     def __drawPhobject(self,phobject):
@@ -191,7 +188,7 @@ class Screen():
             self.selectedObjects = []
             for phobject in self.interativityList:
                 if hasattr(phobject,"radius"):
-                    if magnitude(diff(phobject.position,vadd(self.mousePos,self.camera.position))) < phobject.radius:
+                    if magnitude(phobject.position-(self.mousePos+self.camera.position)) < phobject.radius:
                         self.selectedObjects.append(phobject)
                 elif hasattr(phobject,"checkSelection"):
                     if phobject.checkSelection(self):
@@ -199,7 +196,7 @@ class Screen():
                 elif hasattr(phobject,"groupObjects"):
                     for phobject2 in phobject.groupObjects:
                         if hasattr(phobject2,"radius"):
-                            if magnitude(diff(phobject2.position,vadd(self.mousePos,self.camera.position))) < phobject2.radius:
+                            if magnitude(phobject2.position-(self.mousePos+self.camera.position)) < phobject2.radius:
                                 self.selectedObjects.append(phobject2)
 
         for phobject in self.interativityList:
@@ -248,7 +245,7 @@ class Screen():
         pos = self.renderer.getMousePos()
         self.cursorPositionScreen = pos
         self.LocalcursorPosition = self.camera.screen2cords(pos)
-        self.GlobalCursorPosition = vadd(self.LocalcursorPosition,self.camera.position)
+        self.GlobalCursorPosition = self.LocalcursorPosition+self.camera.position
         self.mousePos = self.LocalcursorPosition #for version compatibility (should be discontinued)
 
     def __performUpdateList(self):

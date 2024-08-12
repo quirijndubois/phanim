@@ -20,17 +20,17 @@ def update(s):
     G = 15
     dt = s.dt*(slider.value**2)
     dist = 0.01
-    if magSquared(diff(nodes[0].position,nodes[1].position)) > dist:
+    if magSquared(nodes[0].position-nodes[1].position) > dist:
         toggle01 = 1
     else:
         toggle01 = 0
         
-    if magSquared(diff(nodes[1].position,nodes[2].position)) > dist:
+    if magSquared(nodes[1].position-nodes[2].position) > dist:
         toggle12 = 1
     else:
         toggle12 = 0
 
-    if magSquared(diff(nodes[2].position,nodes[0].position)) > dist:
+    if magSquared(nodes[2].position-nodes[0].position) > dist:
         toggle20 = 1
     else:
         toggle20 = 0

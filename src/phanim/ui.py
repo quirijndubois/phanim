@@ -6,8 +6,8 @@ from .functions import *
 
 class Slider(Group):
     def __init__(self,value=None,width=2,position=[0,0],color = (150,150,230),maxValue=1,minValue=0):
-        self.width=width
-        self.position = position
+        self.width = width
+        self.position = np.array(position)
         self.selected = False
         if value == None:
             self.value = interp(minValue,maxValue,0.5)
@@ -27,7 +27,7 @@ class Slider(Group):
                 color=self.color,
                 ),
             Node(
-                pos=vadd(self.position,interp2d([-self.width/2,0],[self.width/2,0],(self.value-self.minValue)/(self.maxValue-self.minValue))),
+                pos=self.position+interp(np.array([-self.width/2,0]),np.array([self.width/2,0]),(self.value-self.minValue)/(self.maxValue-self.minValue)),
                 borderColor = self.color,
                 ),
         ]
@@ -35,7 +35,7 @@ class Slider(Group):
     def updateInteractivity(self,screen):
         if self in screen.selectedObjects:
             if not self.selected:
-                self.offset = -diff(screen.GlobalCursorPosition,self.groupObjects[1].position)
+                self.offset = self.groupObjects[1].position-screen.GlobalCursorPosition
             if len(self.color) == 3:
                 self.groupObjects[1].setColor(
                     (self.color[0]/3,self.color[1]/3,self.color[2]/3)
@@ -44,7 +44,7 @@ class Slider(Group):
                 maximimPos = self.position[0]+self.width/2
                 minimumPos = self.position[0]-self.width/2
                 self.groupObjects[1].setPosition(
-                    [clamp(vadd(screen.GlobalCursorPosition,self.offset)[0],minimumPos,maximimPos),self.position[1]]
+                    [clamp((screen.GlobalCursorPosition+self.offset)[0],minimumPos,maximimPos),self.position[1]]
                     )
                 self.value = interp(self.minValue,self.maxValue,((self.groupObjects[1].position[0]-self.position[0])/(self.width/2)+1)/2)
                 self.selected = True
@@ -54,15 +54,14 @@ class Slider(Group):
             self.groupObjects[1].setColor((0,0,0))
     
     def checkSelection(self,screen):
-        if magnitude(diff(self.groupObjects[1].position,vadd(screen.mousePos,screen.camera.position))) < self.groupObjects[1].radius:
+        if magnitude(self.groupObjects[1].position-(screen.mousePos+screen.camera.position)) < self.groupObjects[1].radius:
             return True
-            print(selected)
         else:
             return False
     
     def setValue(self,value):
         self.value = clamp(value,self.minValue,self.maxValue)
-        self.groupObjects[1].setPosition(vadd(self.position,interp2d([-self.width/2,0],[self.width/2,0],(self.value-self.minValue)/(self.maxValue-self.minValue))))
+        self.groupObjects[1].setPosition(self.position+interp([-self.width/2,0],[self.width/2,0],(self.value-self.minValue)/(self.maxValue-self.minValue)))
 
     
     def setPosition(self,position):

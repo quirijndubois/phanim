@@ -60,9 +60,9 @@ def update_physics(screen):
         force23 = springForce(C, l3, nodes[2].position, nodes[3].position)
         force32 = springForce(C, l3, nodes[3].position, nodes[2].position)
 
-        force1 = vadd(force01,fz1,force21)
-        force2 = vadd(force12,fz2,force32)
-        force3 = vadd(force23,fz3)
+        force1 = force01+fz1+force21
+        force2 = force12+fz2+force32
+        force3 = force23+fz3
 
         nodes[1].eulerODESolver(force1, screen.dt)
         nodes[2].eulerODESolver(force2, screen.dt)

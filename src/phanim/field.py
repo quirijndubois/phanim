@@ -12,9 +12,9 @@ class Field(Group):
         else: 
             self.fieldFunction = fieldFunction
         
-        self.position = position
+        self.position = np.array(position)
         self.spacing = spacing
-        self.size = size
+        self.size = np.array(size)
         self.setField(self.fieldFunction)
 
     def setField(self,fieldFunction):
@@ -48,7 +48,7 @@ class Field(Group):
                 else:
                     direction = position[1]
 
-                self.groupObjects.append(Arrow(begin=position[0],end=vadd(position[0],direction),color=color))
+                self.groupObjects.append(Arrow(begin=position[0],end=position[0]+direction,color=color))
 
     def updateField(self):
         self.setArrows()
@@ -57,12 +57,12 @@ class Field(Group):
 
 class OldField():
     def __init__(self,resolution=1,size=[5,4],vectorScale=50,maxVectorScale = 0.6,pointSize = 0.2,lineThickness=0.06):
-        self.position = [0,0]
+        self.position = np.array([0,0])
         self.vectorScale = vectorScale/resolution
         self.maxVectorScale = maxVectorScale/resolution
         self.pointSize = pointSize/resolution
         self.lineThickness = lineThickness/resolution
-        self.size = size
+        self.size = np.array(size)
         self.resolution = resolution
         self.sizeRatio = 1
     def setField(self,lambdaFunction):
@@ -120,10 +120,10 @@ class ElectricLineField():
         position = [x,y]
         totalForce = [0,0]
         for q in self.charges:
-            diff = diff(position,q[0])
+            diff = position-q[0]
             magsq = magSquared(diff)
             force = q[1]/magsq*diff
-            totalForce = vadd(force,totalForce)
+            totalForce = force+totalForce
         return totalForce
 
     def generateLines(self):
@@ -153,7 +153,7 @@ class ElectricLineField():
                     totalForce = [0,0]
                     dobreak = False
                     for q in self.charges:
-                        diff = diff(positions[-1],q[0])
+                        diff = positions[-1]-q[0]
                         magsq = magSquared(diff)
                         if magsq < particleLimit:
                             dobreak = True
@@ -162,7 +162,7 @@ class ElectricLineField():
                     totalForce = self.fieldFunction(positions[-1][0],positions[-1][1])
                     if category == 1:
                         totalForce = -totalForce
-                    positions.append(vadd(positions[-1],normalize(totalForce)/8))
+                    positions.append(positions[-1]+normalize(totalForce)/8)
 
                 decimateAmount = 20
                 if len(positions) > decimateAmount:
