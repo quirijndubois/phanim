@@ -24,6 +24,17 @@ pip install phanim
 ``` 
 If you want to use the very latest version you can also clone the repository and import the phanim folder within python.
 
+You can also install phanim systemwide with pip from this repo by doing the following:
+```
+git clone https://github.com/quirijn/phanim
+```
+```
+cd phanim
+```
+```
+pip install -e .
+```
+
 ## Usage
 
 First import the library with:
