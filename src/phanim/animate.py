@@ -4,6 +4,23 @@ from phanim.ui import *
 from copy import copy
 
 class Animation():
+    
+    """
+    Represents an animation of a phobject.
+
+    Attributes:
+        object (Phobject): The phobject being animated.
+        position (list): The position of the phobject.
+        duration (int): The duration of the animation.
+        currentFrame (int): The current frame of the animation.
+        oldPhobject (Phobject): A copy of the original phobject.
+        animationMode (str): The mode of the animation.
+
+    Methods:
+        __init__(phobject, duration, mode): Initializes the animation.
+        updateAndPrint(): Updates the animation and prints the current state.
+    """
+
     def __init__(self,phobject,duration = 60,mode = "smoothstep"):
         self.object = phobject
         self.position = phobject.position
@@ -12,6 +29,19 @@ class Animation():
         self.oldPhobject = copy(phobject)
         self.animationMode = mode
     def updateAndPrint(self):
+        """
+        Updates the animation and prints the current state.
+
+        This method updates the animation based on the current frame and the animation mode.
+        It then updates the object's attributes and prints the current state of the animation.
+
+        Parameters:
+            None
+
+        Returns:
+            None
+        """
+        
         t = self.currentFrame / self.duration
         if self.animationMode == "smoothstep":
             self.t = interp(t**2,np.sqrt(t),t)
@@ -48,16 +78,52 @@ class Animation():
 
 
 class Create(Animation):
+    """
+    Represents a create animation.
+
+    Attributes:
+        mode (str): The mode of the create animation.
+
+    Methods:
+        update(): Updates the create animation.
+    """
     mode = "add"
     def update(self):
         self.object.createFunction(self.t,self.oldPhobject)
 
 class Destroy(Animation):
+    """
+    Represents a destroy animation.
+
+    Attributes:
+        mode (str): The mode of the destroy animation.
+
+    Methods:
+        update(): Updates the destroy animation.
+    """
     mode = "remove"
     def update(self):
         self.object.createFunction(1-self.t,self.oldPhobject)
 
 class Transform(Animation):
+    """
+    Represents a transformation animation.
+
+    Attributes:
+        newPhobject (Phobject): The new phobject to transform into.
+        duration (int): The duration of the animation.
+        mode (str): The mode of the animation.
+
+    Methods:
+        __init__(phobject, newPhobject, duration, mode): Initializes the animation.
+        update(): Updates the animation.
+
+    Args:
+        phobject (Phobject): The phobject to transform.
+        newPhobject (Phobject): The new phobject to transform into.
+        duration (int): The duration of the animation.
+        mode (str): The mode of the animation.
+    """
     mode = None
     def __init__(self,phobject,newPhobject,duration=60,mode = "smooth"):
         super().__init__(phobject,duration, mode)
@@ -69,16 +135,55 @@ class Transform(Animation):
 
 
 class Add(Animation):
+    """
+    Represents an add animation.
+
+    Attributes:
+        mode (str): The mode of the animation.
+
+    Methods:
+        __init__(phobject, mode): Initializes the animation.
+
+    Args:
+        phobject (Phobject): The phobject to add.
+        mode (str): The mode of the animation.
+    """
+
     mode = "add"
     def __init__(self, phobject,mode = "smooth"):
         super().__init__(phobject,1, mode)
 
 class Remove(Animation):
+    """
+    Represents a remove animation.
+
+    Attributes:
+        mode (str): The mode of the animation.
+
+    Methods:
+        __init__(phobject, mode): Initializes the animation.
+
+    Args:
+        phobject (Phobject): The phobject to remove.
+        mode (str): The mode of the animation.
+    """
     mode = "remove"
     def __init__(self, phobject,mode = "smooth"):
         super().__init__(phobject,1, mode)
 
 class Sleep(Animation):
+    """
+    Represents a sleep animation.
+
+    Attributes:
+        duration (int): The duration of the sleep animation.
+
+    Methods:
+        __init__(duration): Initializes the sleep animation.
+
+    Args:
+        duration (int): The duration of the sleep animation.
+    """
     mode = None
     def __init__(self,duration):
         self.animationMode = "linear"
@@ -87,6 +192,18 @@ class Sleep(Animation):
         self.currentFrame = 0
 
 class Move(Animation):
+    """
+    Represents a move animation.
+
+    Attributes:
+        object (Phobject): The phobject to move.
+
+    Methods:
+        update(): Updates the move animation.
+
+    Args:
+        phobject (Phobject): The phobject to move.
+    """
     mode = None
     def __init__(self, phobject, target, duration=60,mode = "smooth"):
         super().__init__(phobject, duration, mode)
@@ -95,11 +212,31 @@ class Move(Animation):
     def update(self):
         self.object.setPosition(interp(self.oldPhobject.position,self.target,self.t))
 
-class Shift(Move):    
+class Shift(Move):  
+    """
+    Represents a shift animation.
+
+    Methods:
+        update(): Updates the shift animation.
+    """  
     def update(self):
         self.object.setPosition(interp(self.oldPhobject.position,self.oldPhobject.position+self.target,self.t))    
     
 class AnimateValue(Animation):
+    """
+    Represents an animation of a value.
+
+    Attributes:
+        function (function): The function to animate.
+        target (object): The target of the animation.
+        duration (int): The duration of the animation.
+        currentFrame (int): The current frame of the animation.
+        animationMode (str): The mode of the animation.
+
+    Methods:
+        __init__(function, target, duration, mode): Initializes the animation.
+        update(): Updates the animation.
+    """
     mode = None
     def __init__(self,function,target,duration = 60,mode = "smooth"):
         self.duration = duration
@@ -112,6 +249,20 @@ class AnimateValue(Animation):
         self.function(interp(self.target[0],self.target[1],self.t))
 
 class laggedStart():
+    """
+    Represents a lagged start animation.
+
+    Attributes:
+        animations (list): The list of animations.
+        playingAnimations (list): The list of playing animations.
+        currentFrame (int): The current frame of the animation.
+        lagRatio (float): The lag ratio of the animation.
+
+    Methods:
+        __init__(*args, lagRatio): Initializes the animation.
+        updateAndPrint(): Updates the animation and prints the current state.
+        __setDuration(): Sets the duration of the animation.
+    """
     mode = "wrapper"
     def __init__(self,*args,lagRatio = 0.1):
         self.animations = args

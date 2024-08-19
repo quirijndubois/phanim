@@ -1,42 +1,3 @@
-![phanim logo](https://github.com/quirijndaboyy/phanim/blob/main/src/phanim/icon.png)
-
-PHysics ANIMations: 
-a (quite bad) Physics render library
-
-The project is still in the early stages of development, so larger simulations will be slow and features are limited. Look at the example files to see what cool things you can already do!
-
-## Examples
-
-A simple visualisation of the electric field can be found in examples/vectorField.py
-![vector field](https://github.com/quirijndaboyy/phanim/blob/main/gifs/vectorFIeld.gif)
-
-A simulation of a triple pendulum with the use of stiff springs can be found in examples/triplePendulum.py. The graphs on the right show the energy that each of the masses has. The yellow graph shows the total energy in the system.
-![triple pendulum](https://github.com/quirijndaboyy/phanim/blob/main/gifs/pendulum.gif)
-
-Or just a simple double pendulum(looks better imo):
-![double pendulum](https://github.com/quirijndaboyy/phanim/blob/main/gifs/double_pendulum.gif)
-
-
-## Installation
-Install with pip (old shitty version):
-```bash
-pip install phanim
-``` 
-If you want to use the very latest version you can also clone the repository and import the phanim folder within python.
-
-You can also install phanim systemwide with pip from this repo by doing the following:
-```bash
-git clone https://github.com/quirijndubois/phanim
-```
-```bash
-cd phanim
-```
-```bash
-pip install -e .
-```
-
-## Usage
-
 First import the library with:
 ```python
 from phanim import *
@@ -127,11 +88,3 @@ myScreen.play(Create(lines[0]),Create(lines[1]))
 
 myScreen.run()
 ```
-
-
-
-
-
-
-
-

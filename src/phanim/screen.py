@@ -8,9 +8,30 @@ from copy import deepcopy
 import threading
 
 class Screen():
+    
+    """
+    The Screen class is the backbone of the Phanim library and represents the windows where are animation are played.
 
-    # os.environ['SDL_VIDEO_WINDOW_POS'] = '0,0'
-    # os.environ['SDL_VIDEO_FULLSCREEN_DISPLAY'] = '0'
+    Args:
+        resolution (tuple): The resolution of the screen in pixels.
+        zoom (float): The initial zoom level of the camera.
+        fullscreen (bool): Whether the screen should be displayed in fullscreen mode.
+        background (tuple): The background color of the screen in RGB format.
+        fontSize (float): The font size for text rendering.
+        panning (bool): Whether the camera should allow panning.
+        renderer (str): The rendering engine to use (e.g. "pygame", "moderngl").
+        grid (bool): Whether to display a grid on the screen.
+        gridResolution (int): The resolution of the grid.
+        gridBrightness (int): The brightness of the grid lines.
+
+    Attributes:
+        resolution (tuple): The resolution of the screen in pixels.
+        camera (Camera): The camera object managing the screen's view.
+        fontSize (int): The font size for text rendering in pixels.
+        renderer (Renderer): The rendering engine instance.
+        rendererName (str): The name of the rendering engine.
+
+    """
 
     def __init__(self,resolution=None,zoom = 6,fullscreen=True,background=(10,15,20),fontSize=0.5,panning=True,renderer="pygame",grid=True,gridResolution=15,gridBrightness=150):
         
@@ -53,15 +74,39 @@ class Screen():
         self.gridBrightness = gridBrightness
 
     def addUpdater(self,someFunction,substeps=1):
+        """
+        This method is called to add an updater. I.E. a function that updates every frame.
+
+        Args:
+            someFunction (function): The function to be called when the mouse button is released.
+        """
         self.updaterList.append([someFunction,substeps])
 
     def addMouseClickUpdater(self,someFunction):
+        """
+        Similar to addUpdater, but only called when the mouse is released.
+
+        Args:
+            someFunction (function): The function to be called when the mouse button is released.
+        """
         self.mouseClickUpdaterList.append(someFunction)
     
     def addMouseDownUpdater(self,someFunction):
+        """
+        Similar to addUpdater, but only called when the mouse button is pressed down.
+
+        Args:
+            someFunction (function): The function to be called when the mouse button is pressed down.
+        """
         self.mouseDownUpdaterList.append(someFunction)
 
     def addMouseDragUpdater(self,someFunction):
+        """
+        Similar to addUpdater, but only called when the mouse button is being dragged.
+
+        Args:
+            someFunction (function): The function to be called when the mouse button is being dragged.
+        """
         self.mouseDragUpdaterList.append(someFunction)
 
     def __handlePanning(self,mouseDown,dragging):
@@ -79,6 +124,18 @@ class Screen():
         self.camera.setZoom(self.camera.zoom - self.camera.zoom*scroll[1])
 
     def drawLines(self,lines,width,position):
+        """
+        Draws a list of lines on the screen.
+
+        Args:
+            lines (list): A list of lines, where each line is a list of two or three elements.
+                The first two elements are the start and stop coordinates of the line.
+                The third element is optional and specifies the color of the line.
+            width (float): The width of the lines.
+            position (list): The position offset of the lines.
+        Returns:
+            None
+        """
         for line in lines:
             start = self.camera.coords2screen(line[0] + position)
             stop = self.camera.coords2screen(line[1] + position)
@@ -124,6 +181,15 @@ class Screen():
             self.__drawText(phobject.texts, phobject.position)
 
     def draw(self,*args):
+        """
+        Draws the given phobjects or groups of phobjects on the screen.
+        
+        Parameters:
+            *args: variable number of phobjects or groups of phobjects to be drawn
+        
+        Returns:
+            None
+        """
         for arg in args:
             if hasattr(arg,"groupObjects"):
                 for phobject in arg.groupObjects:
@@ -174,6 +240,15 @@ class Screen():
             self.__drawGrid(closestPower,color=(color3,color3,color3))
 
     def makeInteractive(self,*args):
+        """
+        Makes the given phobjects interactive. (If the phobject has an ```updateInteractivity``` method)
+
+        Args:
+            *args: A variable number of phobjects or lists of phobjects to be made interactive.
+
+        Returns:
+            None
+        """
         for arg in args:
             if type(arg) is list:
                 for phobject in arg:
@@ -264,9 +339,28 @@ class Screen():
         self.renderer.drawCircle(color,center,radius,segments=10)
 
     def play(self,*args):
+        """
+        Adds the given arguments to the animation queue, which is used to schedule animations to be played on the screen.
+
+        Parameters:
+            *args (Any): The arguments to be added to the animation queue. These can be any type of object that can be passed as arguments to the draw method.
+
+        Returns:
+            None
+        """
+
         self.animationQueue.append(list(args))
 
     def wait(self,duration):
+        """
+        Pauses the animation for a specified duration.
+
+        Parameters:
+            duration (int): The duration of the pause in frames.
+
+        Returns:
+            None
+        """
         self.play(Sleep(duration))
 
     def __playAnimations(self):
@@ -320,15 +414,43 @@ class Screen():
                 self.draw(wrappedAnimation)
         
     def add(self,phobject):
+        """
+        Adds a phobject to the draw list.
+
+        Args:
+            phobject (any): The phobject to be added to the draw list.
+
+        Returns:
+            None
+        """
         self.drawList.append(phobject)
 
     def remove(self,phobject):
+        """
+        Removes a phobject from the draw list.
+
+        Args:
+            phobject (any): The phobject to be removed from the draw list.
+
+        Returns:
+            None
+        """
         self.drawList.remove(phobject)
     
     def __drawDrawList(self):
         self.draw(*self.drawList)
 
     def run_interactive(self,globals):
+        """
+        Runs the screen in interactive mode, allowing for IPython input.
+        When used, this method replaces Screen.run().
+
+        Args:
+            globals (dict): The global namespace to be used in the IPython session.
+
+        Returns:
+            None
+        """
         from IPython import start_ipython
         
         def thread_loop():
@@ -340,6 +462,12 @@ class Screen():
         self.run()
 
     def run(self):
+        """
+        Runs the main loop of the screen, handling user input, rendering, and updating. Necessary for phanim to function.
+
+        Returns:
+            None
+        """
         self.frameDt = 0
         while self.renderer.running():
             self.t = time.time() - self.t0

@@ -1,0 +1,20 @@
+site_name: Phanim
+
+theme:
+  logo: icon.png
+  name: material
+  palette: 
+    - scheme: slate
+    - primary: red
+
+plugins:
+  - mkdocstrings
+
+nav:
+  - home: index.md
+  - Installation.md
+  - Getting Started.md
+  - Reference:
+    - Screen.md
+    - Animation.md
+  - doc generation.md
