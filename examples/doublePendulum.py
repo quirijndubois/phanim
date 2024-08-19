@@ -1,6 +1,6 @@
 from phanim import *
 
-s = Screen(fullscreen=True,zoom=10,grid=True,renderer="pygame",panning=False)
+s = Screen(zoom=10)
 
 startPositions = [[0,1],[2,1],[4,1]]
 startVelocities = [[0,0],[0,3],[0,6]]

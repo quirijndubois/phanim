@@ -13,7 +13,7 @@ substeps = 10
 bounce_radius = particle_radius/100
 bounce_radius_squared = bounce_radius**2
 
-s = Screen(grid=True, panning=True, fullscreen=False)
+s = Screen()
 
 plate_node = Node(pos=[0, 0], interactivityType="force")
 plate = Line(start=[0, -2], stop=[0, 2])

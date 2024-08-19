@@ -4,7 +4,7 @@ import numpy as np
 drawVectors = True
 drawTrails = True
 
-screen = Screen(fullscreen=True,zoom=12,fontSize=0.4,panning=True,grid=True)
+screen = Screen(zoom=12,fontSize=0.4)
 
 trails = [
     Trail(color=color.red),

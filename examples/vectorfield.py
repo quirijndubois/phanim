@@ -1,7 +1,7 @@
 from phanim import *
 import numpy as np
 
-screen = Screen(fullscreen=True,panning=True,grid=True)
+screen = Screen()
 field = OldField(resolution=2,maxVectorScale=0.5)
 particles = ParticlesOld(n=100,lifetime=15)
 
