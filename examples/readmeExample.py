@@ -1,6 +1,6 @@
 from phanim import *
 
-myScreen = Screen(fullscreen=True)
+myScreen = Screen()
 
 grid = Grid(1,1,10,10)
 arrow =Arrow(color=color.blue)

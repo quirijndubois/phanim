@@ -1,7 +1,7 @@
 from phanim import *
 import numpy as np
 
-s = Screen(zoom=9)
+s = Screen(zoom=9,panning=False)
 
 slider = Slider(position=[0,2.5],maxValue=np.sqrt(3))
 
