@@ -3,16 +3,14 @@ import numpy as np
 
 screen = Screen()
 field = OldField(resolution=2, maxVectorScale=0.5)
-particles = ParticlesOld(n=100, lifetime=15)
+particles = ParticlesOld(n=50, lifetime=10)
 
 nodes = Node(pos=[1, 0]), Node(pos=[-1, 0])
 
-gravityStrength1 = 0.3
-gravityStrength2 = -0.3
-gravityStrength1 = 0.1
-gravityStrength2 = 0.1
-swirlStrength1 = 0.3
-swirlStrength2 = -0.3
+gravityStrength1 = 0.5
+gravityStrength2 = -0.5
+swirlStrength1 = 0
+swirlStrength2 = 0
 
 
 def func(x, y): return (
