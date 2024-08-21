@@ -1,5 +1,7 @@
 site_name: Phanim
 
+repo_url: https://github.com/quirijndubois/phanim
+
 theme:
   logo: icon.png
   name: material
