@@ -35,7 +35,7 @@ class Screen():
         recording_fps (int): The FPS for the screen recording.
     """
 
-    def __init__(self,resolution=None,zoom = 6,fullscreen=True,background=(10,15,20),fontSize=0.5,panning=True,renderer="pygame",grid=True,gridResolution=15,gridBrightness=150,record=False,recording_output="recording.mp4",recording_fps=30):
+    def __init__(self,resolution=None,zoom = 6,fullscreen=True,background=(10,15,20),fontSize=0.5,panning=True,renderer="pygame",grid=True,gridResolution=15,gridBrightness=150,record=False,recording_output="recording.mp4",recording_fps=60):
         
         if renderer == "pygame":
             self.renderer = PygameRenderer(resolution,fontSize,fullscreen,record=record,recording_output=recording_output,recording_fps=recording_fps)
