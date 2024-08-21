@@ -30,13 +30,15 @@ class Screen():
         fontSize (int): The font size for text rendering in pixels.
         renderer (Renderer): The rendering engine instance.
         rendererName (str): The name of the rendering engine.
-
+        record (bool): Whether the screen is being recorded.
+        recording_output (str): The output file for the screen recording.
+        recording_fps (int): The FPS for the screen recording.
     """
 
-    def __init__(self,resolution=None,zoom = 6,fullscreen=True,background=(10,15,20),fontSize=0.5,panning=True,renderer="pygame",grid=True,gridResolution=15,gridBrightness=150):
+    def __init__(self,resolution=None,zoom = 6,fullscreen=True,background=(10,15,20),fontSize=0.5,panning=True,renderer="pygame",grid=True,gridResolution=15,gridBrightness=150,record=False,recording_output="recording.mp4",recording_fps=30):
         
         if renderer == "pygame":
-            self.renderer = PygameRenderer(resolution,fontSize,fullscreen)
+            self.renderer = PygameRenderer(resolution,fontSize,fullscreen,record=record,recording_output=recording_output,recording_fps=recording_fps)
         elif renderer == "moderngl":
             self.renderer = ModernGLRenderer(resolution,fontSize,fullscreen)
         else:
@@ -47,6 +49,8 @@ class Screen():
 
         self.camera = Camera(zoom,self.resolution)
         self.fontSize = int(fontSize*self.camera.pixelsPerUnit)
+
+        self.record = record
 
         #Setting static settings
         self.panning = panning
@@ -72,6 +76,8 @@ class Screen():
         self.grid = grid
         self.gridResolution = gridResolution
         self.gridBrightness = gridBrightness
+
+        self.frameDt = 1/recording_fps
 
     def addUpdater(self,someFunction,substeps=1):
         """
@@ -468,7 +474,6 @@ class Screen():
         Returns:
             None
         """
-        self.frameDt = 0
         while self.renderer.running():
             self.t = time.time() - self.t0
 
@@ -487,7 +492,8 @@ class Screen():
             self.__drawCursor()
             self.renderer.update(self.background)
 
-            self.frameDt = self.renderer.getFrameDeltaTime()
+            if not self.record:
+                self.frameDt = self.renderer.getFrameDeltaTime()
             self.mouseButtonDown = False #because this should only be True for a single frame
             self.__debug()
 

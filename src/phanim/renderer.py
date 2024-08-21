@@ -9,13 +9,16 @@ from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame  
 
+from .screen_recorder import ScreenRecorder
+
 class PygameRenderer():
     # pygame.display.set_icon(pygame.image.load('phanim/icon.png'))
-    def __init__(self,resolution,fontSize,fullscreen):
+    def __init__(self,resolution,fontSize,fullscreen,record=False,recording_output="recording.mp4",recording_fps=30):
         pygame.init()
         pygame.mouse.set_visible(False)
         pygame.display.set_caption("Phanim")
 
+        self.record = record
 
         infoObject = pygame.display.Info()
         if resolution == None:
@@ -30,7 +33,11 @@ class PygameRenderer():
             self.display = pygame.display.set_mode(self.resolution,flags=pygame.SCALED,vsync=1)
         self.clock = pygame.time.Clock()
         self.isRunning = True
-        
+
+        if self.record:
+            self.recorder = ScreenRecorder(self.resolution[0],self.resolution[1],recording_fps,out_file=recording_output)
+            self.recorder.start_recording()
+
         
     def drawLine(self,color,start,stop,pixelWidth):
         pygame.draw.line(
@@ -72,14 +79,19 @@ class PygameRenderer():
         self.blit()
         self.setCursor((100,100,100),self.getMousePos(),10)
         self.drawCursor()
+        if self.record:
+            self.recorder.capture_frame(self.display)
         pygame.display.update()
         self.reset(backgroundColor)
+
 
     def getFrameDeltaTime(self):
         return self.clock.tick(60) / 1000
 
     def quit(self):
         pygame.quit()
+        if self.record:
+            self.recorder.end_recording()
 
 
 
