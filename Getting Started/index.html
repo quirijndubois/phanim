@@ -12,7 +12,7 @@
         <link rel="prev" href="../Installation/">
       
       
-        <link rel="next" href="../Screen/">
+        <link rel="next" href="../Recording/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -268,6 +268,26 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../Recording/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Recording
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -276,10 +296,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -290,8 +310,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Reference
           </label>
@@ -402,71 +422,71 @@
 
   <h1>Getting Started</h1>
 
-<p>First import the library with:</p>
-<pre><code class="language-python">from phanim import *
-</code></pre>
+<p>First import the library with:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">phanim</span> <span class="kn">import</span> <span class="o">*</span>
+</span></code></pre></div></p>
 <p>After importing you can create a phanim screen as follows:</p>
-<pre><code class="language-python">myScreen = phanim.Screen()
-</code></pre>
-<p>This will use the device screen resolution. We can also change some of the screen parameters.</p>
-<pre><code class="language-python">myScreen = phanim.Screen(fullscreen=False,resolution=(1920,1080))
-</code></pre>
+<p><div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">myScreen</span> <span class="o">=</span> <span class="n">phanim</span><span class="o">.</span><span class="n">Screen</span><span class="p">()</span>
+</span></code></pre></div>
+This will use the device screen resolution. We can also change some of the screen parameters.
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">myScreen</span> <span class="o">=</span> <span class="n">phanim</span><span class="o">.</span><span class="n">Screen</span><span class="p">(</span><span class="n">fullscreen</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">resolution</span><span class="o">=</span><span class="p">(</span><span class="mi">1920</span><span class="p">,</span><span class="mi">1080</span><span class="p">))</span>
+</span></code></pre></div></p>
 <p>Now we can create something to render on the screen. In this example we will create a simple grid, but the possibilities are endless.</p>
-<pre><code class="language-python">grid = phanim.Grid(1,1,10,10) #This creates a grid with each line seperated by 1, and 10 lines to each side of the origin.
-</code></pre>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">grid</span> <span class="o">=</span> <span class="n">phanim</span><span class="o">.</span><span class="n">Grid</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span> <span class="c1">#This creates a grid with each line seperated by 1, and 10 lines to each side of the origin.</span>
+</span></code></pre></div>
 <p>Now we can add some wait time and animate the grid being added to the screen by:</p>
-<pre><code class="language-python">myScreen.wait(60) #This will add an empty animation for 60 frames or 1 seconds.
-myScreen.play(Create(grid))
-</code></pre>
-<p>Now we can run the script and a window with a simple grid should show up.</p>
-<pre><code class="language-python">myScreen.run()
-</code></pre>
-<p>We can also create different object. For example, a blue arrow, which points to the position of the cursor at all times.
+<p><div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">myScreen</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span> <span class="c1">#This will add an empty animation for 60 frames or 1 seconds.</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">myScreen</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="n">Create</span><span class="p">(</span><span class="n">grid</span><span class="p">))</span>
+</span></code></pre></div>
+Now we can run the script and a window with a simple grid should show up.</p>
+<p><div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">myScreen</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</span></code></pre></div>
+We can also create different object. For example, a blue arrow, which points to the position of the cursor at all times.
 We can create the arrow by defining it like this:</p>
-<pre><code class="language-python">arrow = phanim.Arrow(color=color.blue)
-</code></pre>
-<p>Now we will create an update function that will be called each frame and move the end of the arrow to the cursor.</p>
-<pre><code class="language-python">def setArrow(screen):
-  arrow.setDirection([0,0],screen.mousePos)
-</code></pre>
+<p><div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">arrow</span> <span class="o">=</span> <span class="n">phanim</span><span class="o">.</span><span class="n">Arrow</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="o">.</span><span class="n">blue</span><span class="p">)</span>
+</span></code></pre></div>
+Now we will create an update function that will be called each frame and move the end of the arrow to the cursor.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">def</span> <span class="nf">setArrow</span><span class="p">(</span><span class="n">screen</span><span class="p">):</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>  <span class="n">arrow</span><span class="o">.</span><span class="n">setDirection</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">screen</span><span class="o">.</span><span class="n">mousePos</span><span class="p">)</span>
+</span></code></pre></div>
 <p>Then add this function to the updater list and run the script:</p>
-<pre><code class="language-python">myScreen.addUpdater(setArrow)
-myScreen.play(Create(arrow))
-myScreen.run()
-</code></pre>
-<p>Make sure you only add the .run() command once at the very end of your script. We can also add some dotted lines to track the mouse position like this:</p>
-<pre><code class="language-python">lines = DottedLine(),DottedLine()
-
-def setLines(screen):
-    lines[0].setEnds([screen.mousePos[0],0],screen.mousePos)
-    lines[1].setEnds([0,screen.mousePos[1]],screen.mousePos)
-
-myScreen.play(Create(lines[0]),Create(lines[1]))
-myScreen.addUpdater(setLines)
-</code></pre>
+<p><div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">myScreen</span><span class="o">.</span><span class="n">addUpdater</span><span class="p">(</span><span class="n">setArrow</span><span class="p">)</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">myScreen</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="n">Create</span><span class="p">(</span><span class="n">arrow</span><span class="p">))</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="n">myScreen</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</span></code></pre></div>
+Make sure you only add the .run() command once at the very end of your script. We can also add some dotted lines to track the mouse position like this:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">lines</span> <span class="o">=</span> <span class="n">DottedLine</span><span class="p">(),</span><span class="n">DottedLine</span><span class="p">()</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="k">def</span> <span class="nf">setLines</span><span class="p">(</span><span class="n">screen</span><span class="p">):</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">setEnds</span><span class="p">([</span><span class="n">screen</span><span class="o">.</span><span class="n">mousePos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">0</span><span class="p">],</span><span class="n">screen</span><span class="o">.</span><span class="n">mousePos</span><span class="p">)</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>    <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">setEnds</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="n">screen</span><span class="o">.</span><span class="n">mousePos</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span><span class="n">screen</span><span class="o">.</span><span class="n">mousePos</span><span class="p">)</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="n">myScreen</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="n">Create</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="n">Create</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="n">myScreen</span><span class="o">.</span><span class="n">addUpdater</span><span class="p">(</span><span class="n">setLines</span><span class="p">)</span>
+</span></code></pre></div>
 <p>After combining the update functions the final script will look like this:</p>
-<pre><code class="language-python">from phanim import *
-
-myScreen = Screen(fullscreen=True)
-
-grid = Grid(1,1,10,10)
-arrow =Arrow(color=color.blue)
-lines = DottedLine(),DottedLine()
-
-def update(screen):
-  arrow.setDirection([0,0],screen.mousePos)
-  lines[0].setEnds([screen.mousePos[0],0],screen.mousePos)
-  lines[1].setEnds([0,screen.mousePos[1]],screen.mousePos)
-
-myScreen.addUpdater(update)
-
-myScreen.wait(60)
-myScreen.play(Create(grid))
-myScreen.play(Create(arrow))
-myScreen.play(Create(lines[0]),Create(lines[1]))
-
-myScreen.run()
-</code></pre>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">from</span> <span class="nn">phanim</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="n">myScreen</span> <span class="o">=</span> <span class="n">Screen</span><span class="p">(</span><span class="n">fullscreen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="n">grid</span> <span class="o">=</span> <span class="n">Grid</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="n">arrow</span> <span class="o">=</span><span class="n">Arrow</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="o">.</span><span class="n">blue</span><span class="p">)</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="n">lines</span> <span class="o">=</span> <span class="n">DottedLine</span><span class="p">(),</span><span class="n">DottedLine</span><span class="p">()</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">screen</span><span class="p">):</span>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>  <span class="n">arrow</span><span class="o">.</span><span class="n">setDirection</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">screen</span><span class="o">.</span><span class="n">mousePos</span><span class="p">)</span>
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>  <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">setEnds</span><span class="p">([</span><span class="n">screen</span><span class="o">.</span><span class="n">mousePos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">0</span><span class="p">],</span><span class="n">screen</span><span class="o">.</span><span class="n">mousePos</span><span class="p">)</span>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>  <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">setEnds</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="n">screen</span><span class="o">.</span><span class="n">mousePos</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span><span class="n">screen</span><span class="o">.</span><span class="n">mousePos</span><span class="p">)</span>
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>
+</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="n">myScreen</span><span class="o">.</span><span class="n">addUpdater</span><span class="p">(</span><span class="n">update</span><span class="p">)</span>
+</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>
+</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="n">myScreen</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span>
+</span><span id="__span-10-17"><a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="n">myScreen</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="n">Create</span><span class="p">(</span><span class="n">grid</span><span class="p">))</span>
+</span><span id="__span-10-18"><a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a><span class="n">myScreen</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="n">Create</span><span class="p">(</span><span class="n">arrow</span><span class="p">))</span>
+</span><span id="__span-10-19"><a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a><span class="n">myScreen</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="n">Create</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="n">Create</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</span><span id="__span-10-20"><a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a>
+</span><span id="__span-10-21"><a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="n">myScreen</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</span></code></pre></div>
 
 
 
