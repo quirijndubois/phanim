@@ -1,8 +1,10 @@
 import numpy as np
 import math
 
+
 def interp(a, b, t):
     return a + (b-a) * t
+
 
 def coords2screen(res, pos, zoom):
     return np.array([
@@ -10,13 +12,14 @@ def coords2screen(res, pos, zoom):
         -pos[1]*zoom + res[1]/2
     ])
 
+
 def screen2cords(res, pos, zoom):
     x = (pos[0] - res[0]/2)/zoom
     y = -(pos[1] - res[1]/2)/zoom
     return np.array([x, y])
 
 
-def normalize(vector,mag=None):
+def normalize(vector, mag=None):
     vector = np.array(vector)
     if mag == None:
         mag = magnitude(vector)
@@ -67,11 +70,13 @@ def dampenedSpringForce(C, l, dampFactor, begin, end, vel):
 
     return direction * (mag * C) - vel_direction*vel_mag*dampFactor
 
+
 def pointsToLines(points, color):
     lines = []
     for i in range(len(points)-1):
         lines.append([points[i], points[i+1], color])
     return lines
+
 
 def gravity(pos1, pos2, G):
     diff = [

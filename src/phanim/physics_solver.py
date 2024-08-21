@@ -2,6 +2,7 @@
 from .functions import *
 from copy import copy
 
+
 class Physics():
     @staticmethod
     def constraintSolver(nodes, constraints, dt):
@@ -33,6 +34,7 @@ class Physics():
         correction = -normalize(J)*C/2
 
         return correction
+
 
 class DoublePendulumConstraint:
     def __init__(self, node1, node2, length):

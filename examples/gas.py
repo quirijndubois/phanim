@@ -19,9 +19,10 @@ plate_node = Node(pos=[0, 0], interactivityType="force")
 plate = Line(start=[0, -2], stop=[0, 2])
 plate.position = plate_node.position
 
-box = Rectangle(position=[18,0],width=44,height=4)
+box = Rectangle(position=[18, 0], width=44, height=4)
 
 s.play(Create(plate), Create(box), Create(plate_node))
+
 
 def update(s):
     f = [-plate_force, 0]
@@ -33,7 +34,8 @@ def update(s):
 
     if plate_node.position[0] > 40:
         plate_node.position[0] = 40 - 0.01
-        plate_node.velocity[0] *=-1
+        plate_node.velocity[0] *= -1
+
 
 def update_particle_collisions(s):
     intersection = intersecting_particles(particles.q, bounce_radius_squared)
@@ -69,10 +71,11 @@ def update_particles(x, v, F, m):
     x[mask_left, 0] = -3.9
 
     # Handle right wall boundary (assuming plate_node is a global variable)
-    mask_right = x[:, 0] > plate_node.position[0] -0.05
-    v1, v2 = elastic_collision_1d(particle_mass, plate_mass, v[mask_right, 0], plate_node.velocity[0])
+    mask_right = x[:, 0] > plate_node.position[0] - 0.05
+    v1, v2 = elastic_collision_1d(
+        particle_mass, plate_mass, v[mask_right, 0], plate_node.velocity[0])
     v[mask_right, 0] = v1
-    if len(v2)>0:
+    if len(v2) > 0:
         plate_node.velocity[0] = v2[0]
     x[mask_right, 0] = plate_node.position[0] - 0.05
 

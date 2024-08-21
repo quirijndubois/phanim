@@ -1,4 +1,6 @@
 
+import pygame
+from .screen_recorder import ScreenRecorder
 import numpy as np
 import time
 
@@ -7,13 +9,11 @@ import glfw
 
 from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
-import pygame  
 
-from .screen_recorder import ScreenRecorder
 
 class PygameRenderer():
     # pygame.display.set_icon(pygame.image.load('phanim/icon.png'))
-    def __init__(self,resolution,fontSize,fullscreen,record=False,recording_output="recording.mp4",recording_fps=30):
+    def __init__(self, resolution, fontSize, fullscreen, record=False, recording_output="recording.mp4", recording_fps=30):
         pygame.init()
         pygame.mouse.set_visible(False)
         pygame.display.set_caption("Phanim")
@@ -25,21 +25,23 @@ class PygameRenderer():
             self.resolution = (infoObject.current_w, infoObject.current_h)
         else:
             self.resolution = resolution
-        self.surface = pygame.Surface(self.resolution,pygame.SRCALPHA)
-        self.font = pygame.font.SysFont(None,1)
+        self.surface = pygame.Surface(self.resolution, pygame.SRCALPHA)
+        self.font = pygame.font.SysFont(None, 1)
         if fullscreen:
-            self.display = pygame.display.set_mode(self.resolution,pygame.FULLSCREEN | pygame.SCALED)
+            self.display = pygame.display.set_mode(
+                self.resolution, pygame.FULLSCREEN | pygame.SCALED)
         else:
-            self.display = pygame.display.set_mode(self.resolution,flags=pygame.SCALED,vsync=1)
+            self.display = pygame.display.set_mode(
+                self.resolution, flags=pygame.SCALED, vsync=1)
         self.clock = pygame.time.Clock()
         self.isRunning = True
 
         if self.record:
-            self.recorder = ScreenRecorder(self.resolution[0],self.resolution[1],recording_fps,out_file=recording_output)
+            self.recorder = ScreenRecorder(
+                self.resolution[0], self.resolution[1], recording_fps, out_file=recording_output)
             self.recorder.start_recording()
 
-        
-    def drawLine(self,color,start,stop,pixelWidth):
+    def drawLine(self, color, start, stop, pixelWidth):
         pygame.draw.line(
             self.surface,
             color,
@@ -47,43 +49,43 @@ class PygameRenderer():
             stop,
             width=int(pixelWidth)
         )
+
     def running(self):
         return self.isRunning
-    
-    def drawCircle(self,color,center,radius,segments=1):
-        pygame.draw.circle(self.surface,color,center,radius)
+
+    def drawCircle(self, color, center, radius, segments=1):
+        pygame.draw.circle(self.surface, color, center, radius)
 
     def drawCursor(self):
-        color,center,radius = self.cursor
+        color, center, radius = self.cursor
         circle = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
         pygame.draw.circle(circle, color, (radius, radius), radius)
-        self.display.blit(circle,[center[0]-radius,center[1]-radius])
-        
-    def setCursor(self,color,center,radius):
-        self.cursor = color,center,radius
+        self.display.blit(circle, [center[0]-radius, center[1]-radius])
 
-    def drawPolygon(self,color,points):
+    def setCursor(self, color, center, radius):
+        self.cursor = color, center, radius
+
+    def drawPolygon(self, color, points):
         pygame.draw.polygon(self.surface, color, points)
 
-    def reset(self,color):
+    def reset(self, color):
         self.display.fill(color)
-        self.surface.fill((0,0,0,0))
-    
+        self.surface.fill((0, 0, 0, 0))
+
     def blit(self):
-        self.display.blit(self.surface,(0,0))
+        self.display.blit(self.surface, (0, 0))
 
     def getMousePos(self):
         return pygame.mouse.get_pos()
 
-    def update(self,backgroundColor):
+    def update(self, backgroundColor):
         self.blit()
-        self.setCursor((100,100,100),self.getMousePos(),10)
+        self.setCursor((100, 100, 100), self.getMousePos(), 10)
         self.drawCursor()
         if self.record:
             self.recorder.capture_frame(self.display)
         pygame.display.update()
         self.reset(backgroundColor)
-
 
     def getFrameDeltaTime(self):
         return self.clock.tick(60) / 1000
@@ -94,10 +96,8 @@ class PygameRenderer():
             self.recorder.end_recording()
 
 
-
-
 class ModernGLRenderer:
-    def __init__(self, resolution,fontsize, fullscreen):
+    def __init__(self, resolution, fontsize, fullscreen):
 
         if not glfw.init():
             raise Exception("GLFW can't be initialized")
@@ -117,13 +117,14 @@ class ModernGLRenderer:
             self.resolution = (video_mode.size.width, video_mode.size.height)
             print(self.resolution)
 
-
         if fullscreen:
             # Use the video mode's resolution for fullscreen
             self.resolution = (video_mode.size.width, video_mode.size.height)
-            self.window = glfw.create_window(self.resolution[0], self.resolution[1], "ModernGL Renderer", primary_monitor, None)
+            self.window = glfw.create_window(
+                self.resolution[0], self.resolution[1], "ModernGL Renderer", primary_monitor, None)
         else:
-            self.window = glfw.create_window(self.resolution[0], self.resolution[1], "ModernGL Renderer", None, None)
+            self.window = glfw.create_window(
+                self.resolution[0], self.resolution[1], "ModernGL Renderer", None, None)
 
         if not self.window:
             glfw.terminate()
@@ -151,7 +152,7 @@ class ModernGLRenderer:
         )
         self.BUTTONDOWN = False
         self.BUTTONUP = False
-        self.scroll = [0,0]
+        self.scroll = [0, 0]
         glfw.set_input_mode(self.window, glfw.CURSOR, glfw.CURSOR_HIDDEN)
         glfw.set_mouse_button_callback(self.window, self.mouse_button_callback)
         glfw.set_scroll_callback(self.window, self.scroll_callback)
@@ -159,14 +160,13 @@ class ModernGLRenderer:
         self.aspect_ratio = self.resolution[0] / self.resolution[1]
         self.shapes_to_draw = []
 
-    def convert_pixel_to_screen_coordinates(self,coordinate):
-        return  [
+    def convert_pixel_to_screen_coordinates(self, coordinate):
+        return [
             coordinate[0] / self.resolution[0] * 2 - 1,
             1 - coordinate[1] / self.resolution[1] * 2,
         ]
 
-
-    def drawLine(self, color, start, end,width):
+    def drawLine(self, color, start, end, width):
 
         color = color[0]/255, color[1]/255, color[2]/255
         start = self.convert_pixel_to_screen_coordinates(start)
@@ -187,7 +187,8 @@ class ModernGLRenderer:
         perp_dy *= self.aspect_ratio
 
         # Calculate the vertices of the rectangle (thin quad) representing the line
-        half_width = width / self.resolution[1] / 2  # Convert pixel width to NDC
+        # Convert pixel width to NDC
+        half_width = width / self.resolution[1] / 2
         vertices = [
             start[0] + perp_dx * half_width, start[1] + perp_dy * half_width,
             end[0] + perp_dx * half_width, end[1] + perp_dy * half_width,
@@ -209,7 +210,8 @@ class ModernGLRenderer:
     def drawPolygon(self, color, vertices):
         color = color[0]/255, color[1]/255, color[2]/255
         # Assume vertices is a list of (x, y) tuples
-        flat_vertices = [coord for vertex in vertices for coord in self.convert_pixel_to_screen_coordinates(vertex)]
+        flat_vertices = [
+            coord for vertex in vertices for coord in self.convert_pixel_to_screen_coordinates(vertex)]
         vertices = np.array(flat_vertices, dtype='f4')
         vbo = self.ctx.buffer(vertices.tobytes())
         vao = self.ctx.simple_vertex_array(self.prog, vbo, 'in_vert')
@@ -246,7 +248,7 @@ class ModernGLRenderer:
                 self.BUTTONUP = True
 
     def scroll_callback(self, window, xoffset, yoffset):
-        self.scroll = [xoffset,yoffset]
+        self.scroll = [xoffset, yoffset]
 
     def quit(self):
         glfw.terminate()
@@ -254,7 +256,7 @@ class ModernGLRenderer:
     def running(self):
         return not glfw.window_should_close(self.window)
 
-    def update(self,color):
+    def update(self, color):
         color = color[0]/255, color[1]/255, color[2]/255
         # Calculate the time spent on the last frame
         self.delta_time = time.time() - self.last_frame_time
@@ -278,17 +280,17 @@ class ModernGLRenderer:
 
 
 if __name__ == "__main__":
-    renderer = ModernGLRenderer((1920, 1080),0, fullscreen=True)
+    renderer = ModernGLRenderer((1920, 1080), 0, fullscreen=True)
 
     while not glfw.window_should_close(renderer.window):
         for i in range(1000):
             renderer.drawLine(
-                (np.random.random()*255,np.random.random()*255,np.random.random()*255),
-                [np.random.random()*renderer.resolution[0],np.random.random()*renderer.resolution[1]],
-                [np.random.random()*renderer.resolution[0],np.random.random()*renderer.resolution[1]],
+                (np.random.random()*255, np.random.random()
+                 * 255, np.random.random()*255),
+                [np.random.random()*renderer.resolution[0],
+                 np.random.random()*renderer.resolution[1]],
+                [np.random.random()*renderer.resolution[0],
+                 np.random.random()*renderer.resolution[1]],
                 0.1,
             )
-        renderer.update((0,0,0))
-
-
-
+        renderer.update((0, 0, 0))

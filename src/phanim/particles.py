@@ -92,7 +92,8 @@ class Particles():
     def update(self, screen):
 
         if hasattr(self, "update_particles"):
-            q_updated, q_d_updated, F_updated, m_updated = self.update_particles(self.q, self.q_d, self.F, self.m)
+            q_updated, q_d_updated, F_updated, m_updated = self.update_particles(
+                self.q, self.q_d, self.F, self.m)
             self.q = q_updated
             self.q_d = q_d_updated
             self.F = F_updated

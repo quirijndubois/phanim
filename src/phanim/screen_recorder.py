@@ -5,7 +5,8 @@ import pygame
 class ScreenRecorder:
     def __init__(self, width, height, fps, out_file='output.avi'):
         four_cc = cv2.VideoWriter_fourcc(*'XVID')
-        self.video = cv2.VideoWriter(out_file, four_cc, float(fps), (width, height))
+        self.video = cv2.VideoWriter(
+            out_file, four_cc, float(fps), (width, height))
         self.surface_to_frame = pygame.surfarray.pixels3d
         self.rotate_frame = cv2.rotate
         self.flip_frame = cv2.flip
@@ -20,7 +21,7 @@ class ScreenRecorder:
             1
         ), cv2.COLOR_RGB2BGR)
         self.video.write(pixels)
-        
+
     def start_recording(self):
         pass
 

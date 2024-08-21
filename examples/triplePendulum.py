@@ -4,32 +4,32 @@ import numpy as np
 drawVectors = True
 drawTrails = True
 
-screen = Screen(zoom=12,fontSize=0.4)
+screen = Screen(zoom=12, fontSize=0.4)
 
 trails = [
     Trail(color=color.red),
     Trail(color=color.green),
-    Trail(color=color.blue,lineWidth=3,length=50),
+    Trail(color=color.blue, lineWidth=3, length=50),
 ]
 
 graphs = [
-    LiveGraph(pos=[3,2],xSize=[-2,2],color=color.red,liveRange=100),
-    LiveGraph(pos=[3,0],xSize=[-2,2],color=color.green,liveRange=100),
-    LiveGraph(pos=[3,-2],xSize=[-2,2],color=color.blue,liveRange=100),
-    LiveGraph(pos=[-3.5,2],xSize=[-2,2],color=color.yellow,liveRange=100),
+    LiveGraph(pos=[3, 2], xSize=[-2, 2], color=color.red, liveRange=100),
+    LiveGraph(pos=[3, 0], xSize=[-2, 2], color=color.green, liveRange=100),
+    LiveGraph(pos=[3, -2], xSize=[-2, 2], color=color.blue, liveRange=100),
+    LiveGraph(pos=[-3.5, 2], xSize=[-2, 2], color=color.yellow, liveRange=100),
 ]
 
 nodes = [
-    Node(pos=[0,1],radius=0.4,vel=[0,0],interactivityType="force"),
-    Node(pos=[0,3],radius=0.4,vel=[0.22,0],interactivityType="force"),
-    Node(pos=[0,5],radius=0.4,vel=[0,0],interactivityType="force"),
-    Node(pos=[0,7],radius=0.4,vel=[-0.2,0],interactivityType="force"),
+    Node(pos=[0, 1], radius=0.4, vel=[0, 0], interactivityType="force"),
+    Node(pos=[0, 3], radius=0.4, vel=[0.22, 0], interactivityType="force"),
+    Node(pos=[0, 5], radius=0.4, vel=[0, 0], interactivityType="force"),
+    Node(pos=[0, 7], radius=0.4, vel=[-0.2, 0], interactivityType="force"),
 ]
 
 lines = [
-    Line(start=nodes[0].position,stop=nodes[1].position),
-    Line(start=nodes[1].position,stop=nodes[2].position),
-    Line(start=nodes[2].position,stop=nodes[3].position),
+    Line(start=nodes[0].position, stop=nodes[1].position),
+    Line(start=nodes[1].position, stop=nodes[2].position),
+    Line(start=nodes[2].position, stop=nodes[3].position),
 ]
 
 arrows = [
@@ -45,12 +45,13 @@ l2 = 2
 l3 = 2
 g = 3
 
+
 def update_physics(screen):
     if screen.t > 0.3:
 
-        fz1 = [0,-nodes[1].mass * g]
-        fz2 = [0,-nodes[2].mass * g]
-        fz3 = [0,-nodes[3].mass * g]
+        fz1 = [0, -nodes[1].mass * g]
+        fz2 = [0, -nodes[2].mass * g]
+        fz3 = [0, -nodes[3].mass * g]
 
         force01 = springForce(C, l1, nodes[0].position, nodes[1].position)
         force12 = springForce(C, l2, nodes[1].position, nodes[2].position)
@@ -67,17 +68,17 @@ def update_physics(screen):
         nodes[1].eulerODESolver(force1, screen.dt)
         nodes[2].eulerODESolver(force2, screen.dt)
         nodes[3].eulerODESolver(force3, screen.dt)
-        
+
+
 def update_screen(screen):
-    arrows[0].setDirection(nodes[1].position,nodes[1].velocity,scale=0.2)
-    arrows[1].setDirection(nodes[2].position,nodes[2].velocity,scale=0.2)
-    arrows[2].setDirection(nodes[3].position,nodes[3].velocity,scale=0.2)
+    arrows[0].setDirection(nodes[1].position, nodes[1].velocity, scale=0.2)
+    arrows[1].setDirection(nodes[2].position, nodes[2].velocity, scale=0.2)
+    arrows[2].setDirection(nodes[3].position, nodes[3].velocity, scale=0.2)
 
-    trails[0].add(nodes[1].position,(255,0,0,255))
-    trails[1].add(nodes[2].position,(0,255,0,255))
-    trails[2].add(nodes[3].position,(0,0,255,255))
+    trails[0].add(nodes[1].position, (255, 0, 0, 255))
+    trails[1].add(nodes[2].position, (0, 255, 0, 255))
+    trails[2].add(nodes[3].position, (0, 0, 255, 255))
 
-    
     kinetic1 = 0.5 * nodes[1].mass * magnitude(nodes[1].velocity)**2
     kinetic2 = 0.5 * nodes[2].mass * magnitude(nodes[2].velocity)**2
     kinetic3 = 0.5 * nodes[3].mass * magnitude(nodes[3].velocity)**2
@@ -98,7 +99,8 @@ def update_screen(screen):
 
     # screen.lastEnergy = energy
 
-screen.addUpdater(update_physics,substeps=substeps)
+
+screen.addUpdater(update_physics, substeps=substeps)
 screen.addUpdater(update_screen)
 
 screen.makeInteractive(*nodes)
@@ -109,7 +111,8 @@ if drawTrails:
 if drawVectors:
     [screen.add(arrow) for arrow in arrows]
 
-screen.play(laggedStart(*[Create(line) for line in lines],*[Create(node) for node in nodes],lagRatio=0.5))
+screen.play(laggedStart(*[Create(line) for line in lines],
+            *[Create(node) for node in nodes], lagRatio=0.5))
 
 screen.makeInteractive(nodes[2])
 

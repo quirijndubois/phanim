@@ -7,8 +7,9 @@ from copy import copy
 from copy import deepcopy
 import threading
 
+
 class Screen():
-    
+
     """
     The Screen class is the backbone of the Phanim library and represents the windows where are animation are played.
 
@@ -35,29 +36,30 @@ class Screen():
         recording_fps (int): The FPS for the screen recording.
     """
 
-    def __init__(self,resolution=None,zoom = 6,fullscreen=True,background=(10,15,20),fontSize=0.5,panning=True,renderer="pygame",grid=True,gridResolution=15,gridBrightness=150,record=False,recording_output="recording.mp4",recording_fps=60):
-        
+    def __init__(self, resolution=None, zoom=6, fullscreen=True, background=(10, 15, 20), fontSize=0.5, panning=True, renderer="pygame", grid=True, gridResolution=15, gridBrightness=150, record=False, recording_output="recording.mp4", recording_fps=60):
+
         if renderer == "pygame":
-            self.renderer = PygameRenderer(resolution,fontSize,fullscreen,record=record,recording_output=recording_output,recording_fps=recording_fps)
+            self.renderer = PygameRenderer(resolution, fontSize, fullscreen, record=record,
+                                           recording_output=recording_output, recording_fps=recording_fps)
         elif renderer == "moderngl":
-            self.renderer = ModernGLRenderer(resolution,fontSize,fullscreen)
+            self.renderer = ModernGLRenderer(resolution, fontSize, fullscreen)
         else:
             raise "Render engine not found!"
         self.rendererName = renderer
 
         self.resolution = self.renderer.resolution
 
-        self.camera = Camera(zoom,self.resolution)
+        self.camera = Camera(zoom, self.resolution)
         self.fontSize = int(fontSize*self.camera.pixelsPerUnit)
 
         self.record = record
 
-        #Setting static settings
+        # Setting static settings
         self.panning = panning
         self.background = background
         self.mouseThightness = 0.4
 
-        #preparing lists
+        # preparing lists
         self.updaterList = []
         self.mouseClickUpdaterList = []
         self.mouseDragUpdaterList = []
@@ -67,28 +69,28 @@ class Screen():
         self.drawList = []
         self.selectedObjects = []
 
-        #presetting dynamic variables
+        # presetting dynamic variables
         self.dragging = False
         self.mouseButtonDown = False
         self.t0 = time.time()
-        self.scroll = [0,0]
-        self.lastScroll = [0,0]
+        self.scroll = [0, 0]
+        self.lastScroll = [0, 0]
         self.grid = grid
         self.gridResolution = gridResolution
         self.gridBrightness = gridBrightness
 
         self.frameDt = 1/recording_fps
 
-    def addUpdater(self,someFunction,substeps=1):
+    def addUpdater(self, someFunction, substeps=1):
         """
         This method is called to add an updater. I.E. a function that updates every frame.
 
         Args:
             someFunction (function): The function to be called when the mouse button is released.
         """
-        self.updaterList.append([someFunction,substeps])
+        self.updaterList.append([someFunction, substeps])
 
-    def addMouseClickUpdater(self,someFunction):
+    def addMouseClickUpdater(self, someFunction):
         """
         Similar to addUpdater, but only called when the mouse is released.
 
@@ -96,8 +98,8 @@ class Screen():
             someFunction (function): The function to be called when the mouse button is released.
         """
         self.mouseClickUpdaterList.append(someFunction)
-    
-    def addMouseDownUpdater(self,someFunction):
+
+    def addMouseDownUpdater(self, someFunction):
         """
         Similar to addUpdater, but only called when the mouse button is pressed down.
 
@@ -106,7 +108,7 @@ class Screen():
         """
         self.mouseDownUpdaterList.append(someFunction)
 
-    def addMouseDragUpdater(self,someFunction):
+    def addMouseDragUpdater(self, someFunction):
         """
         Similar to addUpdater, but only called when the mouse button is being dragged.
 
@@ -115,21 +117,22 @@ class Screen():
         """
         self.mouseDragUpdaterList.append(someFunction)
 
-    def __handlePanning(self,mouseDown,dragging):
-        if len(self.selectedObjects)>0:
+    def __handlePanning(self, mouseDown, dragging):
+        if len(self.selectedObjects) > 0:
             dragging = False
         if mouseDown:
             self.panBeginCameraPosition = self.camera.position
             self.panBeginMousePos = self.mousePos
         if dragging:
-            self.camera.setPosition((self.panBeginMousePos-self.mousePos)+(self.panBeginCameraPosition))
+            self.camera.setPosition(
+                (self.panBeginMousePos-self.mousePos)+(self.panBeginCameraPosition))
 
         scroll = self.scroll
         scroll[0] /= 30
         scroll[1] /= 30
         self.camera.setZoom(self.camera.zoom - self.camera.zoom*scroll[1])
 
-    def drawLines(self,lines,width,position):
+    def drawLines(self, lines, width, position):
         """
         Draws a list of lines on the screen.
 
@@ -153,99 +156,107 @@ class Screen():
             if len(line) == 3:
                 color = line[2]
             else:
-                color = (255,255,255)
-            self.renderer.drawLine(color,start,stop,pixelWidth)
+                color = (255, 255, 255)
+            self.renderer.drawLine(color, start, stop, pixelWidth)
 
+    def __drawCircles(self, circles, position):
+        for circle in circles:
+            pos = self.camera.coords2screen(circle[1]+position)
+            self.renderer.drawCircle(
+                circle[2], pos, circle[0]*self.camera.pixelsPerUnit)
 
-    def __drawCircles(self,circles,position):
-            for circle in circles:
-                pos = self.camera.coords2screen(circle[1]+position)
-                self.renderer.drawCircle(circle[2], pos, circle[0]*self.camera.pixelsPerUnit)
-
-    def __drawPolygons(self,polygons,color,position):
+    def __drawPolygons(self, polygons, color, position):
         for polygon in polygons:
             points = []
             for point in polygon:
                 points.append(self.camera.coords2screen(point+position))
             self.renderer.drawPolygon(color, points)
 
-    def __drawText(self,texts,position):
+    def __drawText(self, texts, position):
         for text in texts:
             if len(text) > 0:
-                img = self.font.render(text[0],True,text[2])
+                img = self.font.render(text[0], True, text[2])
                 pos = self.camera.coords2screen(text[1]+position)
-                self.display.blit(img,pos)
+                self.display.blit(img, pos)
 
-    def __drawPhobject(self,phobject):
+    def __drawPhobject(self, phobject):
         if hasattr(phobject, 'circles'):
             self.__drawCircles(phobject.circles, phobject.position)
         if hasattr(phobject, 'lines'):
-            self.drawLines(phobject.lines, phobject.lineWidth, phobject.position)
-        if hasattr(phobject,"polygons"):
-            self.__drawPolygons(phobject.polygons,phobject.color, phobject.position)
+            self.drawLines(phobject.lines, phobject.lineWidth,
+                           phobject.position)
+        if hasattr(phobject, "polygons"):
+            self.__drawPolygons(phobject.polygons,
+                                phobject.color, phobject.position)
         if hasattr(phobject, "texts"):
             self.__drawText(phobject.texts, phobject.position)
 
-    def draw(self,*args):
+    def draw(self, *args):
         """
         Draws the given phobjects or groups of phobjects on the screen.
-        
+
         Parameters:
             *args: variable number of phobjects or groups of phobjects to be drawn
-        
+
         Returns:
             None
         """
         for arg in args:
-            if hasattr(arg,"groupObjects"):
+            if hasattr(arg, "groupObjects"):
                 for phobject in arg.groupObjects:
                     self.__drawPhobject(phobject)
             else:
                 self.__drawPhobject(arg)
 
-    def __drawGrid(self,spacing,color=(255,255,255)):
+    def __drawGrid(self, spacing, color=(255, 255, 255)):
         group = Group()
         boundX = self.camera.bounds[0]
         boundY = self.camera.bounds[1]
-        
+
         amountX = int(np.ceil((boundX[1]-boundX[0])/spacing))
         amountY = int(np.ceil((boundY[1]-boundY[0])/spacing))
 
         for i in range(amountX):
             group.add(Line(
-                start=[np.ceil(boundX[0]/spacing)*spacing+i*spacing,boundY[0]],
-                stop=[np.ceil(boundX[0]/spacing)*spacing+i*spacing,boundY[1]],
+                start=[np.ceil(boundX[0]/spacing)*spacing +
+                       i*spacing, boundY[0]],
+                stop=[np.ceil(boundX[0]/spacing)*spacing+i*spacing, boundY[1]],
                 lineWidth=0,
                 color=color
-                )
+            )
             )
         for i in range(amountY):
             group.add(Line(
-                start=[boundX[0],np.ceil(boundY[0]/spacing)*spacing+i*spacing],
-                stop=[boundX[1],np.ceil(boundY[0]/spacing)*spacing+i*spacing],
+                start=[boundX[0], np.ceil(
+                    boundY[0]/spacing)*spacing+i*spacing],
+                stop=[boundX[1], np.ceil(boundY[0]/spacing)*spacing+i*spacing],
                 lineWidth=0,
                 color=color
-                )
+            )
             )
 
         self.draw(group)
 
     def __createGrid(self):
         width = self.camera.bounds[0][1]-self.camera.bounds[0][0]
-        closestPower,distance = round_to_power_of_2(width/self.gridResolution)
+        closestPower, distance = round_to_power_of_2(width/self.gridResolution)
         if self.rendererName == "pygame":
-            self.__drawGrid(closestPower/4,color=(255,255,255,interp(0,self.gridBrightness/3,distance)))
-            self.__drawGrid(closestPower/2,color=(255,255,255,interp(self.gridBrightness/3,self.gridBrightness,distance)))
-            self.__drawGrid(closestPower,color=(255,255,255,self.gridBrightness))
+            self.__drawGrid(closestPower/4, color=(255, 255, 255,
+                            interp(0, self.gridBrightness/3, distance)))
+            self.__drawGrid(closestPower/2, color=(255, 255, 255,
+                            interp(self.gridBrightness/3, self.gridBrightness, distance)))
+            self.__drawGrid(closestPower, color=(
+                255, 255, 255, self.gridBrightness))
         elif self.rendererName == "moderngl":
-            color1 = interp(0,self.gridBrightness/3,distance)
-            color2 = interp(self.gridBrightness/3,self.gridBrightness,distance)
+            color1 = interp(0, self.gridBrightness/3, distance)
+            color2 = interp(self.gridBrightness/3,
+                            self.gridBrightness, distance)
             color3 = self.gridBrightness
-            self.__drawGrid(closestPower/4,color=(color1,color1,color1))
-            self.__drawGrid(closestPower/2,color=(color2,color2,color2))
-            self.__drawGrid(closestPower,color=(color3,color3,color3))
+            self.__drawGrid(closestPower/4, color=(color1, color1, color1))
+            self.__drawGrid(closestPower/2, color=(color2, color2, color2))
+            self.__drawGrid(closestPower, color=(color3, color3, color3))
 
-    def makeInteractive(self,*args):
+    def makeInteractive(self, *args):
         """
         Makes the given phobjects interactive. (If the phobject has an ```updateInteractivity``` method)
 
@@ -262,26 +273,25 @@ class Screen():
             else:
                 self.interativityList.append(arg)
 
-    
     def __handleInteractivity(self):
         self.dt = self.frameDt
         if not self.dragging:
             self.selectedObjects = []
             for phobject in self.interativityList:
-                if hasattr(phobject,"radius"):
+                if hasattr(phobject, "radius"):
                     if magnitude(phobject.position-(self.mousePos+self.camera.position)) < phobject.radius:
                         self.selectedObjects.append(phobject)
-                elif hasattr(phobject,"checkSelection"):
+                elif hasattr(phobject, "checkSelection"):
                     if phobject.checkSelection(self):
                         self.selectedObjects.append(phobject)
-                elif hasattr(phobject,"groupObjects"):
+                elif hasattr(phobject, "groupObjects"):
                     for phobject2 in phobject.groupObjects:
-                        if hasattr(phobject2,"radius"):
+                        if hasattr(phobject2, "radius"):
                             if magnitude(phobject2.position-(self.mousePos+self.camera.position)) < phobject2.radius:
                                 self.selectedObjects.append(phobject2)
 
         for phobject in self.interativityList:
-            if hasattr(phobject,"updateInteractivity"):
+            if hasattr(phobject, "updateInteractivity"):
                 phobject.updateInteractivity(self)
 
     def __handleInput(self):
@@ -301,8 +311,8 @@ class Screen():
                     for func in self.mouseDownUpdaterList:
                         func(self)
                 if event.type == pygame.MOUSEWHEEL:
-                    self.scroll = [event.x,event.y]
-        
+                    self.scroll = [event.x, event.y]
+
         if self.rendererName == "moderngl":
             if self.renderer.BUTTONUP:
                 self.dragging = False
@@ -314,20 +324,21 @@ class Screen():
                 for func in self.mouseDownUpdaterList:
                     func(self)
             self.scroll = self.renderer.scroll
-            
+
         if self.dragging:
             for func in self.mouseDragUpdaterList:
                 func(self)
 
     def __resetDisplay(self):
-            self.renderer.reset(self.background)
+        self.renderer.reset(self.background)
 
     def __calculateCursor(self):
         pos = self.renderer.getMousePos()
         self.cursorPositionScreen = pos
         self.LocalcursorPosition = self.camera.screen2cords(pos)
         self.GlobalCursorPosition = self.LocalcursorPosition+self.camera.position
-        self.mousePos = self.LocalcursorPosition #for version compatibility (should be discontinued)
+        # for version compatibility (should be discontinued)
+        self.mousePos = self.LocalcursorPosition
 
     def __performUpdateList(self):
         if self.t > 1:
@@ -342,9 +353,9 @@ class Screen():
         color = (150, 150, 150)
         center = self.cursorPositionScreen
         # self.renderer.setCursor(color,center,radius)
-        self.renderer.drawCircle(color,center,radius,segments=10)
+        self.renderer.drawCircle(color, center, radius, segments=10)
 
-    def play(self,*args):
+    def play(self, *args):
         """
         Adds the given arguments to the animation queue, which is used to schedule animations to be played on the screen.
 
@@ -357,7 +368,7 @@ class Screen():
 
         self.animationQueue.append(list(args))
 
-    def wait(self,duration):
+    def wait(self, duration):
         """
         Pauses the animation for a specified duration.
 
@@ -371,10 +382,10 @@ class Screen():
 
     def __playAnimations(self):
         if len(self.animationQueue) > 0:
-            for index,animation in enumerate(self.animationQueue[0]):
+            for index, animation in enumerate(self.animationQueue[0]):
 
                 if animation.mode == "wrapper":
-                    animation.currentFrame+=1
+                    animation.currentFrame += 1
                     self.__drawWrapperAnimation(animation)
                     animation.updateAndPrint()
 
@@ -385,7 +396,6 @@ class Screen():
                             if wrappedAnimation.mode == "remove":
                                 self.remove(wrappedAnimation.object)
 
-
                 else:
                     self.__drawAnimation(animation)
 
@@ -394,10 +404,10 @@ class Screen():
 
             if len(self.animationQueue[0]) == 0:
                 self.animationQueue.pop(0)
-        
-    def __drawAnimation(self,animation):
+
+    def __drawAnimation(self, animation):
         if animation.currentFrame == 0:
-            if hasattr(animation,"object"):
+            if hasattr(animation, "object"):
                 animation.oldPhobject = deepcopy(animation.object)
 
         animation.currentFrame += 1
@@ -410,16 +420,17 @@ class Screen():
                 self.add(animation.object)
             if animation.mode == "remove":
                 self.remove(animation.object)
-    
-    def __drawWrapperAnimation(self,animation):
-        for index,wrappedAnimation in enumerate(animation.animations):
+
+    def __drawWrapperAnimation(self, animation):
+        for index, wrappedAnimation in enumerate(animation.animations):
             if wrappedAnimation.currentFrame == 0:
-                if hasattr(wrappedAnimation,"object"):
-                    wrappedAnimation.oldPhobject = copy(wrappedAnimation.object)
+                if hasattr(wrappedAnimation, "object"):
+                    wrappedAnimation.oldPhobject = copy(
+                        wrappedAnimation.object)
             if wrappedAnimation.mode == "add":
                 self.draw(wrappedAnimation)
-        
-    def add(self,phobject):
+
+    def add(self, phobject):
         """
         Adds a phobject to the draw list.
 
@@ -431,7 +442,7 @@ class Screen():
         """
         self.drawList.append(phobject)
 
-    def remove(self,phobject):
+    def remove(self, phobject):
         """
         Removes a phobject from the draw list.
 
@@ -442,11 +453,11 @@ class Screen():
             None
         """
         self.drawList.remove(phobject)
-    
+
     def __drawDrawList(self):
         self.draw(*self.drawList)
 
-    def run_interactive(self,globals):
+    def run_interactive(self, globals):
         """
         Runs the screen in interactive mode, allowing for IPython input.
         When used, this method replaces Screen.run().
@@ -458,7 +469,7 @@ class Screen():
             None
         """
         from IPython import start_ipython
-        
+
         def thread_loop():
             start_ipython(argv=[], user_ns=globals)
 
@@ -484,17 +495,16 @@ class Screen():
             self.__drawDrawList()
             self.__playAnimations()
             if self.panning:
-                self.__handlePanning(self.mouseButtonDown,self.dragging)
+                self.__handlePanning(self.mouseButtonDown, self.dragging)
             self.__handleInteractivity()
             self.__performUpdateList()
-
 
             self.__drawCursor()
             self.renderer.update(self.background)
 
             if not self.record:
                 self.frameDt = self.renderer.getFrameDeltaTime()
-            self.mouseButtonDown = False #because this should only be True for a single frame
+            self.mouseButtonDown = False  # because this should only be True for a single frame
             self.__debug()
 
         self.renderer.quit()
