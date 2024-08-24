@@ -204,7 +204,7 @@ class Screen():
         for arg in args:
             if hasattr(arg, "groupObjects"):
                 for phobject in arg.groupObjects:
-                    self.__drawPhobject(phobject)
+                    self.draw(phobject)
             else:
                 self.__drawPhobject(arg)
 
