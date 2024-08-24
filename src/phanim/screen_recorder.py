@@ -1,12 +1,11 @@
 import cv2
 import pygame
 
-from os import environ
-environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
-
 
 class ScreenRecorder:
     def __init__(self, width, height, fps, out_file='output.avi'):
+        from os import environ
+        environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
         four_cc = cv2.VideoWriter_fourcc(*'XVID')
         self.video = cv2.VideoWriter(
             out_file, four_cc, float(fps), (width, height))
