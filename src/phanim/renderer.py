@@ -7,12 +7,8 @@ import time
 import moderngl
 import glfw
 
-from os import environ
-environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
-
 
 class PygameRenderer():
-    # pygame.display.set_icon(pygame.image.load('phanim/icon.png'))
     def __init__(self, resolution, fontSize, fullscreen, record=False, recording_output="recording.mp4", recording_fps=30):
         pygame.init()
         pygame.mouse.set_visible(False)
