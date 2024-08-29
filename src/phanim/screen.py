@@ -50,6 +50,8 @@ class Screen():
         self.resolution = self.renderer.resolution
 
         self.camera = Camera(zoom, self.resolution)
+        self.static_camera = Camera(zoom, self.resolution)
+
         self.fontSize = int(fontSize*self.camera.pixelsPerUnit)
 
         self.record = record
@@ -132,7 +134,7 @@ class Screen():
         scroll[1] /= 30
         self.camera.setZoom(self.camera.zoom - self.camera.zoom*scroll[1])
 
-    def drawLines(self, lines, width, position):
+    def drawLines(self, lines, width, position, static=False):
         """
         Draws a list of lines on the screen.
 
@@ -145,11 +147,17 @@ class Screen():
         Returns:
             None
         """
-        for line in lines:
-            start = self.camera.coords2screen(line[0] + position)
-            stop = self.camera.coords2screen(line[1] + position)
 
-            pixelWidth = int(width/self.camera.zoom*20)
+        if static:
+            cam = self.static_camera
+        else:
+            cam = self.camera
+
+        for line in lines:
+            start = cam.coords2screen(line[0] + position)
+            stop = cam.coords2screen(line[1] + position)
+
+            pixelWidth = int(width/cam.zoom*20)
             if pixelWidth < 1:
                 pixelWidth = 1.5
 
@@ -159,42 +167,58 @@ class Screen():
                 color = (255, 255, 255)
             self.renderer.drawLine(color, start, stop, pixelWidth)
 
-    def __drawCircles(self, circles, position):
-        for circle in circles:
-            pos = self.camera.coords2screen(circle[1]+position)
-            self.renderer.drawCircle(
-                circle[2], pos, circle[0]*self.camera.pixelsPerUnit)
+    def __drawCircles(self, circles, position, static=False):
+        if static:
+            cam = self.static_camera
+        else:
+            cam = self.camera
 
-    def __drawPolygons(self, polygons, color, position):
+        for circle in circles:
+            pos = cam.coords2screen(circle[1]+position)
+            self.renderer.drawCircle(
+                circle[2], pos, circle[0]*cam.pixelsPerUnit)
+
+    def __drawPolygons(self, polygons, color, position, static=False):
+        if static:
+            cam = self.static_camera
+        else:
+            cam = self.camera
+
         for polygon in polygons:
             points = []
             for point in polygon:
-                points.append(self.camera.coords2screen(point+position))
+                points.append(cam.coords2screen(point+position))
             self.renderer.drawPolygon(color, points)
 
-    def __drawTexts(self, texts, position):
+    def __drawTexts(self, texts, position, static=False):
+        if static:
+            cam = self.static_camera
+        else:
+            cam = self.camera
+
         for text in texts:
-            position = self.camera.coords2screen(position)
+            position = cam.coords2screen(position)
             color = text[2]
             size = text[1]
             text = text[0]
-            size = int(size/self.camera.zoom*20)
+            size = int(size/cam.zoom*20)
 
             # We cap size for performance reasons
             if size < 1000:
                 self.renderer.drawText(color, text, position, size)
 
-    def __drawPhobject(self, phobject):
+    def __drawPhobject(self, phobject, static=False):
         if hasattr(phobject, 'circles'):
-            self.__drawCircles(phobject.circles, phobject.position)
+            self.__drawCircles(
+                phobject.circles, phobject.position, static=static)
         if hasattr(phobject, 'lines'):
             self.drawLines(phobject.lines, phobject.lineWidth,
-                           phobject.position)
+                           phobject.position, static=static)
         if hasattr(phobject, "polygons"):
             self.__drawPolygons(phobject.polygons,
-                                phobject.color, phobject.position)
+                                phobject.color, phobject.position, static=static)
         if hasattr(phobject, "texts"):
-            self.__drawTexts(phobject.texts, phobject.position)
+            self.__drawTexts(phobject.texts, phobject.position, static=static)
 
     def draw(self, *args):
         """
@@ -207,11 +231,17 @@ class Screen():
             None
         """
         for arg in args:
+
+            static = False
+            if hasattr(arg, "static"):
+                if arg.static:
+                    static = True
+
             if hasattr(arg, "groupObjects"):
                 for phobject in arg.groupObjects:
                     self.draw(phobject)
             else:
-                self.__drawPhobject(arg)
+                self.__drawPhobject(arg, static=static)
 
     def __drawGrid(self, spacing, color=(255, 255, 255)):
         group = Group()

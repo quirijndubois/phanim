@@ -347,6 +347,10 @@ class Text():
         self.text = str(text)
         self.__setText()
 
+    def setPosition(self, position):
+        self.position = position
+        self.__setText()
+
     def __setText(self, ratio=1):
         self.texts = []
 
