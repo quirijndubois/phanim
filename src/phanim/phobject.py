@@ -175,6 +175,9 @@ class Arrow():
         self.sizeRatio = 1
         self.polygons = [self.calculateVertices()]
 
+    def setColor(self, color):
+        self.color = color
+
     def calculateVertices(self):
         if self.sizeRatio != 1:
             end = interp(self.begin, self.end, self.sizeRatio)
