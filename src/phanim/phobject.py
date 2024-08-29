@@ -18,6 +18,7 @@ class Node():
         self.force = np.array([0.0, 0.0])
         self.interactiveForce = np.array([0.0, 0.0])
         self.setPosition(pos)
+        self.setCircles()
 
     def setCircles(self):
         self.circles = [[self.radius, [0, 0], self.borderColor], [

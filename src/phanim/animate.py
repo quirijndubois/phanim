@@ -30,6 +30,11 @@ class Animation():
         self.oldPhobject = copy(phobject)
         self.animationMode = mode
 
+        self.static = False
+        if hasattr(phobject, "static"):
+            if phobject.static:
+                self.static = True
+
     def updateAndPrint(self):
         """
         Updates the animation and prints the current state.

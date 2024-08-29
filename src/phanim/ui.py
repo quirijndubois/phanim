@@ -6,7 +6,7 @@ from .functions import *
 
 
 class Slider(Group):
-    def __init__(self, value=None, width=2, position=[0, 0], color=(150, 150, 230), maxValue=1, minValue=0):
+    def __init__(self, value=None, width=2, position=[0, 0], color=(150, 150, 230), maxValue=1, minValue=0, static=False):
         self.width = width
         self.position = np.array(position)
         self.selected = False
@@ -18,6 +18,8 @@ class Slider(Group):
         self.color = color
         self.maxValue = maxValue
         self.minValue = minValue
+        self.static = static
+
         self.setPhobjects()
 
     def setPhobjects(self):
@@ -35,10 +37,18 @@ class Slider(Group):
         ]
 
     def updateInteractivity(self, screen):
+
+        if self.static:
+            CursorPosition = screen.LocalCursorPosition
+        else:
+            CursorPosition = screen.GlobalCursorPosition
+
+        print(CursorPosition)
+
         if self in screen.selectedObjects:
             if not self.selected:
                 self.offset = self.groupObjects[1].position - \
-                    screen.GlobalCursorPosition
+                    CursorPosition
             if len(self.color) == 3:
                 self.groupObjects[1].setColor(
                     (self.color[0]/3, self.color[1]/3, self.color[2]/3)
@@ -47,7 +57,7 @@ class Slider(Group):
                 maximimPos = self.position[0]+self.width/2
                 minimumPos = self.position[0]-self.width/2
                 self.groupObjects[1].setPosition(
-                    [clamp((screen.GlobalCursorPosition+self.offset)[0],
+                    [clamp((CursorPosition+self.offset)[0],
                            minimumPos, maximimPos), self.position[1]]
                 )
                 self.value = interp(self.minValue, self.maxValue, ((

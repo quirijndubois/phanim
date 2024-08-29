@@ -220,7 +220,7 @@ class Screen():
         if hasattr(phobject, "texts"):
             self.__drawTexts(phobject.texts, phobject.position, static=static)
 
-    def draw(self, *args):
+    def draw(self, *args, static=False):
         """
         Draws the given phobjects or groups of phobjects on the screen.
 
@@ -232,14 +232,13 @@ class Screen():
         """
         for arg in args:
 
-            static = False
             if hasattr(arg, "static"):
                 if arg.static:
                     static = True
 
             if hasattr(arg, "groupObjects"):
                 for phobject in arg.groupObjects:
-                    self.draw(phobject)
+                    self.draw(phobject, static=static)
             else:
                 self.__drawPhobject(arg, static=static)
 
@@ -370,10 +369,10 @@ class Screen():
     def __calculateCursor(self):
         pos = self.renderer.getMousePos()
         self.cursorPositionScreen = pos
-        self.LocalcursorPosition = self.camera.screen2cords(pos)
-        self.GlobalCursorPosition = self.LocalcursorPosition+self.camera.position
+        self.LocalCursorPosition = self.camera.screen2cords(pos)
+        self.GlobalCursorPosition = self.LocalCursorPosition+self.camera.position
         # for version compatibility (should be discontinued)
-        self.mousePos = self.LocalcursorPosition
+        self.mousePos = self.LocalCursorPosition
 
     def __performUpdateList(self):
         if self.t > .1:
