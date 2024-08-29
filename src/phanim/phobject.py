@@ -335,8 +335,25 @@ class DottedLine(Line):
 
 
 class Text():
-    def __init__(self, text="Hello World!", color="white", pos=[0, 0]):
-        self.text = text
+    def __init__(self, text="Hello World!", color=(255, 255, 255), size=20, position=[0, 0]):
+        self.text = str(text)
+        self.position = np.array(position, dtype='float64')
         self.color = color
-        self.position = pos
-        self.texts = [[self.text, self.position, self.color]]
+        self.size = size
+
+        self.__setText()
+
+    def setText(self, text):
+        self.text = str(text)
+        self.__setText()
+
+    def __setText(self, ratio=1):
+        self.texts = []
+
+        if ratio == 1:
+            self.texts.append([self.text, self.size, self.color])
+        else:
+            raise NotImplementedError
+
+    def createFunction(self, t, old):
+        self.setLines(ratio=t)

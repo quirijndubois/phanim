@@ -64,6 +64,11 @@ class PygameRenderer():
     def drawPolygon(self, color, points):
         pygame.draw.polygon(self.surface, color, points)
 
+    def drawText(self, color, text, position, size):
+        font = pygame.font.SysFont('Arial', size)
+        text_surface = font.render(text, True, color)
+        self.surface.blit(text_surface, position)
+
     def reset(self, color):
         self.display.fill(color)
         self.surface.fill((0, 0, 0, 0))
@@ -212,6 +217,9 @@ class ModernGLRenderer:
         vbo = self.ctx.buffer(vertices.tobytes())
         vao = self.ctx.simple_vertex_array(self.prog, vbo, 'in_vert')
         self.shapes_to_draw.append((vao, tuple(color), moderngl.TRIANGLE_FAN))
+
+    def drawText(self, color, text, position, size):
+        pass
 
     def drawCircle(self, color, center, radius, segments=100):
         color = color[0]/255, color[1]/255, color[2]/255

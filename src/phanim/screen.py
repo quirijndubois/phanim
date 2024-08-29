@@ -172,12 +172,17 @@ class Screen():
                 points.append(self.camera.coords2screen(point+position))
             self.renderer.drawPolygon(color, points)
 
-    def __drawText(self, texts, position):
+    def __drawTexts(self, texts, position):
         for text in texts:
-            if len(text) > 0:
-                img = self.font.render(text[0], True, text[2])
-                pos = self.camera.coords2screen(text[1]+position)
-                self.display.blit(img, pos)
+            position = self.camera.coords2screen(position)
+            color = text[2]
+            size = text[1]
+            text = text[0]
+            size = int(size/self.camera.zoom*20)
+
+            # We cap size for performance reasons
+            if size < 1000:
+                self.renderer.drawText(color, text, position, size)
 
     def __drawPhobject(self, phobject):
         if hasattr(phobject, 'circles'):
@@ -189,7 +194,7 @@ class Screen():
             self.__drawPolygons(phobject.polygons,
                                 phobject.color, phobject.position)
         if hasattr(phobject, "texts"):
-            self.__drawText(phobject.texts, phobject.position)
+            self.__drawTexts(phobject.texts, phobject.position)
 
     def draw(self, *args):
         """
@@ -341,7 +346,7 @@ class Screen():
         self.mousePos = self.LocalcursorPosition
 
     def __performUpdateList(self):
-        if self.t > 1:
+        if self.t > .1:
             for func in self.updaterList:
                 for i in range(func[1]):
                     self.dt = self.frameDt/func[1]
