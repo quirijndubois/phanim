@@ -6,16 +6,16 @@ def interp(a, b, t):
     return a + (b-a) * t
 
 
-def coords2screen(res, pos, zoom):
+def coords2screen(res, pos, pixelsPerUnit):
     return np.array([
-        pos[0]*zoom + res[0]/2,
-        -pos[1]*zoom + res[1]/2
+        pos[0]*pixelsPerUnit + res[0]/2,
+        -pos[1]*pixelsPerUnit + res[1]/2
     ])
 
 
-def screen2cords(res, pos, zoom):
-    x = (pos[0] - res[0]/2)/zoom
-    y = -(pos[1] - res[1]/2)/zoom
+def screen2cords(res, pos, pixelsPerUnit):
+    x = (pos[0] - res[0]/2)/pixelsPerUnit
+    y = -(pos[1] - res[1]/2)/pixelsPerUnit
     return np.array([x, y])
 
 
