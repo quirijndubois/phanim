@@ -39,7 +39,7 @@ class Slider(Group):
     def updateInteractivity(self, screen):
 
         if self.static:
-            CursorPosition = screen.LocalCursorPosition
+            CursorPosition = screen.StaticCursorPosition
         else:
             CursorPosition = screen.GlobalCursorPosition
 
