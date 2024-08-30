@@ -16,7 +16,7 @@ class Camera():
         newLocation = location - self.position
         return pf.coords2screen(self.resolution, newLocation, self.pixelsPerUnit)
 
-    def screen2cords(self, location):
+    def screen2coords(self, location):
         newLocation = location - self.position
         return pf.screen2cords(self.resolution, newLocation, self.pixelsPerUnit)
 

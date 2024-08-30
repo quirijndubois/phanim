@@ -383,7 +383,7 @@ class Screen():
     def __calculateCursor(self):
         pos = self.renderer.getMousePos()
         self.cursorPositionScreen = pos
-        self.LocalCursorPosition = self.camera.screen2cords(pos)
+        self.LocalCursorPosition = self.camera.screen2coords(pos)
         self.GlobalCursorPosition = self.LocalCursorPosition+self.camera.position
         self.StaticCursorPosition = self.LocalCursorPosition / \
             self.camera.zoom * self.static_camera.zoom
