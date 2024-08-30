@@ -56,7 +56,8 @@ def update_physics(screen):
         force01 = springForce(C, l1, nodes[0].position, nodes[1].position)
         force12 = springForce(C, l2, nodes[1].position, nodes[2].position)
         force21 = springForce(C, l2, nodes[2].position, nodes[1].position)
-        forcemouse = springForce(10, 0, screen.mousePos, nodes[2].position)*0
+        forcemouse = springForce(
+            10, 0, screen.LocalCursorPosition, nodes[2].position)*0
 
         force23 = springForce(C, l3, nodes[2].position, nodes[3].position)
         force32 = springForce(C, l3, nodes[3].position, nodes[2].position)

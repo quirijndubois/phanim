@@ -116,7 +116,6 @@ class ModernGLRenderer:
 
         if resolution == None:
             self.resolution = (video_mode.size.width, video_mode.size.height)
-            print(self.resolution)
 
         if fullscreen:
             # Use the video mode's resolution for fullscreen

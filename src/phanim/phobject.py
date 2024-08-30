@@ -3,7 +3,7 @@ from copy import copy
 
 
 class Node():
-    def __init__(self, pos=[0, 0], vel=[0, 0], radius=0.2, color=(0, 0, 0), borderColor=(200, 200, 200), borderSize=0.3, mass=1, charge=0, interactivityType="position"):
+    def __init__(self, pos=[0, 0], vel=[0, 0], radius=0.2, color=(0, 0, 0), borderColor=(200, 200, 200), borderSize=0.3, mass=1, charge=0, interactivityType="position", static=False):
         self.velocity = np.array(vel, dtype='float64')
         self.accelaration = np.array([0.0, 0.0])
         self.accelarationAVG = np.array([0.0, 0.0])
@@ -17,6 +17,7 @@ class Node():
         self.selected = False
         self.force = np.array([0.0, 0.0])
         self.interactiveForce = np.array([0.0, 0.0])
+        self.static = static
         self.setPosition(pos)
         self.setCircles()
 
@@ -58,25 +59,34 @@ class Node():
         self.setRadius(size)
 
     def updateInteractivity(self, screen):
+        if self.static:
+            GlobalCursorPosition = screen.StaticCursorPosition
+            LocalCursorPosition = screen.StaticCursorPosition
+            cam = screen.static_camera
+        else:
+            GlobalCursorPosition = screen.GlobalCursorPosition
+            LocalCursorPosition = screen.LocalCursorPosition
+            cam = screen.camera
+
         self.interactiveForce = [0, 0]
         if self in screen.selectedObjects:
             if not self.selected:
-                self.offset = self.position - screen.GlobalCursorPosition
+                self.offset = self.position - GlobalCursorPosition
 
             self.setColor((100, 100, 100))
             if screen.dragging:
                 if self.interactivityType == "position":
                     self.setPosition(
-                        screen.mousePos+screen.camera.position+self.offset)
+                        LocalCursorPosition+cam.position+self.offset)
                     if self.selected:
                         self.velocity = (self.position-self.lasPos)/screen.dt/2
                     self.selected = True
                     self.lasPos = copy(self.position)
                 if self.interactivityType == "force":
                     screen.draw(
-                        Line(start=screen.GlobalCursorPosition, stop=self.position))
+                        Line(start=GlobalCursorPosition, stop=self.position))
                     self.interactiveForce = (
-                        screen.GlobalCursorPosition-self.position)*300
+                        GlobalCursorPosition-self.position)*300
                     self.velocity = self.velocity*0.80
             else:
                 self.selected = False

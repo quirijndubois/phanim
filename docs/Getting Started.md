@@ -40,7 +40,7 @@ Now we will create an update function that will be called each frame and move th
 
 ```python
 def setArrow(screen):
-  arrow.setDirection([0,0],screen.mousePos)
+  arrow.setDirection([0,0],screen.LocalCursorPosition)
 ```
 
 Then add this function to the updater list and run the script:
@@ -56,8 +56,8 @@ Make sure you only add the .run() command once at the very end of your script. W
 lines = DottedLine(),DottedLine()
 
 def setLines(screen):
-    lines[0].setEnds([screen.mousePos[0],0],screen.mousePos)
-    lines[1].setEnds([0,screen.mousePos[1]],screen.mousePos)
+    lines[0].setEnds([screen.LocalCursorPosition[0],0],screen.LocalCursorPosition)
+    lines[1].setEnds([0,screen.LocalCursorPosition[1]],screen.LocalCursorPosition)
 
 myScreen.play(Create(lines[0]),Create(lines[1]))
 myScreen.addUpdater(setLines)
@@ -75,9 +75,9 @@ arrow =Arrow(color=color.blue)
 lines = DottedLine(),DottedLine()
 
 def update(screen):
-  arrow.setDirection([0,0],screen.mousePos)
-  lines[0].setEnds([screen.mousePos[0],0],screen.mousePos)
-  lines[1].setEnds([0,screen.mousePos[1]],screen.mousePos)
+  arrow.setDirection([0,0],screen.LocalCursorPosition)
+  lines[0].setEnds([screen.LocalCursorPosition[0],0],screen.LocalCursorPosition)
+  lines[1].setEnds([0,screen.LocalCursorPosition[1]],screen.LocalCursorPosition)
 
 myScreen.addUpdater(update)
 

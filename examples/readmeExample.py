@@ -8,9 +8,11 @@ lines = DottedLine(), DottedLine()
 
 
 def update(screen):
-    arrow.setDirection([0, 0], screen.mousePos)
-    lines[0].setEnds([screen.mousePos[0], 0], screen.mousePos)
-    lines[1].setEnds([0, screen.mousePos[1]], screen.mousePos)
+    arrow.setDirection([0, 0], screen.LocalCursorPosition)
+    lines[0].setEnds([screen.LocalCursorPosition[0], 0],
+                     screen.LocalCursorPosition)
+    lines[1].setEnds([0, screen.LocalCursorPosition[1]],
+                     screen.LocalCursorPosition)
 
 
 myScreen.addUpdater(update)

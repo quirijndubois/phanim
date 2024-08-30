@@ -156,7 +156,7 @@ class Graph(Group):
                 phobject.setColor((100, 100, 100))
                 if screen.dragging:
                     self.positions[index] = screen.camera.position + \
-                        screen.mousePos
+                        screen.LocalCursorPosition
                     if self.initalPositions:
                         self.initalPositions[index] = copy(
                             self.positions[index])

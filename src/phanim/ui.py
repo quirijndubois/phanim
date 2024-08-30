@@ -43,8 +43,6 @@ class Slider(Group):
         else:
             CursorPosition = screen.GlobalCursorPosition
 
-        print(CursorPosition)
-
         if self in screen.selectedObjects:
             if not self.selected:
                 self.offset = self.groupObjects[1].position - \
@@ -69,7 +67,15 @@ class Slider(Group):
             self.groupObjects[1].setColor((0, 0, 0))
 
     def checkSelection(self, screen):
-        if magnitude(self.groupObjects[1].position-(screen.mousePos+screen.camera.position)) < self.groupObjects[1].radius:
+
+        if self.static:
+            CursorPosition = screen.StaticCursorPosition
+            camera = screen.static_camera
+        else:
+            CursorPosition = screen.LocalCursorPosition
+            camera = screen.camera
+
+        if magnitude(self.groupObjects[1].position-(CursorPosition+camera.position)) < self.groupObjects[1].radius:
             return True
         else:
             return False

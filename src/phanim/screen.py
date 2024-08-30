@@ -124,10 +124,10 @@ class Screen():
             dragging = False
         if mouseDown:
             self.panBeginCameraPosition = self.camera.position
-            self.panBeginMousePos = self.mousePos
+            self.panBeginMousePos = self.LocalCursorPosition
         if dragging:
             self.camera.setPosition(
-                (self.panBeginMousePos-self.mousePos)+(self.panBeginCameraPosition))
+                (self.panBeginMousePos-self.LocalCursorPosition)+(self.panBeginCameraPosition))
 
         scroll = self.scroll
         scroll[0] /= 30
@@ -311,9 +311,23 @@ class Screen():
         self.dt = self.frameDt
         if not self.dragging:
             self.selectedObjects = []
+
             for phobject in self.interativityList:
+
+                static = False
+                if hasattr(phobject, "static"):
+                    if phobject.static:
+                        static = True
+
+                if static:
+                    cam = self.static_camera
+                    mouse = self.StaticCursorPosition
+                else:
+                    cam = self.camera
+                    mouse = self.GlobalCursorPosition
+
                 if hasattr(phobject, "radius"):
-                    if magnitude(phobject.position-(self.mousePos+self.camera.position)) < phobject.radius:
+                    if magnitude(phobject.position-(mouse+cam.position)) < phobject.radius:
                         self.selectedObjects.append(phobject)
                 elif hasattr(phobject, "checkSelection"):
                     if phobject.checkSelection(self):
@@ -321,7 +335,7 @@ class Screen():
                 elif hasattr(phobject, "groupObjects"):
                     for phobject2 in phobject.groupObjects:
                         if hasattr(phobject2, "radius"):
-                            if magnitude(phobject2.position-(self.mousePos+self.camera.position)) < phobject2.radius:
+                            if magnitude(phobject2.position-(mouse+cam.position)) < phobject2.radius:
                                 self.selectedObjects.append(phobject2)
 
         for phobject in self.interativityList:
@@ -371,8 +385,8 @@ class Screen():
         self.cursorPositionScreen = pos
         self.LocalCursorPosition = self.camera.screen2cords(pos)
         self.GlobalCursorPosition = self.LocalCursorPosition+self.camera.position
-        # for version compatibility (should be discontinued)
-        self.mousePos = self.LocalCursorPosition
+        self.StaticCursorPosition = self.LocalCursorPosition / \
+            self.camera.zoom * self.static_camera.zoom
 
     def __performUpdateList(self):
         if self.t > .1:
