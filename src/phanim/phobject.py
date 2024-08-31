@@ -346,11 +346,12 @@ class DottedLine(Line):
 
 
 class Text():
-    def __init__(self, text="Hello World!", color=(255, 255, 255), size=20, position=[0, 0]):
+    def __init__(self, text="Hello World!", color=(255, 255, 255), size=20, position=[0, 0], static=False):
         self.text = str(text)
         self.position = np.array(position, dtype='float64')
         self.color = color
         self.size = size
+        self.static = static
 
         self.__setText()
 
