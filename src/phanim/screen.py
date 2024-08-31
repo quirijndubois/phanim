@@ -82,6 +82,7 @@ class Screen():
         self.gridBrightness = gridBrightness
 
         self.frameDt = 1/recording_fps
+        self.frameRate = recording_fps
 
     def addUpdater(self, someFunction, substeps=1):
         """
@@ -232,6 +233,8 @@ class Screen():
         """
         for arg in args:
 
+            if len(args) > 1:
+                static = False
             if hasattr(arg, "static"):
                 if arg.static:
                     static = True
@@ -320,14 +323,12 @@ class Screen():
                         static = True
 
                 if static:
-                    cam = self.static_camera
                     mouse = self.StaticCursorPosition
                 else:
-                    cam = self.camera
                     mouse = self.GlobalCursorPosition
 
                 if hasattr(phobject, "radius"):
-                    if magnitude(phobject.position-(mouse+cam.position)) < phobject.radius:
+                    if magnitude(phobject.position-mouse) < phobject.radius:
                         self.selectedObjects.append(phobject)
                 elif hasattr(phobject, "checkSelection"):
                     if phobject.checkSelection(self):
@@ -335,7 +336,7 @@ class Screen():
                 elif hasattr(phobject, "groupObjects"):
                     for phobject2 in phobject.groupObjects:
                         if hasattr(phobject2, "radius"):
-                            if magnitude(phobject2.position-(mouse+cam.position)) < phobject2.radius:
+                            if magnitude(phobject2.position-mouse) < phobject2.radius:
                                 self.selectedObjects.append(phobject2)
 
         for phobject in self.interativityList:
@@ -478,7 +479,7 @@ class Screen():
             if wrappedAnimation.mode == "add":
                 self.draw(wrappedAnimation)
 
-    def add(self, phobject):
+    def add(self, *args):
         """
         Adds a phobject to the draw list.
 
@@ -488,7 +489,8 @@ class Screen():
         Returns:
             None
         """
-        self.drawList.append(phobject)
+        for phobject in args:
+            self.drawList.append(phobject)
 
     def remove(self, phobject):
         """
@@ -552,6 +554,8 @@ class Screen():
 
             if not self.record:
                 self.frameDt = self.renderer.getFrameDeltaTime()
+                self.frameRate = 1 / self.frameDt
+
             self.mouseButtonDown = False  # because this should only be True for a single frame
             self.__debug()
 
