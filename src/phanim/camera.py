@@ -5,6 +5,7 @@ import numpy as np
 class Camera():
     def __init__(self, zoom, resolution, position=[0, 0], rotation=0):
         self.zoom = zoom
+        self.targetZoom = zoom
         self.resolution = resolution
         self.position = np.array(position)
         self.rotation = rotation
@@ -24,9 +25,12 @@ class Camera():
         self.__calculateBounds()
 
     def setZoom(self, zoom):
-        self.zoom = zoom
+        self.targetZoom = zoom
         self.pixelsPerUnit = self.resolution[1] / self.zoom
         self.__calculateBounds()
+
+    def update(self, smoothingConstant):
+        self.zoom = pf.interp(self.zoom, self.targetZoom, smoothingConstant)
 
     def __calculateBounds(self):
         self.bounds = np.array([
