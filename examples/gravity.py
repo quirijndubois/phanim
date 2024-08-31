@@ -1,9 +1,9 @@
 from phanim import *
 import numpy as np
 
-s = Screen(zoom=9, panning=False)
+s = Screen(zoom=9, panning=False, grid=False)
 
-slider = Slider(position=[0, 2.5], maxValue=np.sqrt(3))
+slider = Slider(position=[0, 3.5], maxValue=np.sqrt(3))
 
 nodes = [
     Node(pos=[1, 1], vel=[0, 0], borderColor=color.red),

@@ -80,9 +80,9 @@ def update_screen(screen):
     trails[1].add(nodes[2].position, (0, 255, 0, 255))
     trails[2].add(nodes[3].position, (0, 0, 255, 255))
 
-    kinetic1 = 0.5 * nodes[1].mass * magnitude(nodes[1].velocity)**2
-    kinetic2 = 0.5 * nodes[2].mass * magnitude(nodes[2].velocity)**2
-    kinetic3 = 0.5 * nodes[3].mass * magnitude(nodes[3].velocity)**2
+    # kinetic1 = 0.5 * nodes[1].mass * magnitude(nodes[1].velocity)**2
+    # kinetic2 = 0.5 * nodes[2].mass * magnitude(nodes[2].velocity)**2
+    # kinetic3 = 0.5 * nodes[3].mass * magnitude(nodes[3].velocity)**2
 
     # potential1 = nodes[1].mass * g * nodes[1].position[1]
     # potential2 = nodes[2].mass * g * nodes[2].position[1]
