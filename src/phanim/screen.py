@@ -41,13 +41,14 @@ class Screen():
             panning=True,
             renderer="pygame",
             grid=True,
+            gridMargin=40,
             gridResolution=15,
             gridBrightness=150,
             record=False,
             recording_output="recording.mp4",
             recording_fps=60,
             zoomSpeed=1.5,
-            zoomSmoothingConstant=0.4
+            zoomSmoothingConstant=0.4,
     ):
 
         if renderer == "pygame":
@@ -66,13 +67,12 @@ class Screen():
 
         self.fontSize = int(fontSize*self.camera.pixelsPerUnit)
 
-        self.record = record
-
         # Setting static settings
+        self.record = record
         self.panning = panning
+        self.gridMargin = gridMargin
         self.background = background
         self.mouseThightness = 0.3
-
         self.zoomSpeed = zoomSpeed
         self.zoomSmoothingConstant = zoomSmoothingConstant
 
@@ -262,31 +262,74 @@ class Screen():
             else:
                 self.__drawPhobject(arg, static=static)
 
-    def __drawGrid(self, spacing, color=(255, 255, 255)):
+    def __drawGrid(self, spacing, color=(255, 255, 255), margin=0):
         group = Group()
-        boundX = self.camera.bounds[0]
-        boundY = self.camera.bounds[1]
+        boundX = self.camera.bounds[0] + \
+            np.array([margin, -margin])/self.camera.pixelsPerUnit
+        boundY = self.camera.bounds[1] + \
+            np.array([margin, -margin])/self.camera.pixelsPerUnit
 
         amountX = int(np.ceil((boundX[1]-boundX[0])/spacing))
         amountY = int(np.ceil((boundY[1]-boundY[0])/spacing))
 
         for i in range(amountX):
+            start = [np.ceil(boundX[0]/spacing)*spacing + i*spacing, boundY[0]]
+            stop = [np.ceil(boundX[0]/spacing)*spacing+i*spacing, boundY[1]]
+
+            if margin > 0:
+                if start[0] > boundX[1]:
+                    start[0] = boundX[1]
+                    stop[0] = boundX[1]
+
             group.add(Line(
-                start=[np.ceil(boundX[0]/spacing)*spacing +
-                       i*spacing, boundY[0]],
-                stop=[np.ceil(boundX[0]/spacing)*spacing+i*spacing, boundY[1]],
+                start=start,
+                stop=stop,
                 lineWidth=0,
                 color=color
             )
             )
         for i in range(amountY):
+            start = [boundX[0], np.ceil(boundY[0]/spacing)*spacing+i*spacing]
+            stop = [boundX[1], np.ceil(boundY[0]/spacing)*spacing+i*spacing]
+
+            if margin > 0:
+                if start[1] > boundY[1]:
+                    start[1] = boundY[1]
+                    stop[1] = boundY[1]
+
             group.add(Line(
-                start=[boundX[0], np.ceil(
-                    boundY[0]/spacing)*spacing+i*spacing],
-                stop=[boundX[1], np.ceil(boundY[0]/spacing)*spacing+i*spacing],
+                start=start,
+                stop=stop,
                 lineWidth=0,
                 color=color
             )
+            )
+        if margin > 0:
+            group.add(
+                Line(
+                    start=[boundX[0], boundY[0]],
+                    stop=[boundX[1], boundY[0]],
+                    lineWidth=0,
+                    color=color
+                ),
+                Line(
+                    start=[boundX[1], boundY[0]],
+                    stop=[boundX[1], boundY[1]],
+                    lineWidth=0,
+                    color=color
+                ),
+                Line(
+                    start=[boundX[1], boundY[1]],
+                    stop=[boundX[0], boundY[1]],
+                    lineWidth=0,
+                    color=color
+                ),
+                Line(
+                    start=[boundX[0], boundY[1]],
+                    stop=[boundX[0], boundY[0]],
+                    lineWidth=0,
+                    color=color
+                ),
             )
 
         self.draw(group)
@@ -295,20 +338,35 @@ class Screen():
         width = self.camera.bounds[0][1]-self.camera.bounds[0][0]
         closestPower, distance = round_to_power_of_2(width/self.gridResolution)
         if self.rendererName == "pygame":
-            self.__drawGrid(closestPower/4, color=(255, 255, 255,
-                            interp(0, self.gridBrightness/3, distance)))
-            self.__drawGrid(closestPower/2, color=(255, 255, 255,
-                            interp(self.gridBrightness/3, self.gridBrightness, distance)))
-            self.__drawGrid(closestPower, color=(
-                255, 255, 255, self.gridBrightness))
+            self.__drawGrid(
+                closestPower/4,
+                color=(255, 255, 255, interp(
+                    0, self.gridBrightness/3, distance)),
+                margin=self.gridMargin
+            )
+            self.__drawGrid(
+                closestPower/2,
+                color=(255, 255, 255, interp(
+                    self.gridBrightness/3, self.gridBrightness, distance)),
+                margin=self.gridMargin
+            )
+            self.__drawGrid(
+                closestPower,
+                color=(255, 255, 255, self.gridBrightness),
+                margin=self.gridMargin
+            )
+
         elif self.rendererName == "moderngl":
             color1 = interp(0, self.gridBrightness/3, distance)
             color2 = interp(self.gridBrightness/3,
                             self.gridBrightness, distance)
             color3 = self.gridBrightness
-            self.__drawGrid(closestPower/4, color=(color1, color1, color1))
-            self.__drawGrid(closestPower/2, color=(color2, color2, color2))
-            self.__drawGrid(closestPower, color=(color3, color3, color3))
+            self.__drawGrid(closestPower/4, color=(color1,
+                            color1, color1), margin=self.gridMargin)
+            self.__drawGrid(closestPower/2, color=(color2,
+                            color2, color2), margin=self.gridMargin)
+            self.__drawGrid(closestPower, color=(
+                color3, color3, color3), margin=self.gridMargin)
 
     def makeInteractive(self, *args):
         """
