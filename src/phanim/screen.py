@@ -24,19 +24,31 @@ class Screen():
         grid (bool): Whether to display a grid on the screen.
         gridResolution (int): The resolution of the grid.
         gridBrightness (int): The brightness of the grid lines.
-
-    Attributes:
-        resolution (tuple): The resolution of the screen in pixels.
-        camera (Camera): The camera object managing the screen's view.
-        fontSize (int): The font size for text rendering in pixels.
-        renderer (Renderer): The rendering engine instance.
-        rendererName (str): The name of the rendering engine.
-        record (bool): Whether the screen is being recorded.
+        record (bool): Whether the screen is being recorded.,
         recording_output (str): The output file for the screen recording.
         recording_fps (int): The FPS for the screen recording.
+        zoomSpeed (float): The speed at which the camera zooms.
+        zoomSmoothingConstant (float): The smoothing constant for the camera zoom.
     """
 
-    def __init__(self, resolution=None, zoom=6, fullscreen=True, background=(10, 15, 20), fontSize=0.5, panning=True, renderer="pygame", grid=True, gridResolution=15, gridBrightness=150, record=False, recording_output="recording.mp4", recording_fps=60):
+    def __init__(
+            self,
+            resolution=None,
+            zoom=6,
+            fullscreen=True,
+            background=(10, 15, 20),
+            fontSize=0.5,
+            panning=True,
+            renderer="pygame",
+            grid=True,
+            gridResolution=15,
+            gridBrightness=150,
+            record=False,
+            recording_output="recording.mp4",
+            recording_fps=60,
+            zoomSpeed=1.5,
+            zoomSmoothingConstant=0.4
+    ):
 
         if renderer == "pygame":
             self.renderer = PygameRenderer(resolution, fontSize, fullscreen, record=record,
@@ -59,7 +71,10 @@ class Screen():
         # Setting static settings
         self.panning = panning
         self.background = background
-        self.mouseThightness = 0.4
+        self.mouseThightness = 0.3
+
+        self.zoomSpeed = zoomSpeed
+        self.zoomSmoothingConstant = zoomSmoothingConstant
 
         # preparing lists
         self.updaterList = []
@@ -133,7 +148,9 @@ class Screen():
         scroll = self.scroll
         scroll[0] /= 30
         scroll[1] /= 30
-        self.camera.setZoom(self.camera.zoom - self.camera.zoom*scroll[1])
+        self.camera.setZoom(self.camera.targetZoom -
+                            self.camera.targetZoom*scroll[1]*self.zoomSpeed)
+        self.camera.update(self.zoomSmoothingConstant)
 
     def drawLines(self, lines, width, position, static=False):
         """
