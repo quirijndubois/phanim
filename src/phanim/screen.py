@@ -41,7 +41,7 @@ class Screen():
             panning=True,
             renderer="pygame",
             grid=True,
-            gridMargin=40,
+            gridMargin=60,
             gridResolution=15,
             gridBrightness=150,
             record=False,
@@ -478,6 +478,9 @@ class Screen():
         center = self.cursorPositionScreen
         # self.renderer.setCursor(color,center,radius)
         self.renderer.drawCircle(color, center, radius, segments=10)
+
+    def setGridMargin(self, value):
+        self.gridMargin = value
 
     def play(self, *args):
         """
