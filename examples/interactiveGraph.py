@@ -2,6 +2,10 @@ from phanim import *
 
 s = Screen()
 
+s.setGridMargin(s.resolution[1]/2)
+s.play(AnimateValue(lambda value: s.setGridMargin(
+    value), [s.resolution[1]/2, 50], duration=100))
+
 slider = Slider(position=[-4, 2], minValue=0.05, maxValue=2, static=True)
 s.makeInteractive(slider)
 
