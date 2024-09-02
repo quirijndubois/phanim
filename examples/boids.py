@@ -59,7 +59,7 @@ class Beads(Group):
             self.groupObjects[i].update(screen)
 
 
-s = Screen()
+s = Screen(zooming=False)
 
 beads = Beads(50, s.camera.bounds)
 
