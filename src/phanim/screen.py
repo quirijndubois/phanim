@@ -45,6 +45,7 @@ class Screen():
             gridMargin=60,
             gridResolution=15,
             gridBrightness=150,
+            expand_grid = True,
             record=False,
             recording_output="recording.mp4",
             recording_fps=60,
@@ -100,6 +101,9 @@ class Screen():
 
         self.frameDt = 1/recording_fps
         self.frameRate = recording_fps
+
+        if expand_grid:
+            self.expandGrid()
 
     def addUpdater(self, someFunction, substeps=1):
         """
@@ -585,6 +589,12 @@ class Screen():
         """
         self.drawList.remove(phobject)
 
+    def expandGrid(self):
+        target = copy(self.gridMargin)
+        self.setGridMargin(self.resolution[1]/2)
+        self.play(AnimateValue(lambda value: self.setGridMargin(
+            value), [self.resolution[1]/2, target], duration=50))
+
     def __drawDrawList(self):
         self.draw(*self.drawList)
 
@@ -616,6 +626,7 @@ class Screen():
         Returns:
             None
         """
+
         while self.renderer.running():
             self.t = time.time() - self.t0
 
