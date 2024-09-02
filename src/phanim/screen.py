@@ -39,6 +39,7 @@ class Screen():
             background=(10, 15, 20),
             fontSize=0.5,
             panning=True,
+            zooming = True,
             renderer="pygame",
             grid=True,
             gridMargin=60,
@@ -70,6 +71,7 @@ class Screen():
         # Setting static settings
         self.record = record
         self.panning = panning
+        self.zooming = zooming
         self.gridMargin = gridMargin
         self.background = background
         self.mouseThightness = 0.3
@@ -145,11 +147,12 @@ class Screen():
             self.camera.setPosition(
                 (self.panBeginMousePos-self.LocalCursorPosition)+(self.panBeginCameraPosition))
 
-        scroll = self.scroll
-        scroll[0] /= 30
-        scroll[1] /= 30
-        self.camera.setZoom(self.camera.targetZoom -
-                            self.camera.targetZoom*scroll[1]*self.zoomSpeed)
+        if self.zooming:
+            scroll = self.scroll
+            scroll[0] /= 30
+            scroll[1] /= 30
+            self.camera.setZoom(self.camera.targetZoom -
+                                self.camera.targetZoom*scroll[1]*self.zoomSpeed)
         self.camera.update(self.zoomSmoothingConstant)
 
     def drawLines(self, lines, width, position, static=False):
