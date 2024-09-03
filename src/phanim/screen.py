@@ -42,7 +42,7 @@ class Screen():
             zooming = True,
             renderer="pygame",
             grid=True,
-            gridMargin=60,
+            gridMargin=[60,60],
             gridResolution=15,
             gridBrightness=150,
             expand_grid = True,
@@ -269,12 +269,12 @@ class Screen():
             else:
                 self.__drawPhobject(arg, static=static)
 
-    def __drawGrid(self, spacing, color=(255, 255, 255), margin=0):
+    def __drawGrid(self, spacing, color=(255, 255, 255), margin=[0,0]):
         group = Group()
         boundX = self.camera.bounds[0] + \
-            np.array([margin, -margin])/self.camera.pixelsPerUnit
+            np.array([margin[0], -margin[0]])/self.camera.pixelsPerUnit
         boundY = self.camera.bounds[1] + \
-            np.array([margin, -margin])/self.camera.pixelsPerUnit
+            np.array([margin[1], -margin[1]])/self.camera.pixelsPerUnit
 
         amountX = int(np.ceil((boundX[1]-boundX[0])/spacing))
         amountY = int(np.ceil((boundY[1]-boundY[0])/spacing))
@@ -283,7 +283,7 @@ class Screen():
             start = [np.ceil(boundX[0]/spacing)*spacing + i*spacing, boundY[0]]
             stop = [np.ceil(boundX[0]/spacing)*spacing+i*spacing, boundY[1]]
 
-            if margin > 0:
+            if margin[0] > 0:
                 if start[0] > boundX[1]:
                     start[0] = boundX[1]
                     stop[0] = boundX[1]
@@ -299,7 +299,7 @@ class Screen():
             start = [boundX[0], np.ceil(boundY[0]/spacing)*spacing+i*spacing]
             stop = [boundX[1], np.ceil(boundY[0]/spacing)*spacing+i*spacing]
 
-            if margin > 0:
+            if margin[1] > 0:
                 if start[1] > boundY[1]:
                     start[1] = boundY[1]
                     stop[1] = boundY[1]
@@ -311,11 +311,11 @@ class Screen():
                 color=color
             )
             )
-        if margin > 0:
+        if margin[0] > 0:
             group.add(
                 Line(
-                    start=[boundX[0], boundY[0]],
-                    stop=[boundX[1], boundY[0]],
+                    start=[boundX[0], boundY[1]],
+                    stop=[boundX[0], boundY[0]],
                     lineWidth=0,
                     color=color
                 ),
@@ -325,15 +325,18 @@ class Screen():
                     lineWidth=0,
                     color=color
                 ),
+            )
+        if margin[1] > 0:
+            group.add(
                 Line(
-                    start=[boundX[1], boundY[1]],
-                    stop=[boundX[0], boundY[1]],
+                    start=[boundX[0], boundY[0]],
+                    stop=[boundX[1], boundY[0]],
                     lineWidth=0,
                     color=color
                 ),
                 Line(
-                    start=[boundX[0], boundY[1]],
-                    stop=[boundX[0], boundY[0]],
+                    start=[boundX[1], boundY[1]],
+                    stop=[boundX[0], boundY[1]],
                     lineWidth=0,
                     color=color
                 ),
@@ -486,8 +489,15 @@ class Screen():
         # self.renderer.setCursor(color,center,radius)
         self.renderer.drawCircle(color, center, radius, segments=10)
 
-    def setGridMargin(self, value):
-        self.gridMargin = value
+    def setGridMargin(self, *args):
+        if len(args) == 1:
+            self.gridMargin[0] = args[0]
+            self.gridMargin[1] = args[0]
+        elif len(args) == 2:
+            self.gridMargin[0] = args[0]
+            self.gridMargin[1] = args[1]
+        else:
+            raise NotImplementedError
 
     def play(self, *args):
         """
@@ -590,10 +600,19 @@ class Screen():
         self.drawList.remove(phobject)
 
     def expandGrid(self):
+        self.wait(30)
         target = copy(self.gridMargin)
-        self.setGridMargin(self.resolution[1]/2)
-        self.play(AnimateValue(lambda value: self.setGridMargin(
-            value), [self.resolution[1]/2, target], duration=50))
+        self.setGridMargin(self.resolution[0]/2,self.resolution[1]/2)
+        self.play(AnimateValue(
+            lambda value: self.setGridMargin(value,self.gridMargin[1]), 
+            [self.resolution[0]/2, target[0]],
+            duration=30
+        ))
+        self.play(AnimateValue(
+            lambda value: self.setGridMargin(target[0],value), 
+            [self.resolution[1]/2, target[1]],
+            duration=30
+        ))
 
     def __drawDrawList(self):
         self.draw(*self.drawList)
