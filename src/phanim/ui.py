@@ -6,9 +6,8 @@ from .functions import *
 
 
 class Slider(Group):
-    def __init__(self, value=None, width=2, position=[0, 0], color=(150, 150, 230), maxValue=1, minValue=0, static=False):
+    def __init__(self, value=None, width=2, color=(150, 150, 230), maxValue=1, minValue=0, **kwargs):
         self.width = width
-        self.position = np.array(position)
         self.selected = False
         if value == None:
             self.value = interp(minValue, maxValue, 0.5)
@@ -18,11 +17,11 @@ class Slider(Group):
         self.color = color
         self.maxValue = maxValue
         self.minValue = minValue
-        self.static = static
 
-        self.setPhobjects()
+        super().__init__(color=color, **kwargs)
+        self.setShapes()
 
-    def setPhobjects(self):
+    def setShapes(self):
         self.groupObjects = [
             Line(
                 begin=[self.position[0]-self.width/2, self.position[1]],

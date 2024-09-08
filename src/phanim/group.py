@@ -1,12 +1,11 @@
 from phanim import *
-from phanim.phobject import Grid
+from phanim.phobject import *
 
 
-class Group():
-    def __init__(self, *objects, static=False):
+class Group(Phobject):
+    def __init__(self, *objects, **kwargs):
         self.groupObjects = list(objects)
-        self.position = [0, 0]
-        self.static = static
+        super().__init__(**kwargs)
 
     def add(self, *objects):
         for obj in objects:
