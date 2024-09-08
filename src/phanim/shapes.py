@@ -3,8 +3,8 @@ from .curve import *
 
 class Quadrilateral(Curve):
 
-    def __init__(self, position=[0, 0], strokeWidth=0.05, color=(255, 255, 255), corners=[[1, 1], [-1, 1], [-1, -1], [1, -1]], resolution=100):
-        super().__init__(position, strokeWidth, color)
+    def __init__(self, corners=[[1, 1], [-1, 1], [-1, -1], [1, -1]], resolution=100, **kwargs):
+        super().__init__(**kwargs)
         self.corners = np.array(corners)
         self.resolution = resolution
         self.setQuadrilateral()
@@ -23,8 +23,8 @@ class Quadrilateral(Curve):
 
 
 class Rectangle(Quadrilateral):
-    def __init__(self, position=[0, 0], strokeWidth=0.05, color=(255, 255, 255), width=2, height=2, resolution=100):
-        super().__init__(position, strokeWidth, color)
+    def __init__(self, width=2, height=2, resolution=100, **kwargs):
+        super().__init__(**kwargs)
         self.width = width
         self.height = height
         self.setRectange()
@@ -39,8 +39,8 @@ class Rectangle(Quadrilateral):
 
 
 class Circle(Curve):
-    def __init__(self, position=[0, 0], strokeWidth=0.05, color=(255, 255, 255), radius=1, resolution=100):
-        super().__init__(position, strokeWidth, color)
+    def __init__(self, radius=1, resolution=100, **kwargs):
+        super().__init__(**kwargs)
         self.setCircle(radius, resolution)
         self.radius = radius
 

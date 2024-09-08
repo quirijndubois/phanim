@@ -4,7 +4,7 @@ from copy import copy
 
 class Phobject():
     def __init__(self, position=[0, 0], velocity=[0, 0], color=(255, 255, 255), mass=1, charge=0, static=False):
-        self.accelaration = np.array([0.0, 0.0])
+        self.accelaration = np.array([0.0, 0.0], dtype='float64')
         self.color = color
         self.static = static
         self.selected = False
@@ -12,9 +12,9 @@ class Phobject():
         self.mass = mass
         self.charge = charge
 
-        self.force = np.array([0.0, 0.0])
-        self.accelaration = np.array([0.0, 0.0])
-        self.accelarationAVG = np.array([0.0, 0.0])
+        self.force = np.array([0.0, 0.0], dtype='float64')
+        self.accelaration = np.array([0.0, 0.0], dtype='float64')
+        self.accelarationAVG = np.array([0.0, 0.0], dtype='float64')
 
         self.setPosition(position)
         self.setVelocity(velocity)
@@ -27,6 +27,13 @@ class Phobject():
 
     def setPosition(self, position):
         self.position = np.array(position, dtype='float64')
+
+    def setColor(self, color):
+        self.color = color
+        self.setShapes()
+
+    def setShapes(self):
+        pass
 
     def setVelocity(self, velocity):
         self.velocity = np.array(velocity, dtype='float64')
@@ -54,13 +61,6 @@ class Node(Phobject):
     def setShapes(self):
         self.circles = [[self.radius, [0, 0], self.borderColor], [
             self.radius*(1-self.borderSize), [0, 0], self.color]]
-
-    def setColor(self, color):
-        self.color = color
-        self.setShapes()
-
-    def setPosition(self, position):
-        self.position = np.array(position, dtype='float64')
 
     def setRadius(self, radius):
         self.radius = radius

@@ -5,18 +5,18 @@ from copy import deepcopy
 from lxml import etree
 from urllib.parse import urlparse
 from .functions import *
+from .phobject import *
 import numpy as np
 import os
 
 
-class Tex():
+class Tex(Phobject):
 
     scale = 1/9600
 
-    def __init__(self, expression, color=(255, 255, 255), useLatex=True, curveResolution=3, lineWidth=3, position=[0, 0]):
+    def __init__(self, expression, useLatex=True, curveResolution=3, lineWidth=3, **kwargs):
+        super().__init__(**kwargs)
         self.filename = f"expression{np.random.randint(0,100)}.svg"
-        self.position = position
-        self.color = color
         self.useLatex = useLatex
         self.expression = expression
         self.lineWidth = lineWidth
@@ -33,9 +33,6 @@ class Tex():
 
     def refresh(self):
         self.generateLines()
-
-    def setPosition(self, position):
-        self.position = position
 
     def latexToSvg(self):
         fig, ax = plt.subplots()

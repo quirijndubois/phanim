@@ -1,22 +1,22 @@
 from .functions import *
 from .color import *
+from .phobject import *
 
 
-class Curve():
-    def __init__(self, position=[0, 0], strokeWidth=0.05, color=(255, 255, 255), points=None):
-        self.position = np.array(position)
+class Curve(Phobject):
+    def __init__(self, strokeWidth=0.05, points=[], **kwargs):
+        super().__init__(**kwargs)
         self.strokeWidth = strokeWidth
-        self.color = color
-        if points:
-            self.setPoints(points)
+        self.points = points
+        self.setShapes()
+
+    def setShapes(self):
+        self.setPoints(self.points)
 
     def setPoints(self, points):
         self.points = np.array(points)
         self.__setNormals()
         self.__setPolygons()
-
-    def setPosition(self, position):
-        self.position = position
 
     def __setNormals(self):
         self.pointsWithNormals = []
@@ -74,8 +74,8 @@ class Curve():
 
 
 class BezierCurve(Curve):
-    def __init__(self, position=[0, 0], strokeWidth=0.05, color=(255, 255, 255), corners=[[1, 1], [-1, 1], [-1, -1], [1, -1]], resolution=100):
-        super().__init__(position, strokeWidth, color)
+    def __init__(self, corners=[[1, 1], [-1, 1], [-1, -1], [1, -1]], resolution=100, **kwargs):
+        super().__init__(**kwargs)
         self.corners = np.array(corners)
         self.resolution = resolution
         self.__setBezier()
@@ -93,8 +93,8 @@ class BezierCurve(Curve):
 
 
 class PlotGraph(Curve):
-    def __init__(self, position=[0, 0], width=0.05, color=(255, 255, 255)):
-        super().__init__(position, width, color)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     # TODO make this easier with arrays!
     def setData(self, x, y):
