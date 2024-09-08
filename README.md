@@ -16,7 +16,7 @@ A simulation of a triple pendulum with the use of stiff springs can be found in 
 ![triple pendulum](https://github.com/quirijndaboyy/phanim/blob/main/gifs/pendulum.gif)
 
 Or just a simple double pendulum(looks better imo):
-![double pendulum](https://github.com/quirijndaboyy/phanim/blob/main/gifs/double_pendulum.gif)
+![double pendulum](https://github.com/quirijndaboyy/phanim/blob/main/gifs/pendulum_compressed.mp4)
 
 
 ## Installation
