@@ -12,11 +12,11 @@ Take a look at the [documentation](https://quirijndubois.github.io/phanim/) for 
 A simple visualisation of the electric field can be found in examples/vectorField.py
 ![vector field](https://github.com/quirijndaboyy/phanim/blob/main/gifs/vectorFIeld.gif)
 
-A simulation of a triple pendulum with the use of stiff springs can be found in examples/triplePendulum.py. The graphs on the right show the energy that each of the masses has. The yellow graph shows the total energy in the system.
-![triple pendulum](https://github.com/quirijndaboyy/phanim/blob/main/gifs/pendulum.gif)
+A simulation of a double pendulum with the use of stiff springs can be found in examples/doublePendulum.py. 
+![triple pendulum](https://github.com/quirijndaboyy/phanim/blob/main/gifs/double_pendulum.gif)
 
-Or just a simple double pendulum(looks better imo):
-![double pendulum](https://github.com/quirijndaboyy/phanim/blob/main/gifs/pendulum_compressed.mp4)
+Or even a triple pendulum. The graphs on the right show the energy that each of the masses has. The yellow graph shows the total energy in the system.
+![double pendulum](https://github.com/quirijndaboyy/phanim/blob/main/gifs/pendulum.gif)
 
 
 ## Installation
