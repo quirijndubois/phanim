@@ -1,15 +1,13 @@
 from phanim import *
 import itertools
 from copy import copy
+import numpy as np
 
 
 class Graph(Group):
-    def __init__(self, vertices, edges, position=[0, 0], k=3, initalPositions=False, edgeWidth=2, setup=True, nodeRadius=0.15):
-
-        self.initalPositions = np.array(initalPositions)
-        self.nodeRadius = 0.15
-        self.position = np.array(position)
-        self.rotation = 0
+    def __init__(self, vertices, edges, k=3, initalPositions=[], edgeWidth=2, nodeRadius=0.15, **kwargs):
+        self.initalPositions = initalPositions
+        self.nodeRadius = nodeRadius
         self.vertices = vertices
         self.edges = edges
         self.k = k/np.sqrt(vertices)
@@ -18,31 +16,28 @@ class Graph(Group):
 
         self.edgeWidth = edgeWidth
         self.interacting = False
+
         self.createNodesAndLines()
         self.setPositions()
-        self.setNodesAndLines()
-        if setup:
-            self.setup()
 
-    def setup(self):
-        for i in range(100):
-            self.update(1/30)
+        super().__init__(**kwargs)
 
-    def join(self, graph, setup=True):
+    def join(self, graph):
         for edge in graph.edges:
             self.edges.append([edge[0]+self.vertices, edge[1]+self.vertices])
         self.vertices += graph.vertices
         self.positions += graph.positions
         self.createNodesAndLines()
         self.setNodesAndLines()
-        if setup:
-            self.setup()
 
     def setPositions(self):
         self.velocities = []
 
-        if self.initalPositions != False:
-            self.positions = copy(self.initalPositions)
+        if len(self.initalPositions) != 0:
+
+            self.positions = np.array(
+                copy(self.initalPositions), dtype='float64')
+
         else:
             self.positions = []
 
@@ -84,7 +79,8 @@ class Graph(Group):
         for node in self.nodes:
             self.groupObjects.append(node)
 
-    def update(self, dt):
+    def update(self, screen):
+        dt = screen.dt
         for i in range(len(self.positions)):
             attractiveForce = [0, 0]
             repulsiveForce = [0, 0]
@@ -115,13 +111,6 @@ class Graph(Group):
             force = attractiveForce+repulsiveForce+centerForce
 
             positionalForce = [0, 0]
-            if self.initalPositions:
-                k1 = 0
-                k2 = 10
-                attractivePoint = self.initalPositions[i]-normalize(force)*k1
-                distance = magnitude(attractivePoint-self.positions[i])
-                direction = normalize(attractivePoint-self.positions[i])
-                positionalForce = direction*distance*k2
 
             force = force+positionalForce
 
@@ -153,14 +142,57 @@ class Graph(Group):
 
 
 class RandomGraph(Graph):
-    def __init__(self, vertices, chance=0.5, position=[0, 0], k=3, initalPositions=False, edgeWidth=2, setup=True, nodeRadius=0.15):
+    def __init__(self, vertices, chance=0.5, position=[0, 0], k=3, initalPositions=[], edgeWidth=2, nodeRadius=0.15):
         edges = []
         for edge in itertools.combinations(range(vertices), 2):
             if np.random.random() < chance:
                 edges.append(list(edge))
         super().__init__(vertices, edges, position=position, k=k, initalPositions=initalPositions,
-                         edgeWidth=edgeWidth, setup=setup, nodeRadius=nodeRadius)
+                         edgeWidth=edgeWidth, nodeRadius=nodeRadius)
 
 
-def CompleteGraph(vertices, chance=0.5, position=[0, 0], k=4, initalPositions=False, edgeWidth=3, setup=True):
-    return RandomGraph(vertices, chance=1, position=position, k=k, initalPositions=initalPositions, edgeWidth=edgeWidth, setup=setup)
+def CompleteGraph(vertices, chance=0.5, position=[0, 0], k=4, initalPositions=[], edgeWidth=3):
+    return RandomGraph(vertices, chance=1, position=position, k=k, initalPositions=initalPositions, edgeWidth=edgeWidth)
+
+
+class SoftBody(Graph):
+    def __init__(self, positions, edges, **kwargs):
+        vertices = len(positions)
+        super().__init__(vertices, edges, initalPositions=positions, **kwargs)
+
+        self.springLengths = self.getEdgeLengths()
+        self.velocities = np.array([[0, 0]]*self.vertices, dtype='float64')
+
+    def getEdgeLengths(self):
+        return [
+            magnitude(self.positions[edge[0]]-self.positions[edge[1]]) for edge in self.edges
+        ]
+
+    def update(self, screen):
+        k = 1e6
+
+        gravity = np.array([0, -10])
+
+        forces = np.array([[0, 0]]*self.vertices, dtype='float64')
+
+        for i, edge in enumerate(self.edges):
+
+            begin = self.positions[edge[0]]
+            end = self.positions[edge[1]]
+
+            l = self.springLengths[i]
+
+            force = springForce(k, l, begin, end)
+
+            forces[edge[0]] = forces[edge[0]]-force
+            forces[edge[1]] = forces[edge[1]]+force
+
+        for i in range(self.vertices):
+            forces[i] = forces[i]+gravity
+
+        forces[0] = np.array([0, 0])
+
+        self.velocities += forces * screen.dt
+        self.positions += self.velocities * screen.dt
+
+        self.setNodesAndLines()

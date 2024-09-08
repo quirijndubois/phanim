@@ -86,4 +86,4 @@ class Slider(Group):
 
     def setPosition(self, position):
         self.position = position
-        self.setPhobjects()
+        self.setShapes()

@@ -33,6 +33,6 @@ graph = RandomGraph(15, chance=0.17)
 
 s.play(Create(graph))
 s.makeInteractive(graph)
-s.addUpdater(lambda s: graph.update(s.dt))
+s.addUpdater(graph.update)
 s.play(Create(slider))
 s.run()
