@@ -326,7 +326,7 @@ def makeGrid(n_horizontal=8, n_vertical=5):
     for grid in grids:
         for line in grid.lines:
             animations.append(Create(
-                Line(start=grid.position+line[0], stop=grid.position +
+                Line(begin=grid.position+line[0], end=grid.position +
                      line[1], lineWidth=grid.lineWidth, color=line[2]),
                 duration=30
             ))

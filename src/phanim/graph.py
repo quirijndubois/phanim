@@ -125,23 +125,7 @@ class Graph(Group):
 
             force = force+positionalForce
 
-            randomizeSize = 0.1
-            force = force+[(np.random.random()-0.5)*randomizeSize +
-                           (np.random.random()-0.5)*randomizeSize]
-
             self.positions[i] = self.positions[i] + force*dt
-
-        avaragePosition = [0, 0]
-
-        # if self.locked:
-        #     for position in self.positions:
-        #         avaragePosition = vadd(avaragePosition,np.array(position)/len(self.positions))
-
-        #     for index,position in enumerate(self.positions):
-        #         self.positions[index] = diff(position,avaragePosition)
-
-        # if not self.interacting:
-        #     self.positions = rotateToAlign(self.positions,self.rotation)
 
         self.setNodesAndLines()
 

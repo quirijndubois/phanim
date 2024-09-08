@@ -2,56 +2,69 @@ from phanim.functions import *
 from copy import copy
 
 
-class Node():
-    def __init__(self, pos=[0, 0], vel=[0, 0], radius=0.2, color=(0, 0, 0), borderColor=(200, 200, 200), borderSize=0.3, mass=1, charge=0, interactivityType="position", static=False):
-        self.velocity = np.array(vel, dtype='float64')
+class Phobject():
+    def __init__(self, position=[0, 0], velocity=[0, 0], color=(255, 255, 255), mass=1, charge=0, static=False):
+        self.accelaration = np.array([0.0, 0.0])
+        self.color = color
+        self.static = static
+        self.selected = False
+
+        self.mass = mass
+        self.charge = charge
+
+        self.force = np.array([0.0, 0.0])
         self.accelaration = np.array([0.0, 0.0])
         self.accelarationAVG = np.array([0.0, 0.0])
-        self.mass = mass
+
+        self.setPosition(position)
+        self.setVelocity(velocity)
+
+        self.lines = []
+        self.lineWidth = 0
+        self.circles = []
+        self.polygons = []
+        self.texts = []
+
+    def setPosition(self, position):
+        self.position = np.array(position, dtype='float64')
+
+    def setVelocity(self, velocity):
+        self.velocity = np.array(velocity, dtype='float64')
+
+    def eulerODESolver(self, force, dt):
+        force = np.array(force)+self.interactiveForce
+        self.accelaration = force / self.mass
+        AVGlength = 10000
+        self.accelarationAVG = interp(
+            self.accelarationAVG, self.accelaration, 1/AVGlength)
+        self.velocity += self.accelaration * dt
+        self.position += self.velocity * dt
+
+
+class Node(Phobject):
+    def __init__(self, pos=[0, 0], vel=[0, 0], radius=0.2, color=(0, 0, 0), borderColor=(200, 200, 200), borderSize=0.3, mass=1, charge=0, interactivityType="position", static=False):
+        super().__init__(pos, vel, color, mass, charge, static)
         self.radius = radius
-        self.color = color
         self.borderColor = borderColor
         self.borderSize = borderSize
         self.interactivityType = interactivityType
-        self.charge = charge
-        self.selected = False
-        self.force = np.array([0.0, 0.0])
         self.interactiveForce = np.array([0.0, 0.0])
-        self.static = static
-        self.setPosition(pos)
-        self.setCircles()
+        self.setShapes()
 
-    def setCircles(self):
+    def setShapes(self):
         self.circles = [[self.radius, [0, 0], self.borderColor], [
             self.radius*(1-self.borderSize), [0, 0], self.color]]
 
     def setColor(self, color):
         self.color = color
-        self.setCircles()
+        self.setShapes()
 
     def setPosition(self, position):
         self.position = np.array(position, dtype='float64')
 
     def setRadius(self, radius):
         self.radius = radius
-        self.setCircles()
-
-    def eulerODESolver(self, force, dt):
-
-        force = np.array(force)+self.interactiveForce
-
-        self.accelaration = force / self.mass
-
-        AVGlength = 10000
-        self.accelarationAVG = interp(
-            self.accelarationAVG, self.accelaration, 1/AVGlength)
-
-        self.velocity += self.accelaration * dt
-
-        self.position += self.velocity * dt
-
-    def rkODESolver(self, force, dt):
-        pass
+        self.setShapes()
 
     def createFunction(self, t, old):
         size = calculateBezier([0, 0], [0, 3], [0.5, 1.5], [
@@ -84,7 +97,7 @@ class Node():
                     self.lasPos = copy(self.position)
                 if self.interactivityType == "force":
                     screen.draw(
-                        Line(start=GlobalCursorPosition, stop=self.position))
+                        Line(begin=GlobalCursorPosition, end=self.position))
                     self.interactiveForce = (
                         GlobalCursorPosition-self.position)*300
                     self.velocity = self.velocity*0.80
@@ -129,21 +142,19 @@ class Electron(Node):
         self.setSign(t*self.signSize)
 
 
-class Grid():
+class Grid(Phobject):
     def __init__(self, Xspacing, Yspacing, n_horizontal, n_vertical, color=(100, 100, 100), width=1, position=[0, 0]):
-        self.position = np.array(position)
-        self.lines = []
-        self.color = color
-        self.lineWidth = width
+        super().__init__(position=position, color=color)
 
+        self.lineWidth = width
         self.n_horizontal = n_horizontal
         self.n_vertical = n_vertical
         self.Xspacing = Xspacing
         self.Yspacing = Yspacing
 
-        self.generateGrid()
+        self.setShapes()
 
-    def generateGrid(self):
+    def setShapes(self):
         self.lines = []
         xmax = self.n_horizontal * self.Xspacing
         ymax = self.n_vertical * self.Yspacing
@@ -166,32 +177,49 @@ class Grid():
             self.lines[i][startIndex] = list(
                 (interp(self.lines[i][endIndex], old.lines[i][startIndex], t)))
 
-    def setPosition(self, position):
-        self.position = position
 
-    def reset(self):
-        self.index = 0
-        self.lines = []
-
-
-class Arrow():
-    def __init__(self, begin=[0, 0], end=[0, 1], color=(0, 0, 255), lineThickness=0.06, pointSize=0.2):
+class Line(Phobject):
+    def __init__(self, begin=[0, 0], end=[1, 0], color=(255, 255, 255), lineWidth=5, position=[0, 0]):
+        super().__init__(position=position, color=color)
         self.begin = np.array(begin)
         self.end = np.array(end)
-        self.position = [0, 0]
+        self.lineWidth = lineWidth
+        self.setShapes()
+
+    def setShapes(self, ratio=1):
+        self.lines = []
+        if ratio == 1:
+            self.lines.append([self.begin, self.end, self.color])
+        else:
+            self.lines.append(
+                [self.begin, interp(self.begin, self.end, ratio), self.color])
+
+    def setEnds(self, begin, end):
+        self.begin = np.array(begin)
+        self.end = np.array(end)
+        self.setShapes()
+
+    def setDirection(self, begin, direction, scale=1):
+        self.setEnds(begin, begin+np.array(direction)*scale)
+
+    def createFunction(self, t, old):
+        self.setShapes(ratio=t)
+
+
+class Arrow(Line):
+    def __init__(self, lineThickness=0.06, pointSize=0.2, **kwargs):
         self.lineThickness = lineThickness
         self.pointThickness = pointSize
         self.pointlength = pointSize
-        self.color = color
         self.sizeRatio = 1
-        self.polygons = [self.calculateVertices()]
+        super().__init__(**kwargs)
 
-    def setColor(self, color):
-        self.color = color
+    def setShapes(self, ratio=1):
+        self.polygons = [self.calculateVertices(ratio)]
 
-    def calculateVertices(self):
-        if self.sizeRatio != 1:
-            end = interp(self.begin, self.end, self.sizeRatio)
+    def calculateVertices(self, ratio):
+        if ratio != 1:
+            end = interp(self.begin, self.end, ratio)
         else:
             end = self.end
 
@@ -211,31 +239,18 @@ class Arrow():
             pointstart - normal*(self.lineThickness*length)/2
         ]
 
-    def setPosition(self, begin, end):
-        self.begin = begin
-        self.end = end
-        self.polygons = [self.calculateVertices()]
 
-    def setDirection(self, begin, direction, scale=1):
-        self.setPosition(begin, begin+np.array(direction)*scale)
-
-    def createFunction(self, t, old):
-        self.sizeRatio = t
-        self.polygons = [self.calculateVertices()]
-
-
-class Axes():
-    def __init__(self, position=[0, 0], xRange=[-4, 4], yRange=[-2, 2], lineWidth=1, color=(255, 255, 255), step=1, numbers=False):
-        self.position = np.array(position)
+class Axes(Phobject):
+    def __init__(self, xRange=[-4, 4], yRange=[-2, 2], lineWidth=1, step=1, showNumbers=False, **kwargs):
+        super().__init__(**kwargs)
         self.xRange = xRange
         self.yRange = yRange
         self.lineWidth = lineWidth
-        self.color = color
         self.step = step
-        self.showNumbers = numbers
-        self.setLines()
+        self.showNumbers = showNumbers
+        self.setShapes()
 
-    def setLines(self):
+    def setShapes(self):
         self.relativeTexts = []
         self.relativeLines = [
             [[self.xRange[0], 0], [self.xRange[1], 0], self.color],
@@ -264,10 +279,6 @@ class Axes():
             for text in self.relativeTexts:
                 self.texts.append([text[0], text[1]+self.position, text[2]])
 
-    def setPosition(self, position):
-        self.position = position
-        self.setLines()
-
     def createFunction(self, t, old):
         for i in range(len(self.lines)):
             startIndex = 1
@@ -278,47 +289,15 @@ class Axes():
             self.texts[i][1] = interp([0, 0], old.texts[i][1], t)
 
 
-class Line():
-    def __init__(self, start=[0, 0], stop=[1, 0], color=(255, 255, 255), lineWidth=5, position=[0, 0]):
-        self.position = np.array([0, 0])
-        self.start = np.array(start)
-        self.stop = np.array(stop)
-        self.color = color
-        self.lineWidth = lineWidth
-
-        self.setLines()
-
-    def setLines(self, ratio=1):
-        self.lines = []
-        if ratio == 1:
-            self.lines.append([self.start, self.stop, self.color])
-        else:
-            self.lines.append(
-                [self.start, interp(self.start, self.stop, ratio), self.color])
-
-    def setEnds(self, start, stop):
-        self.start = start
-        self.stop = stop
-        self.setLines()
-
-    def createFunction(self, t, old):
-        self.setLines(ratio=t)
-
-
 class DottedLine(Line):
-    def __init__(self, start=[0, 0], stop=[1, 0], color=(255, 255, 255), lineWidth=5, stripeLength=0.1, position=[0, 0]):
-        self.position = np.array([0, 0])
-        self.start = np.array(start)
-        self.stop = np.array(stop)
-        self.color = color
-        self.lineWidth = lineWidth
+    def __init__(self, stripeLength=0.1, **kwargs):
         self.stripeLength = stripeLength
-        self.setLines()
+        super().__init__(**kwargs)
 
-    def setLines(self, ratio=1):
+    def setShapes(self, ratio=1):
 
-        start = self.start
-        stop = interp(self.start, self.stop, ratio)
+        start = self.begin
+        stop = interp(self.begin, self.end, ratio)
 
         self.lines = []
         r = ((start[0]-stop[0])**2+(start[1]-stop[1])**2)**(0.5)
@@ -339,31 +318,20 @@ class DottedLine(Line):
                         [interp(start, stop, t), interp(start, stop, 1), self.color])
                 lastt = t
 
-    def setEnds(self, start, stop):
-        self.start = start
-        self.stop = stop
-        self.setLines()
 
-
-class Text():
-    def __init__(self, text="Hello World!", color=(255, 255, 255), size=20, position=[0, 0], static=False):
+class Text(Phobject):
+    def __init__(self, text="Hello World!", size=20, **kwargs):
+        super().__init__(**kwargs)
         self.text = str(text)
-        self.position = np.array(position, dtype='float64')
-        self.color = color
         self.size = size
-        self.static = static
 
-        self.__setText()
+        self.setShapes()
 
     def setText(self, text):
         self.text = str(text)
-        self.__setText()
+        self.setShapes()
 
-    def setPosition(self, position):
-        self.position = position
-        self.__setText()
-
-    def __setText(self, ratio=1):
+    def setShapes(self, ratio=1):
         self.texts = []
 
         if ratio == 1:
@@ -372,4 +340,4 @@ class Text():
             raise NotImplementedError
 
     def createFunction(self, t, old):
-        self.setLines(ratio=t)
+        pass

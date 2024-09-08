@@ -54,21 +54,23 @@ def update(s):
 
     for node in nodes:
         # if abs(node.position[0])>s.camera.bounds[0][1] or abs(node.position[1])>s.camera.bounds[1][1]:
-        x = 4-node.radius
-        y = 3-node.radius
+        bounds = [
+            [-7, 7],
+            [-4, 3]
+        ]
         e = 0.05
-        if node.position[0] > x:
+        if node.position[0] > bounds[0][1]-node.radius:
             node.velocity[0] *= -1
-            node.position[0] = x-e
-        elif node.position[0] < -x:
+            node.position[0] = bounds[0][1]-node.radius-e
+        elif node.position[0] < bounds[0][0]+node.radius:
             node.velocity[0] *= -1
-            node.position[0] = -x+e
-        elif node.position[1] > y:
+            node.position[0] = bounds[0][0]+node.radius+e
+        elif node.position[1] > bounds[1][1]-node.radius:
             node.velocity[1] *= -1
-            node.position[1] = y-e
-        elif node.position[1] < -y:
+            node.position[1] = bounds[1][1]-node.radius-e
+        elif node.position[1] < bounds[1][0]+node.radius:
             node.velocity[1] *= -1
-            node.position[1] = -y+e
+            node.position[1] = bounds[1][0]+node.radius+e
 
 
 def frameUpdate(s):
@@ -79,7 +81,7 @@ def frameUpdate(s):
 
 
 circle = Circle()
-rectangle = Rectangle(width=8, height=6)
+rectangle = Rectangle(width=14, height=7, position=[0, -.5])
 
 s.addUpdater(update, substeps=100)
 s.addUpdater(frameUpdate)

@@ -39,13 +39,13 @@ class Screen():
             background=(10, 15, 20),
             fontSize=0.5,
             panning=True,
-            zooming = True,
+            zooming=True,
             renderer="pygame",
             grid=True,
-            gridMargin=[60,60],
+            gridMargin=[60, 60],
             gridResolution=15,
             gridBrightness=150,
-            expand_grid = True,
+            expand_grid=True,
             record=False,
             recording_output="recording.mp4",
             recording_fps=60,
@@ -102,7 +102,7 @@ class Screen():
         self.frameDt = 1/recording_fps
         self.frameRate = recording_fps
 
-        if expand_grid:
+        if expand_grid and grid:
             self.expandGrid()
 
     def addUpdater(self, someFunction, substeps=1):
@@ -269,7 +269,7 @@ class Screen():
             else:
                 self.__drawPhobject(arg, static=static)
 
-    def __drawGrid(self, spacing, color=(255, 255, 255), margin=[0,0]):
+    def __drawGrid(self, spacing, color=(255, 255, 255), margin=[0, 0]):
         group = Group()
         boundX = self.camera.bounds[0] + \
             np.array([margin[0], -margin[0]])/self.camera.pixelsPerUnit
@@ -289,8 +289,8 @@ class Screen():
                     stop[0] = boundX[1]
 
             group.add(Line(
-                start=start,
-                stop=stop,
+                begin=start,
+                end=stop,
                 lineWidth=0,
                 color=color
             )
@@ -305,8 +305,8 @@ class Screen():
                     stop[1] = boundY[1]
 
             group.add(Line(
-                start=start,
-                stop=stop,
+                begin=start,
+                end=stop,
                 lineWidth=0,
                 color=color
             )
@@ -314,14 +314,14 @@ class Screen():
         if margin[0] > 0:
             group.add(
                 Line(
-                    start=[boundX[0], boundY[1]],
-                    stop=[boundX[0], boundY[0]],
+                    begin=[boundX[0], boundY[1]],
+                    end=[boundX[0], boundY[0]],
                     lineWidth=0,
                     color=color
                 ),
                 Line(
-                    start=[boundX[1], boundY[0]],
-                    stop=[boundX[1], boundY[1]],
+                    begin=[boundX[1], boundY[0]],
+                    end=[boundX[1], boundY[1]],
                     lineWidth=0,
                     color=color
                 ),
@@ -329,14 +329,14 @@ class Screen():
         if margin[1] > 0:
             group.add(
                 Line(
-                    start=[boundX[0], boundY[0]],
-                    stop=[boundX[1], boundY[0]],
+                    begin=[boundX[0], boundY[0]],
+                    end=[boundX[1], boundY[0]],
                     lineWidth=0,
                     color=color
                 ),
                 Line(
-                    start=[boundX[1], boundY[1]],
-                    stop=[boundX[0], boundY[1]],
+                    begin=[boundX[1], boundY[1]],
+                    end=[boundX[0], boundY[1]],
                     lineWidth=0,
                     color=color
                 ),
@@ -602,14 +602,14 @@ class Screen():
     def expandGrid(self):
         self.wait(30)
         target = copy(self.gridMargin)
-        self.setGridMargin(self.resolution[0]/2,self.resolution[1]/2)
+        self.setGridMargin(self.resolution[0]/2, self.resolution[1]/2)
         self.play(AnimateValue(
-            lambda value: self.setGridMargin(value,self.gridMargin[1]), 
+            lambda value: self.setGridMargin(value, self.gridMargin[1]),
             [self.resolution[0]/2, target[0]],
             duration=30
         ))
         self.play(AnimateValue(
-            lambda value: self.setGridMargin(target[0],value), 
+            lambda value: self.setGridMargin(target[0], value),
             [self.resolution[1]/2, target[1]],
             duration=30
         ))

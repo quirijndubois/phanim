@@ -1,6 +1,6 @@
 from phanim import *
 
-myScreen = Screen()
+myScreen = Screen(grid=False)
 
 grid = Grid(1, 1, 10, 10)
 arrow = Arrow(color=color.blue)
@@ -8,11 +8,11 @@ lines = DottedLine(), DottedLine()
 
 
 def update(screen):
-    arrow.setDirection([0, 0], screen.LocalCursorPosition)
-    lines[0].setEnds([screen.LocalCursorPosition[0], 0],
-                     screen.LocalCursorPosition)
-    lines[1].setEnds([0, screen.LocalCursorPosition[1]],
-                     screen.LocalCursorPosition)
+    arrow.setDirection([0, 0], screen.GlobalCursorPosition)
+    lines[0].setEnds([screen.GlobalCursorPosition[0], 0],
+                     screen.GlobalCursorPosition)
+    lines[1].setEnds([0, screen.GlobalCursorPosition[1]],
+                     screen.GlobalCursorPosition)
 
 
 myScreen.addUpdater(update)

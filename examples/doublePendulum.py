@@ -17,8 +17,8 @@ nodes = (
          radius=nodeRadius, interactivityType="force")
 )
 lines = (
-    Line(start=startPositions[0], stop=startPositions[1], lineWidth=10),
-    Line(start=startPositions[1], stop=startPositions[2], lineWidth=10),
+    Line(begin=startPositions[0], end=startPositions[1], lineWidth=10),
+    Line(begin=startPositions[1], end=startPositions[2], lineWidth=10),
 )
 
 trail = Trail(length=100, lineWidth=3)

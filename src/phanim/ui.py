@@ -25,8 +25,8 @@ class Slider(Group):
     def setPhobjects(self):
         self.groupObjects = [
             Line(
-                start=[self.position[0]-self.width/2, self.position[1]],
-                stop=[self.position[0]+self.width/2, self.position[1]],
+                begin=[self.position[0]-self.width/2, self.position[1]],
+                end=[self.position[0]+self.width/2, self.position[1]],
                 color=self.color,
             ),
             Node(

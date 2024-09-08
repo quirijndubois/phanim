@@ -2,7 +2,7 @@ from phanim import *
 import numpy as np
 
 grid = Grid(1, 1, 10, 10)
-axes = Axes(xRange=[-2, 7], yRange=[-1, 4], numbers=False)
+axes = Axes(xRange=[-2, 7], yRange=[-1, 4], showNumbers=False)
 
 graph = PlotGraph(width=0.03, color=(150, 150, 255))
 graph2 = PlotGraph(width=0.03, color=(255, 150, 150))

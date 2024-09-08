@@ -16,7 +16,7 @@ bounce_radius_squared = bounce_radius**2
 s = Screen()
 
 plate_node = Node(pos=[0, 0], interactivityType="force")
-plate = Line(start=[0, -2], stop=[0, 2])
+plate = Line(begin=[0, -2], end=[0, 2])
 plate.position = plate_node.position
 
 box = Rectangle(position=[18, 0], width=44, height=4)

@@ -27,9 +27,9 @@ nodes = [
 ]
 
 lines = [
-    Line(start=nodes[0].position, stop=nodes[1].position),
-    Line(start=nodes[1].position, stop=nodes[2].position),
-    Line(start=nodes[2].position, stop=nodes[3].position),
+    Line(begin=nodes[0].position, end=nodes[1].position),
+    Line(begin=nodes[1].position, end=nodes[2].position),
+    Line(begin=nodes[2].position, end=nodes[3].position),
 ]
 
 arrows = [

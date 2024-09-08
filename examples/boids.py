@@ -10,7 +10,7 @@ class Bead(Group):
         self.position = np.array(pos)
         self.speed = speed
         self.angle = angle
-        self.groupObjects = [Arrow(self.position, color=white), Node(
+        self.groupObjects = [Arrow(color=white), Node(
             self.position, radius=0.08)]
 
         dir = np.array([np.cos(self.angle), np.sin(self.angle)])
