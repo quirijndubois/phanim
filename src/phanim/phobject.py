@@ -47,6 +47,8 @@ class Phobject():
         self.velocity += self.accelaration * dt
         self.position += self.velocity * dt
 
+    def createFunction(self, t, old):
+        pass
 
 class Node(Phobject):
     def __init__(self, pos=[0, 0], vel=[0, 0], radius=0.2, color=(0, 0, 0), borderColor=(200, 200, 200), borderSize=0.3, mass=1, charge=0, interactivityType="position", static=False):
@@ -214,6 +216,7 @@ class Polygon(Phobject):
 
     def setShapes(self):
         self.polygons = [self.points]
+
 
 
 class Arrow(Line):

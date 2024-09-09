@@ -123,7 +123,7 @@ class Graph(Group):
         self.setNodesAndLines()
 
     def updateInteractivity(self, screen):
-        self.updateForceInteractivity(screen)
+        self.updatePostionInteractivity(screen)
 
     def updateForceInteractivity(self, screen):
         self.interacting = False
@@ -273,3 +273,6 @@ class SoftBody(Graph):
 
         for node in self.nodes:
             self.groupObjects.append(node)
+
+    def updateInteractivity(self, screen):
+        self.updateForceInteractivity(screen)
