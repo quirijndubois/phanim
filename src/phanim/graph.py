@@ -123,19 +123,61 @@ class Graph(Group):
         self.setNodesAndLines()
 
     def updateInteractivity(self, screen):
+        self.updateForceInteractivity(screen)
+
+    def updateForceInteractivity(self, screen):
+        self.interacting = False
+        self.interactiveForces = np.array(
+            [[0, 0]]*self.vertices, dtype='float64')
+        for index, phobject in enumerate(self.nodes):
+            if phobject in screen.selectedObjects:
+
+                if not self.selected:
+                    self.offset = self.positions[index] - \
+                        screen.GlobalCursorPosition
+
+                phobject.setColor((100, 100, 100))
+
+                if screen.dragging:
+                    self.selected = True
+                    self.interacting = True
+
+                    screen.draw(
+                        Line(begin=screen.GlobalCursorPosition, end=self.positions[index]))
+
+                    force = dampenedSpringForce(
+                        500, 0, 40, screen.GlobalCursorPosition, self.positions[index], self.velocities[index])
+
+                    self.velocities[index] *= .9
+
+                    self.interactiveForces[index] = force
+                else:
+                    self.selected = False
+
+            else:
+                phobject.setColor((0, 0, 0))
+        self.setNodesAndLines()
+
+    def updatePostionInteractivity(self, screen):
+
         self.interacting = False
         for index, phobject in enumerate(self.nodes):
             if phobject in screen.selectedObjects:
+
+                if not self.selected:
+                    self.offset = self.positions[index] - \
+                        screen.GlobalCursorPosition
+
                 phobject.setColor((100, 100, 100))
+
                 if screen.dragging:
-                    self.positions[index] = screen.camera.position + \
-                        screen.LocalCursorPosition
-                    if self.initalPositions:
-                        self.initalPositions[index] = copy(
-                            self.positions[index])
+                    self.selected = True
+                    self.positions[index] = screen.GlobalCursorPosition + self.offset
                     self.interacting = True
-                    self.rotation = calculateRotation(
-                        self.positions[1]-self.positions[0])
+
+                else:
+                    self.selected = False
+
             else:
                 phobject.setColor((0, 0, 0))
         self.setNodesAndLines()
@@ -156,12 +198,16 @@ def CompleteGraph(vertices, chance=0.5, position=[0, 0], k=4, initalPositions=[]
 
 
 class SoftBody(Graph):
-    def __init__(self, positions, edges, **kwargs):
+    def __init__(self, positions, edges, springConstant=1e3, dampingConstant=3, hull=[], **kwargs):
         vertices = len(positions)
+        self.hull = hull
         super().__init__(vertices, edges, initalPositions=positions, **kwargs)
 
         self.springLengths = self.getEdgeLengths()
         self.velocities = np.array([[0, 0]]*self.vertices, dtype='float64')
+
+        self.springConstant = springConstant
+        self.dampingConstant = dampingConstant
 
     def getEdgeLengths(self):
         return [
@@ -169,9 +215,8 @@ class SoftBody(Graph):
         ]
 
     def update(self, screen):
-        k = 1e6
 
-        gravity = np.array([0, -10])
+        gravity = np.array([0, -5])
 
         forces = np.array([[0, 0]]*self.vertices, dtype='float64')
 
@@ -182,17 +227,49 @@ class SoftBody(Graph):
 
             l = self.springLengths[i]
 
-            force = springForce(k, l, begin, end)
+            vel = self.velocities[edge[1]] - self.velocities[edge[0]]
+
+            # C, l, dampFactor, begin, end, vel
+            force = dampenedSpringForce(
+                self.springConstant, l, self.dampingConstant, begin, end, vel)
 
             forces[edge[0]] = forces[edge[0]]-force
             forces[edge[1]] = forces[edge[1]]+force
 
         for i in range(self.vertices):
-            forces[i] = forces[i]+gravity
+            forces[i] += gravity
 
-        forces[0] = np.array([0, 0])
+        if hasattr(self, "interactiveForces"):
+            for i in range(self.vertices):
+                forces[i] += self.interactiveForces[i]
 
         self.velocities += forces * screen.dt
         self.positions += self.velocities * screen.dt
 
         self.setNodesAndLines()
+
+    def setNodesAndLines(self):
+        self.groupObjects = []
+
+        for i in range(self.vertices):
+            self.nodes[i].setPosition(self.positions[i]+self.position)
+
+        for i, edge in enumerate(self.edges):
+            self.lineList[i].setEnds(
+                self.positions[edge[0]]+self.position, self.position+self.positions[edge[1]])
+
+        for line in self.lineList:
+            self.groupObjects.append(line)
+
+        if len(self.hull) > 0:
+            self.groupObjects.append(
+                Polygon(
+                    [
+                        self.positions[i]
+                        for i in self.hull
+                    ],
+                )
+            )
+
+        for node in self.nodes:
+            self.groupObjects.append(node)

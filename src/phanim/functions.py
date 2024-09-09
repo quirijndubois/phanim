@@ -60,15 +60,16 @@ def springForce(C, l, begin, end):
 
 
 def dampenedSpringForce(C, l, dampFactor, begin, end, vel):
-
-    vel_direction = normalize(vel)
-    vel_mag = magnitude(vel)
-
     difference = begin - end
     direction = normalize(difference)
-    mag = magnitude(difference)
+    mag = magnitude(difference) - l
 
-    return direction * (mag * C) - vel_direction*vel_mag*dampFactor
+    vel_along_spring = dot(vel, direction) * direction
+
+    spring_force = direction * (mag * C)
+    damping_force = -vel_along_spring * dampFactor
+
+    return spring_force + damping_force
 
 
 def pointsToLines(points, color):

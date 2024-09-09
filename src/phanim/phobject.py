@@ -16,14 +16,14 @@ class Phobject():
         self.accelaration = np.array([0.0, 0.0], dtype='float64')
         self.accelarationAVG = np.array([0.0, 0.0], dtype='float64')
 
-        self.setPosition(position)
-        self.setVelocity(velocity)
-
         self.lines = []
         self.lineWidth = 0
         self.circles = []
         self.polygons = []
         self.texts = []
+
+        self.setPosition(position)
+        self.setVelocity(velocity)
 
     def setPosition(self, position):
         self.position = np.array(position, dtype='float64')
@@ -204,6 +204,16 @@ class Line(Phobject):
 
     def createFunction(self, t, old):
         self.setShapes(ratio=t)
+
+
+class Polygon(Phobject):
+    def __init__(self, points, **kwargs):
+        super().__init__(**kwargs)
+        self.points = points
+        self.setShapes()
+
+    def setShapes(self):
+        self.polygons = [self.points]
 
 
 class Arrow(Line):
