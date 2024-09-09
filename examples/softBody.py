@@ -7,7 +7,7 @@ graph1 = SoftBody(
         [-1, 1], [0, 1], [1, 1],
         [-1, 0], [0, 0], [1, 0],
         [-1, -1], [0, -1], [1, -1],
-    ])+np.array([[3, 1.5]]*9),
+    ])+np.array([[2, 1.5]]*9),
     [
         [0, 1],
         [1, 2],
@@ -39,7 +39,7 @@ graph2 = SoftBody(
         [-1, 1], [0, 1], [1, 1],
         [-1, 0], [0, 0], [1, 0],
         [-1, -1], [0, -1], [1, -1],
-    ])+np.array([[-3, 1.5]]*9),
+    ])+np.array([[-2, 1.5]]*9),
     [
         [0, 1],
         [1, 2],
@@ -74,8 +74,8 @@ floor = Line(
 
 
 s.play(Create(floor))
-s.play(Add(graph1))
 s.play(Create(graph2))
+s.play(Create(graph1))
 
 
 def updatePhysics(s):

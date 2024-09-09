@@ -80,7 +80,7 @@ def frameUpdate(s):
     trails[2].add(nodes[2].position, nodes[2].borderColor)
 
 
-circle = Circle()
+circle = Circle(color=color.red)
 rectangle = Rectangle(width=14, height=7, position=[0, -.5])
 
 s.addUpdater(update, substeps=100)

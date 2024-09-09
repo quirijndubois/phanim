@@ -2,7 +2,7 @@ from phanim import *
 
 s = Screen()
 
-slider = Slider(position=[-4, 2], minValue=0.05, maxValue=2, static=True)
+slider = Slider(position=[s.camera.bounds[0][0]+1.5, s.camera.bounds[1][1]-1], minValue=0.05, maxValue=2, static=True)
 s.makeInteractive(slider)
 
 
