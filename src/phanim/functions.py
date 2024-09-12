@@ -307,3 +307,61 @@ def elastic_collision(circle1_pos, circle1_vel, circle2_pos, circle2_vel, radius
         circle2_pos += correction_vector
 
     return new_circle1_vel, new_circle2_vel, circle1_pos, circle2_pos
+
+
+def is_point_in_polygon(point, polygon):
+    """
+    Check if a 2D point is inside a polygon.
+
+    Parameters:
+    - point: A tuple (x, y) representing the point.
+    - polygon: A list of tuples [(x1, y1), (x2, y2), ...] representing the vertices of the polygon.
+
+    Returns:
+    - True if the point is inside the polygon, False otherwise.
+    """
+    x, y = point
+    n = len(polygon)
+    inside = False
+
+    # Iterate over edges of the polygon
+    for i in range(n):
+        x1, y1 = polygon[i]
+        x2, y2 = polygon[(i + 1) % n]  # Wrap around to the first vertex
+
+        # Check if the point is inside the y-bounds of the edge
+        if min(y1, y2) < y <= max(y1, y2):
+            # Compute the x coordinate of the intersection of the edge with the horizontal ray
+            xinters = (y - y1) * (x2 - x1) / (y2 - y1) + x1
+
+            # If the point is to the left of the intersection point, toggle the inside flag
+            if x < xinters:
+                inside = not inside
+
+    return inside
+
+
+def polygon_area(polygon):
+    """
+    Calculate the area of a polygon using the Shoelace formula.
+
+    Parameters:
+    - polygon: A list of tuples [(x1, y1), (x2, y2), ...] representing the vertices of the polygon.
+
+    Returns:
+    - The area of the polygon.
+    """
+    n = len(polygon)
+    area = 0
+
+    # Iterate over pairs of vertices
+    for i in range(n):
+        x1, y1 = polygon[i]
+        x2, y2 = polygon[(i + 1) % n]  # Wrap around to the first vertex
+
+        # Add the cross-product of the current vertex and the next
+        area += x1 * y2 - x2 * y1
+
+    # Take the absolute value and divide by 2
+    area = abs(area) / 2
+    return area

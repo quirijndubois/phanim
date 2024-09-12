@@ -2,6 +2,7 @@ from phanim import *
 import itertools
 from copy import copy
 import numpy as np
+from .functions import *
 
 
 class Graph(Group):
@@ -198,9 +199,10 @@ def CompleteGraph(vertices, chance=0.5, position=[0, 0], k=4, initalPositions=[]
 
 
 class SoftBody(Graph):
-    def __init__(self, positions, edges, springConstant=1e3, dampingConstant=3, hull=[], **kwargs):
+    def __init__(self, positions, edges, springConstant=1e3, dampingConstant=3, pressureConstant=500, hull=[], showHull=True, **kwargs):
         vertices = len(positions)
         self.hull = hull
+        self.showHull = showHull
         super().__init__(vertices, edges, initalPositions=positions, **kwargs)
 
         self.springLengths = self.getEdgeLengths()
@@ -208,11 +210,26 @@ class SoftBody(Graph):
 
         self.springConstant = springConstant
         self.dampingConstant = dampingConstant
+        self.pressureConstant = pressureConstant
 
     def getEdgeLengths(self):
         return [
             magnitude(self.positions[edge[0]]-self.positions[edge[1]]) for edge in self.edges
         ]
+
+    def checkInside(self, point):
+        polygon = [
+            self.positions[i]
+            for i in self.hull
+        ]
+        return is_point_in_polygon(point, polygon)
+
+    def getArea(self):
+        polygon = [
+            self.positions[i]
+            for i in self.hull
+        ]
+        return polygon_area(polygon)
 
     def update(self, screen):
 
@@ -243,6 +260,26 @@ class SoftBody(Graph):
             for i in range(self.vertices):
                 forces[i] += self.interactiveForces[i]
 
+        area = self.getArea()
+
+        if area < 0.0001:
+            area = 0.0001
+
+        for i in range(len(self.hull)):
+
+            nextIndex = (i+1) % len(self.hull)
+
+            begin = self.positions[self.hull[i]]
+            end = self.positions[self.hull[nextIndex]]
+
+            normal = calculateNormal(end-begin)
+
+            s = magnitude(begin-end)
+            forceSize = self.pressureConstant*s/area
+
+            forces[self.hull[i]] += forceSize*normal
+            forces[self.hull[nextIndex]] += forceSize*normal
+
         self.velocities += forces * screen.dt
         self.positions += self.velocities * screen.dt
 
@@ -261,7 +298,7 @@ class SoftBody(Graph):
         for line in self.lineList:
             self.groupObjects.append(line)
 
-        if len(self.hull) > 0:
+        if len(self.hull) > 0 and self.showHull:
             self.groupObjects.append(
                 Polygon(
                     [

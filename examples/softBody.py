@@ -30,8 +30,6 @@ graph1 = SoftBody(
         [1, 3],
         [5, 7],
     ],
-    springConstant=5e3,
-    dampingConstant=10,
     hull=[0, 1, 2, 5, 8, 7, 6, 3, 0]
 )
 graph2 = SoftBody(
@@ -62,6 +60,8 @@ graph2 = SoftBody(
         [1, 3],
         [5, 7],
     ],
+    hull=[0, 1, 2, 5, 8, 7, 6, 3, 0],
+    showHull=False,
 )
 
 s.makeInteractive(graph1)
