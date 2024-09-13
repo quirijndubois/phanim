@@ -93,18 +93,18 @@ def updatePhysics(s):
 
         if graph1.positions[i][0] < s.camera.bounds[0][0]:
             graph1.positions[i][0] = s.camera.bounds[0][0] + .01
-            graph1.velocities[i][0] *= 0
-            graph1.velocities[i][1] *= 0
+            graph1.velocities[i][0] *= -1
+            graph1.velocities[i][1] *= 1
 
         if graph1.positions[i][0] > s.camera.bounds[0][1]:
             graph1.positions[i][0] = s.camera.bounds[0][1] - .01
-            graph1.velocities[i][0] *= 0
-            graph1.velocities[i][1] *= 0
+            graph1.velocities[i][0] *= -1
+            graph1.velocities[i][1] *= 1
 
         if graph1.positions[i][1] > s.camera.bounds[1][1]:
             graph1.positions[i][1] = s.camera.bounds[1][1] - .01
-            graph1.velocities[i][0] *= 0
-            graph1.velocities[i][1] *= 0
+            graph1.velocities[i][0] *= 1
+            graph1.velocities[i][1] *= -1
 
     for i in range(graph2.vertices):
         if graph2.positions[i][1] < floorheight:
@@ -114,18 +114,18 @@ def updatePhysics(s):
 
         if graph2.positions[i][0] < s.camera.bounds[0][0]:
             graph2.positions[i][0] = s.camera.bounds[0][0] + .01
-            graph2.velocities[i][0] *= 0
-            graph2.velocities[i][1] *= 0
+            graph2.velocities[i][0] *= -1
+            graph2.velocities[i][1] *= 1
 
         if graph2.positions[i][0] > s.camera.bounds[0][1]:
             graph2.positions[i][0] = s.camera.bounds[0][1] - .01
-            graph2.velocities[i][0] *= 0
-            graph2.velocities[i][1] *= 0
+            graph2.velocities[i][0] *= -1
+            graph2.velocities[i][1] *= 1
 
         if graph2.positions[i][1] > s.camera.bounds[1][1]:
             graph2.positions[i][1] = s.camera.bounds[1][1] - .01
-            graph2.velocities[i][0] *= 0
-            graph2.velocities[i][1] *= 0
+            graph2.velocities[i][0] *= 1
+            graph2.velocities[i][1] *= -1
 
 
 def update(s):
