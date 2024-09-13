@@ -341,6 +341,78 @@ def is_point_in_polygon(point, polygon):
     return inside
 
 
+def distance_point_to_line(p1, p2, p):
+    """
+    Calculate the perpendicular distance from point p to the line segment p1-p2.
+    """
+    line_len = np.linalg.norm(np.array(p2) - np.array(p1))
+    if line_len == 0:
+        return np.linalg.norm(np.array(p) - np.array(p1))
+
+    t = max(0, min(1, np.dot(np.array(p) - np.array(p1),
+            np.array(p2) - np.array(p1)) / line_len**2))
+    projection = np.array(p1) + t * (np.array(p2) - np.array(p1))
+    return np.linalg.norm(np.array(p) - projection)
+
+
+def closest_point_on_line(p, a, b):
+    """
+    Finds the closest point on the line segment AB to point P.
+    P, A, B are all tuples representing 2D points (x, y).
+    """
+    # Vector from A to P
+    AP = (p[0] - a[0], p[1] - a[1])
+    # Vector from A to B
+    AB = (b[0] - a[0], b[1] - a[1])
+
+    # Squared length of AB
+    AB_length_squared = AB[0]**2 + AB[1]**2
+    if AB_length_squared == 0:
+        # A and B are the same point
+        return a
+
+    # Projection factor t of AP onto AB normalized to [0, 1]
+    t = max(0, min(1, (AP[0] * AB[0] + AP[1] * AB[1]) / AB_length_squared))
+
+    # Closest point on the line segment
+    closest_point = (a[0] + t * AB[0], a[1] + t * AB[1])
+    return closest_point+calculateNormal(AB)*0.01
+
+
+def closest_point_outside_polygon(point, polygon):
+    """
+    Given a point and a polygon, if the point is inside the polygon, returns the closest point
+    on the polygon's edges (i.e., outside of the polygon). If the point is not inside, returns None.
+
+    :param point: Tuple (x, y) representing the 2D point to check.
+    :param polygon: List of tuples [(x1, y1), (x2, y2), ..., (xn, yn)] representing the polygon vertices.
+    :return: Tuple representing the closest point outside the polygon or None if the point is outside.
+    """
+    if not is_point_in_polygon(point, polygon):
+        return point  # Point is already outside
+
+    min_distance = float('inf')
+    closest_point = None
+
+    # Iterate through each edge of the polygon
+    for i in range(len(polygon)):
+        a = polygon[i]
+        # Wrap around to form a closed polygon
+        b = polygon[(i + 1) % len(polygon)]
+
+        # Find the closest point on the current edge
+        candidate_point = closest_point_on_line(point, a, b)
+
+        # Calculate the distance between the point and the candidate point
+        distance = math.dist(point, candidate_point)
+
+        if distance < min_distance:
+            min_distance = distance
+            closest_point = candidate_point
+
+    return closest_point
+
+
 def polygon_area(polygon):
     """
     Calculate the area of a polygon using the Shoelace formula.

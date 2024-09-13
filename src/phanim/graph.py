@@ -204,6 +204,10 @@ class SoftBody(Graph):
         self.hull = hull
         self.showHull = showHull
         super().__init__(vertices, edges, initalPositions=positions, **kwargs)
+        self.polygon = [
+            self.positions[i]
+            for i in self.hull
+        ]
 
         self.springLengths = self.getEdgeLengths()
         self.velocities = np.array([[0, 0]]*self.vertices, dtype='float64')
@@ -218,18 +222,10 @@ class SoftBody(Graph):
         ]
 
     def checkInside(self, point):
-        polygon = [
-            self.positions[i]
-            for i in self.hull
-        ]
-        return is_point_in_polygon(point, polygon)
+        return is_point_in_polygon(point, self.polygon)
 
     def getArea(self):
-        polygon = [
-            self.positions[i]
-            for i in self.hull
-        ]
-        return polygon_area(polygon)
+        return polygon_area(self.polygon)
 
     def update(self, screen):
 
@@ -284,6 +280,11 @@ class SoftBody(Graph):
         self.positions += self.velocities * screen.dt
 
         self.setNodesAndLines()
+
+        self.polygon = [
+            self.positions[i]
+            for i in self.hull
+        ]
 
     def setNodesAndLines(self):
         self.groupObjects = []
