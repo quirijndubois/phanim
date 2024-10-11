@@ -7,7 +7,7 @@ graph1 = SoftBody(
         [-1, 1], [0, 1], [1, 1],
         [-1, 0], [0, 0], [1, 0],
         [-1, -1], [0, -1], [1, -1],
-    ])+np.array([[2, 1.5]]*9),
+    ])+np.array([[3, 1.5]]*9),
     [
         [0, 1],
         [1, 2],
@@ -37,7 +37,7 @@ graph2 = SoftBody(
         [-1, 1], [0, 1], [1, 1],
         [-1, 0], [0, 0], [1, 0],
         [-1, -1], [0, -1], [1, -1],
-    ])+np.array([[-2, 1.5]]*9),
+    ])+np.array([[-3, 1.5]]*9),
     [
         [0, 1],
         [1, 2],
@@ -64,8 +64,17 @@ graph2 = SoftBody(
     showHull=False,
 )
 
+n=10
+graph3 = SoftBody(
+    [[np.sin(np.pi*i/n*2), np.cos(np.pi*i/n*2)] for i in range(n)],
+    [[i, (i+1)%n] for i in range(n)],
+    hull=range(n),
+
+)
+
 s.makeInteractive(graph1)
 s.makeInteractive(graph2)
+s.makeInteractive(graph3)
 
 floorheight = -2
 floor = Line(
@@ -74,6 +83,7 @@ floor = Line(
 
 
 s.play(Create(floor))
+s.play(Create(graph3))
 s.play(Create(graph2))
 s.play(Create(graph1))
 
@@ -84,6 +94,7 @@ def updatePhysics(s):
 
     graph1.update(s)
     graph2.update(s)
+    graph3.update(s)
 
     for i in range(graph1.vertices):
         if graph1.positions[i][1] < floorheight:
@@ -126,6 +137,27 @@ def updatePhysics(s):
             graph2.positions[i][1] = s.camera.bounds[1][1] - .01
             graph2.velocities[i][0] *= 1
             graph2.velocities[i][1] *= -1
+
+    for i in range(graph3.vertices):
+        if graph3.positions[i][1] < floorheight:
+            graph3.positions[i][1] = floorheight + .01
+            graph3.velocities[i][1] *= 0
+            graph3.velocities[i][0] *= 0
+
+        if graph3.positions[i][0] < s.camera.bounds[0][0]:
+            graph3.positions[i][0] = s.camera.bounds[0][0] + .01
+            graph3.velocities[i][0] *= -1
+            graph3.velocities[i][1] *= 1
+
+        if graph3.positions[i][0] > s.camera.bounds[0][1]:
+            graph3.positions[i][0] = s.camera.bounds[0][1] - .01
+            graph3.velocities[i][0] *= -1
+            graph3.velocities[i][1] *= 1
+
+        if graph3.positions[i][1] > s.camera.bounds[1][1]:
+            graph3.positions[i][1] = s.camera.bounds[1][1] - .01
+            graph3.velocities[i][0] *= 1
+            graph3.velocities[i][1] *= -1
 
 
 def update(s):

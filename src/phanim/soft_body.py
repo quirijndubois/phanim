@@ -109,6 +109,7 @@ class SoftBody(Graph):
                         self.positions[i]
                         for i in self.hull
                     ],
+                    color=(255, 255, 255, 100)
                 )
             )
 
