@@ -57,7 +57,7 @@ class Field(Group):
         self.setArrows()
 
 
-class OldField():
+class OldField(Phobject):
     def __init__(self, resolution=1, size=[5, 4], vectorScale=50, maxVectorScale=0.6, pointSize=0.2, lineThickness=0.06):
         self.position = np.array([0, 0])
         self.vectorScale = vectorScale/resolution
@@ -67,6 +67,7 @@ class OldField():
         self.size = np.array(size)
         self.resolution = resolution
         self.sizeRatio = 1
+        self.setRotation(0)
 
     def setField(self, lambdaFunction):
         x_range = np.arange(-self.size[0], self.size[0], 1/self.resolution)

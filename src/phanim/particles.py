@@ -69,7 +69,7 @@ class ParticlesOld():
             return pos
 
 
-class Particles():
+class Particles(Phobject):
     def __init__(self, n=10, area=[[-1, 1], [-1, 1]], particle_radius=0.03, particle_updater=None, m=1, speed=5, start_pos=[0, 0], color=(255, 255, 255)):
         self.position = [0, 0]
         self.n = n
@@ -83,6 +83,7 @@ class Particles():
         if particle_updater:
             self.update_particles = particle_updater
         self.set_circles()
+        self.setRotation(0)
 
     def set_circles(self):
         self.circles = []

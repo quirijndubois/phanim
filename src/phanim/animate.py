@@ -25,6 +25,8 @@ class Animation():
     def __init__(self, phobject, duration=60, mode="smoothstep"):
         self.object = phobject
         self.position = phobject.position
+        self.angle = phobject.angle
+        self.rotationMatrix = phobject.rotationMatrix
         self.duration = duration
         self.currentFrame = 0
         self.oldPhobject = copy(phobject)

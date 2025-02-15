@@ -437,3 +437,18 @@ def polygon_area(polygon):
     # Take the absolute value and divide by 2
     area = abs(area) / 2
     return area
+
+def perpendicular_component_magnitude(A, B):
+    A = np.array(A)
+    B = np.array(B)
+
+    # Compute the projection of A onto B
+    proj_B_A = (np.dot(A, B) / np.dot(B, B)) * B
+    orthogonal_component = A - proj_B_A
+    length = np.linalg.norm(orthogonal_component)
+
+    # Determine the sign using the 2D cross product
+    cross_product = A[0] * B[1] - A[1] * B[0]
+    sign = np.sign(cross_product)
+
+    return sign * length

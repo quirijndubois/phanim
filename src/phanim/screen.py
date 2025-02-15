@@ -192,14 +192,14 @@ class Screen():
                 color = (255, 255, 255)
             self.renderer.drawLine(color, start, stop, pixelWidth)
 
-    def __drawCircles(self, circles, position, static=False):
+    def __drawCircles(self, circles, position, rotationMatrix, static=False):
         if static:
             cam = self.static_camera
         else:
             cam = self.camera
 
         for circle in circles:
-            pos = cam.coords2screen(circle[1]+position)
+            pos = cam.coords2screen(circle[1]@rotationMatrix+position) 
             self.renderer.drawCircle(
                 circle[2], pos, circle[0]*cam.pixelsPerUnit)
 
@@ -233,9 +233,10 @@ class Screen():
                 self.renderer.drawText(color, text, position, size)
 
     def __drawPhobject(self, phobject, static=False):
+
         if hasattr(phobject, 'circles'):
             self.__drawCircles(
-                phobject.circles, phobject.position, static=static)
+                phobject.circles, phobject.position, phobject.rotationMatrix, static=static)
         if hasattr(phobject, 'lines'):
             self.drawLines(phobject.lines, phobject.lineWidth,
                            phobject.position, static=static)

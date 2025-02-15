@@ -41,6 +41,7 @@ class Beads(Group):
     def __init__(self, n, bounds):
         self.position = np.array([0, 0])
         self.groupObjects = []
+        self.setRotation(0)
         for i in range(n):
             self.groupObjects.append(Bead(
                 [random.uniform(*bounds[0]), random.uniform(*bounds[1])], 1, random.uniform(0, 2*np.pi)))

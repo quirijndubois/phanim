@@ -3,7 +3,7 @@ from copy import copy
 
 
 class Phobject():
-    def __init__(self, position=[0, 0], velocity=[0, 0], color=(255, 255, 255), mass=1, charge=0, static=False):
+    def __init__(self, position=[0, 0], velocity=[0, 0], color=(255, 255, 255), mass=1, charge=0, static=False, rotation=0):
         self.accelaration = np.array([0.0, 0.0], dtype='float64')
         self.color = color
         self.static = static
@@ -16,6 +16,11 @@ class Phobject():
         self.accelaration = np.array([0.0, 0.0], dtype='float64')
         self.accelarationAVG = np.array([0.0, 0.0], dtype='float64')
 
+        self.torque = 0
+        self.angularVelocity = 0
+        self.angularAccelaration = 0
+        self.interactiveTorque = 0
+
         self.lines = []
         self.lineWidth = 0
         self.circles = []
@@ -24,9 +29,17 @@ class Phobject():
 
         self.setPosition(position)
         self.setVelocity(velocity)
+        self.setRotation(rotation)
 
     def setPosition(self, position):
         self.position = np.array(position, dtype='float64')
+
+    def setRotation(self, angle):
+        self.angle = angle
+        cos = np.cos(angle)
+        sin = np.sin(angle)
+        self.rotationMatrix = np.array([[cos, -sin], [sin, cos]])
+        self.inverseRotationMatrix = np.array([[cos, sin], [-sin, cos]])
 
     def setColor(self, color):
         self.color = color
@@ -38,7 +51,7 @@ class Phobject():
     def setVelocity(self, velocity):
         self.velocity = np.array(velocity, dtype='float64')
 
-    def eulerODESolver(self, force, dt):
+    def eulerODESolver(self, force, dt,torque=0):
         force = np.array(force)+self.interactiveForce
         self.accelaration = force / self.mass
         AVGlength = 10000
@@ -47,12 +60,18 @@ class Phobject():
         self.velocity += self.accelaration * dt
         self.position += self.velocity * dt
 
+        torgue = self.interactiveTorque + torque
+        self.angularAccelaration = torgue / self.mass
+        self.angularVelocity += self.angularAccelaration * dt
+        self.angle += self.angularVelocity * dt
+        self.setRotation(self.angle)
+
     def createFunction(self, t, old):
         pass
 
 class Node(Phobject):
-    def __init__(self, pos=[0, 0], vel=[0, 0], radius=0.2, color=(0, 0, 0), borderColor=(200, 200, 200), borderSize=0.3, mass=1, charge=0, interactivityType="position", static=False):
-        super().__init__(pos, vel, color, mass, charge, static)
+    def __init__(self, pos=[0, 0], vel=[0, 0], radius=0.2, color=(0, 0, 0), borderColor=(200, 200, 200), borderSize=0.3, mass=1, charge=0, interactivityType="position", static=False, rotation=0):
+        super().__init__(pos, vel, color, mass, charge, static, rotation)
         self.radius = radius
         self.borderColor = borderColor
         self.borderSize = borderSize
@@ -73,6 +92,7 @@ class Node(Phobject):
                                1, 1], t)[1]*old.radius
         self.setRadius(size)
 
+
     def updateInteractivity(self, screen):
         if self.static:
             GlobalCursorPosition = screen.StaticCursorPosition
@@ -84,9 +104,10 @@ class Node(Phobject):
             cam = screen.camera
 
         self.interactiveForce = [0, 0]
+        self.interactiveTorque = 0
         if self in screen.selectedObjects:
             if not self.selected:
-                self.offset = self.position - GlobalCursorPosition
+                self.offset = (self.position - GlobalCursorPosition)@self.inverseRotationMatrix
 
             self.setColor((100, 100, 100))
             if screen.dragging:
@@ -99,14 +120,35 @@ class Node(Phobject):
                     self.lasPos = copy(self.position)
                 if self.interactivityType == "force":
                     screen.draw(
-                        Line(begin=GlobalCursorPosition, end=self.position))
+                        Line(begin=GlobalCursorPosition, end=self.position-self.offset@self.rotationMatrix))
                     self.interactiveForce = (
-                        GlobalCursorPosition-self.position)*300
-                    self.velocity = self.velocity*0.80
+                        GlobalCursorPosition-self.position + self.offset@self.rotationMatrix)*10
+                    self.selected = True
+
+                    W = self.offset@self.rotationMatrix
+                    V = GlobalCursorPosition-self.position
+                    r = magnitude(W)
+                    perp = perpendicular_component_magnitude(V,W)
+                    self.interactiveTorque = -perp*10*r
+
+                    self.angularVelocity *= 0.99
+                    self.velocity *= 0.90
+
             else:
                 self.selected = False
         else:
             self.setColor((0, 0, 0))
+
+class Disk(Node):
+    def __init__(self, *args, radius=1, interactivityType="force", **kwargs):
+        super().__init__(*args, radius=radius, interactivityType=interactivityType, **kwargs)
+
+    def setShapes(self):
+        self.circles = [
+            [self.radius, [0, 0], self.borderColor], 
+            [self.radius/8, [self.radius*0.6, 0], self.color],
+            [self.radius/16, [0.0, 0], self.color]
+        ]
 
 
 class Value():

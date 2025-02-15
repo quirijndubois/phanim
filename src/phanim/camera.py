@@ -3,12 +3,12 @@ import numpy as np
 
 
 class Camera():
-    def __init__(self, zoom, resolution, position=[0, 0], rotation=0):
+    def __init__(self, zoom, resolution, position=[0, 0], angle=0):
         self.zoom = zoom
         self.targetZoom = zoom
         self.resolution = resolution
         self.position = np.array(position)
-        self.rotation = rotation
+        self.setRotation(angle)
         self.aspectRatio = self.resolution[0]/self.resolution[1]
         self.pixelsPerUnit = self.resolution[1] / self.zoom
         self.__calculateBounds()
@@ -28,6 +28,12 @@ class Camera():
         self.targetZoom = zoom
         self.pixelsPerUnit = self.resolution[1] / self.zoom
         self.__calculateBounds()
+
+    def setRotation(self, angle):
+        self.angle = angle
+        sin,cos = np.sin(angle), np.cos(angle)
+        self.rotationMatrix = np.array([[cos, -sin], [sin, cos]])
+        self.inverseRotationMatrix = np.array([[cos, sin], [-sin, cos]])
 
     def update(self, smoothingConstant):
         self.zoom = pf.interp(self.zoom, self.targetZoom, smoothingConstant)
