@@ -27,7 +27,7 @@ s.play(Create(plate), Create(box), Create(plate_node))
 def update(s):
     f = [-plate_force, 0]
 
-    plate_node.eulerODESolver(f, s.dt)
+    plate_node.eulerODESolver(s.dt, force=f)
     plate_node.velocity[1] = 0
     plate_node.position[1] = 0
     plate.position = plate_node.position
