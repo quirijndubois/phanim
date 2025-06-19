@@ -1,6 +1,7 @@
 from .group import *
 from . functions import *
 from .base_phobject import *
+from .special_phobject import *
 from copy import copy
 
 
