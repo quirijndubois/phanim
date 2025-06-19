@@ -1,7 +1,7 @@
 import numpy as np
 from copy import deepcopy
 from phanim.group import Group
-from .phobject import *
+from .base_phobject import *
 from .functions import *
 
 

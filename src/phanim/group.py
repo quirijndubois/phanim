@@ -1,5 +1,5 @@
 from phanim import *
-from phanim.phobject import *
+from phanim.base_phobject import *
 
 
 class Group(Phobject):

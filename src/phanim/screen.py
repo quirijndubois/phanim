@@ -159,7 +159,7 @@ class Screen():
                                 self.camera.targetZoom*scroll[1]*self.zoomSpeed)
         self.camera.update(self.zoomSmoothingConstant)
 
-    def drawLines(self, lines, width, position, static=False):
+    def drawLines(self, lines, width, position,rotationMatrix, static=False):
         """
         Draws a list of lines on the screen.
 
@@ -179,8 +179,8 @@ class Screen():
             cam = self.camera
 
         for line in lines:
-            start = cam.coords2screen(line[0] + position)
-            stop = cam.coords2screen(line[1] + position)
+            start = cam.coords2screen(line[0]@rotationMatrix + position)
+            stop = cam.coords2screen(line[1]@rotationMatrix + position)
 
             pixelWidth = int(width/cam.zoom*20)
             if pixelWidth < 1:
@@ -203,7 +203,7 @@ class Screen():
             self.renderer.drawCircle(
                 circle[2], pos, circle[0]*cam.pixelsPerUnit)
 
-    def __drawPolygons(self, polygons, color, position, static=False):
+    def __drawPolygons(self, polygons, color, position,rotationMatrix, static=False):
         if static:
             cam = self.static_camera
         else:
@@ -212,7 +212,7 @@ class Screen():
         for polygon in polygons:
             points = []
             for point in polygon:
-                points.append(cam.coords2screen(point+position))
+                points.append(cam.coords2screen(point@rotationMatrix+position))
             self.renderer.drawPolygon(color, points)
 
     def __drawTexts(self, texts, position, static=False):
@@ -234,15 +234,15 @@ class Screen():
 
     def __drawPhobject(self, phobject, static=False):
 
+        if hasattr(phobject, "polygons"):
+            self.__drawPolygons(phobject.polygons,
+                                phobject.color, phobject.position, phobject.rotationMatrix, static=static)
         if hasattr(phobject, 'circles'):
             self.__drawCircles(
                 phobject.circles, phobject.position, phobject.rotationMatrix, static=static)
         if hasattr(phobject, 'lines'):
             self.drawLines(phobject.lines, phobject.lineWidth,
-                           phobject.position, static=static)
-        if hasattr(phobject, "polygons"):
-            self.__drawPolygons(phobject.polygons,
-                                phobject.color, phobject.position, static=static)
+                           phobject.position, phobject.rotationMatrix, static=static)
         if hasattr(phobject, "texts"):
             self.__drawTexts(phobject.texts, phobject.position, static=static)
 

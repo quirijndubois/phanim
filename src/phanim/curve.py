@@ -1,6 +1,6 @@
 from .functions import *
 from .color import *
-from .phobject import *
+from .base_phobject import *
 
 
 class Curve(Phobject):

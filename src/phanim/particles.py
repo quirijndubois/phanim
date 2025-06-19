@@ -1,6 +1,6 @@
 from .functions import *
 from .curve import *
-from .phobject import *
+from .base_phobject import *
 from phanim.color import NaturalColorMap
 from copy import copy
 

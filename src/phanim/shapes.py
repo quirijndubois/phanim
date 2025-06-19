@@ -37,7 +37,6 @@ class Rectangle(Quadrilateral):
         self.corners = np.array([a, b, c, d])
         self.setQuadrilateral()
 
-
 class Circle(Curve):
     def __init__(self, radius=1, resolution=100, **kwargs):
         super().__init__(**kwargs)

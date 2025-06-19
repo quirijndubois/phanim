@@ -5,7 +5,7 @@ from copy import deepcopy
 from lxml import etree
 from urllib.parse import urlparse
 from .functions import *
-from .phobject import *
+from .base_phobject import *
 import numpy as np
 import os
 
