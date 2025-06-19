@@ -35,8 +35,8 @@ def update_physics(screen):
     spring12 = springForce(C, l, nodes[1].position, nodes[2].position)
     spring21 = springForce(C, l, nodes[2].position, nodes[1].position)
 
-    nodes[1].eulerODESolver(spring01+spring21+fz, dt)
-    nodes[2].eulerODESolver(spring12+fz, dt)
+    nodes[1].eulerODESolver(dt, force=spring01+spring21+fz)
+    nodes[2].eulerODESolver(dt, force=spring12+fz)
 
 
 def update(screen):
